@@ -26,7 +26,7 @@ for i=1:vpts
 
 
 		val_tmp,vec_tmp=eig(result[i].A,result[i].E)  ## Find the eigen for this speed
-	#	println(val_tmp)
+		println(val_tmp)
 	#	println(vec_tmp)
 
 		result[i].e_val=val_tmp[isfinite(val_tmp)]  ## Discard modes with Inf or Nan vals
@@ -34,7 +34,7 @@ for i=1:vpts
 
 	#	println(result[i].e_vect)
 
- 		m=size(result[i].e_val)
+ 	#	m=size(result[i].e_val)
 		#println("Size of e_val is $m")
 
 	#	println(result[i].e_vect(1:m,:))

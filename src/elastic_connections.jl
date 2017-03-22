@@ -102,9 +102,9 @@ else
 	inertia_mtx=zeros(6*(n-1),6*(n-1))
 
 	slct_mtx=Array{Float64}(0,0)
-	preload_vec=Array{Float64}(0,0)
-	spring_stiffness=Vector{Float64}(0)
-	subset_spring_stiffness=Vector{Float64}(0)
+	preload_vec=Array{Float64}(0)
+	stiff=Vector{Float64}(0)
+	subset_spring_stiff=Vector{Float64}(0)
 
 end
 

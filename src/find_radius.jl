@@ -20,7 +20,7 @@ for i in items
 	if(typeof(i)==link||typeof(i)==spring||typeof(i)==beam||typeof(i)==sensor||typeof(i)==actuator)
 		i.radius[:,1]=i.location[:,1]-locations[i.body_number[1]]
 		i.radius[:,2]=i.location[:,2]-locations[i.body_number[2]]
-	elseif(typeof(i)==rigid_point||typeof(i)==flex_point||typeof(i)==nh_point) 
+	elseif(typeof(i)==rigid_point||typeof(i)==flex_point||typeof(i)==nh_point)
 		i.radius[:,1]=i.location-locations[i.body_number[1]]
 		i.radius[:,2]=i.location-locations[i.body_number[2]]
 	elseif(typeof(i)==load)
