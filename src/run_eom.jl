@@ -22,7 +22,7 @@ f=getfield(Main,s)
 
 the_system=Vector{mbd_system}(0)
 for i in vpts ## Build all the input structs
-	temp=f(1.0,2.0,10.0)
+	temp=f(i)
 	push!(the_system,temp)
 end
 
