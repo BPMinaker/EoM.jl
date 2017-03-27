@@ -1,12 +1,11 @@
 function line_bend_jacobian(items,num) ## Function 'line_bend_jacobian' returns 'mtx' (constraint or deflection matrix of directed items) as a function of 'in' (directed items in system) and 'num' (number of bodies) 
-## Copyright (C) 2003, Bruce Minaker
-## This file is intended for use with Octave.
-## line_bend_jacobian.m is free software; you can redistribute it and/or modify it
+## Copyright (C) 2017, Bruce Minaker
+## line_bend_jacobian.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 2, or (at your option)
 ## any later version.
 ##
-## line_bend_jacobian.m is distributed in the hope that it will be useful, but
+## line_bend_jacobian.jl is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ## General Public License for more details at www.gnu.org/copyleft/gpl.html.

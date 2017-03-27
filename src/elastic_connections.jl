@@ -92,14 +92,12 @@ if(s>0)  ## If the deflection matrix has more than zero rows (i.e. there are ela
 	## Build stiffness matrix
 	stiff_mtx=defln_mtx'*diagm(stiff)*defln_mtx  ## Use the deflection matrices to determine the stiffness matrix that results from the deflection of the elastic items -> Combines delfn_mtx (row for each elastic item, six columns for each body) with 'stiff' (row, column for each elastic constraint) to give proper stiffness matrix
  	dmpng_mtx=defln_mtx'*diagm(dmpng)*defln_mtx  ## ...likewise for damping
- 	inertia_mtx=defln_mtx'*diagm(inertia)*defln_mtx  ## ...likewise for inertia
 
 else
 	verb && println("No flexible connectors.")  ## If there are no springs or flex point items, define empty matrices
 
 	stiff_mtx=zeros(6*(n-1),6*(n-1))
 	dmpng_mtx=zeros(6*(n-1),6*(n-1))
-	inertia_mtx=zeros(6*(n-1),6*(n-1))
 
 	slct_mtx=Array{Float64}(0,0)
 	preload_vec=Array{Float64}(0)
@@ -108,7 +106,7 @@ else
 
 end
 
-stiff_mtx,dmpng_mtx,inertia_mtx,defln_mtx,slct_mtx,preload_vec,stiff,subset_spring_stiff
+stiff_mtx,dmpng_mtx,defln_mtx,slct_mtx,preload_vec,stiff,subset_spring_stiff
 
 end  ## Leave
 

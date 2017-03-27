@@ -17,11 +17,12 @@ type config_struct
 	dir_data::String
 	dir_input::String
 	dir_output::String
-	dir_vrml::String
+	dir_stock::String
+#	dir_vrml::String
 	dir_raw::String
-	
-	function config_struct(dtstr="",tmstr="",dir_data="",dir_input="",dir_output="",dir_vrml="",dir_raw="")
-		new(dtstr,tmstr,dir_data,dir_input,dir_output,dir_vrml,dir_raw)
+
+	function config_struct(dtstr="",tmstr="",dir_data="",dir_input="",dir_output="",dir_stock="",dir_raw="")
+		new(dtstr,tmstr,dir_data,dir_input,dir_output,dir_stock,dir_raw)
 	end
 end
 
@@ -31,7 +32,7 @@ type option_struct
 	animate::Bool
 	sketch::Bool
 	schematic::Bool
-	
+
 	function option_struct(analyze=true,report=false,animate=false,sketch=false,schematic=false)
 		new(analyze,report,animate,sketch,schematic)
 	end
@@ -49,6 +50,7 @@ config.tmstr=Dates.format(now(),"HH-MM-SS")
 config.dir_data="data"
 config.dir_input=joinpath(config.dir_data,"input")
 config.dir_output=joinpath(config.dir_data,"output")
+config.dir_stock=joinpath(config.dir_data,"stock")
 
 if(~isdir(joinpath(pwd(),config.dir_data)))  ## If no data folder exists
 	mkdir(joinpath(pwd(),config.dir_data))  ## create new empty one
@@ -91,21 +93,22 @@ end
 
 if(option.analyze)
 	config.dir_output=joinpath(config.dir_output,config.dtstr,config.tmstr)
-	mkdir(joinpath(pwd(),config.dir_output))  ## Create new empty output folder date/time
+#	mkdir(joinpath(pwd(),config.dir_output))  ## Create new empty output folder date/time
+	cp(joinpath(pwd(),config.dir_stock),config.dir_output)  ## Create new empty output folder date/time
 
-	config.dir_vrml=joinpath(config.dir_output,"vrml")
-	mkdir(joinpath(pwd(),config.dir_vrml))  ## Create vrml folder
+#	config.dir_vrml=joinpath(config.dir_output,"vrml")
+#	mkdir(joinpath(pwd(),config.dir_vrml))  ## Create vrml folder
 
 	config.dir_raw=joinpath(config.dir_output,"unformatted")
 	mkdir(joinpath(pwd(),config.dir_raw))  ## Create unformatted folder
 
-	fin=joinpath(config.dir_data,"tables","table_def.tex")  ## Make a copy of the table defn for tex
-	fout=joinpath(config.dir_output,"table_def.tex")
-	cp(fin,fout)
+#	fin=joinpath(config.dir_data,"tables","table_def.tex")  ## Make a copy of the table defn for tex
+#	fout=joinpath(config.dir_output,"table_def.tex")
+#	cp(fin,fout)
 
-	fin=joinpath(config.dir_data,"images","uwlogo.pdf")  ## Make a copy of the logo pdf for tex
-	fout=joinpath(config.dir_output,"uwlogo.pdf")
-	cp(fin,fout);
+#	fin=joinpath(config.dir_data,"images","uwlogo.pdf")  ## Make a copy of the logo pdf for tex
+#	fout=joinpath(config.dir_output,"uwlogo.pdf")
+#	cp(fin,fout);
 
 end
 

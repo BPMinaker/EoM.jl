@@ -28,6 +28,7 @@ include("elastic_connections.jl")
 include("rigid_constraints.jl")
 include("preload.jl")
 include("const_frc_deal.jl")
+include("defln_deal.jl")
 include("centngyro.jl")
 include("point_line_jacobian.jl")
 include("line_bend_jacobian.jl")
@@ -39,6 +40,9 @@ include("point_hessian.jl")
 include("assemble_eom.jl")
 include("linear_analysis.jl")
 include("dss2ss.jl")
+include("write_output.jl")
+include("load_defln.jl")
+include("syst_props.jl")
 
 type mbd_system
 	name::String
@@ -73,7 +77,6 @@ end
 
 type matrix_struct
 	mass::Array{Float64,2}  ## mass matrix from bodies
-	eq_mass::Array{Float64,2}  ## mass matrix from spring inertia
  	damping::Array{Float64,2}  ## damping matrix from dampers
  	stiffness::Array{Float64,2}  ## stiffness matrix from springs
 	tangent_stiffness::Array{Float64,2}  ## stiffness matrix from internal loads
@@ -101,16 +104,19 @@ type matrix_struct
 	C::Array{Float64,2}
 	D::Array{Float64,2}
 	E::Array{Float64,2}
-	AA::Array{Float64,2}
-	BB::Array{Float64,2}
-	CC::Array{Float64,2}
-	DD::Array{Float64,2}
+	Am::Array{Float64,2}
+	Bm::Array{Float64,2}
+	Cm::Array{Float64,2}
+	Dm::Array{Float64,2}
 	e_vect::Array{Complex{Float64},2}
 	e_val::Vector{Complex{Float64}}
+	w::Vector{Float64}
+	freq_resp::Array{Complex{Float64},3}
+	ss_resp::Array{Float64,2}
+	hsv::Vector{Float64}
 
 	function matrix_struct(
 	mass=Array{Float64}(0,0),
-	eq_mass=Array{Float64}(0,0),
  	damping=Array{Float64}(0,0),
  	stiffness=Array{Float64}(0,0),
 	tangent_stiffness=Array{Float64}(0,0),
@@ -138,13 +144,17 @@ type matrix_struct
 	C=Array{Float64}(0,0),
 	D=Array{Float64}(0,0),
 	E=Array{Float64}(0,0),
-	AA=Array{Float64}(0,0),
-	BB=Array{Float64}(0,0),
-	CC=Array{Float64}(0,0),
-	DD=Array{Float64}(0,0),
+	Am=Array{Float64}(0,0),
+	Bm=Array{Float64}(0,0),
+	Cm=Array{Float64}(0,0),
+	Dm=Array{Float64}(0,0),
 	e_vect=Array{Float64}(0,0),
-	e_val=Vector{Float64}(0))
-		new(mass,eq_mass,damping,stiffness,tangent_stiffness,load_stiffness,velocity,momentum,constraint,nh_constraint,deflection,lambda,static,selection,spring_stiffness,subset_spring_stiffness,left_jacobian,right_jacobian,force,preload,input,input_rate,output,feedthrough,A,B,C,D,E,AA,BB,CC,DD,e_vect,e_val)
+	e_val=Vector{Float64}(0),
+	w=Vector{Float64}(0),
+	freq_resp=Array{Float64}(0,0,0),
+	ss_resp=Array{Float64}(0,0),
+	hsv=Vector{Float64}(0))
+		new(mass,damping,stiffness,tangent_stiffness,load_stiffness,velocity,momentum,constraint,nh_constraint,deflection,lambda,static,selection,spring_stiffness,subset_spring_stiffness,left_jacobian,right_jacobian,force,preload,input,input_rate,output,feedthrough,A,B,C,D,E,Am,Bm,Cm,Dm,e_vect,e_val,w,freq_resp,ss_resp,hsv)
 	end
 end
 

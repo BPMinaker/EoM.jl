@@ -1,10 +1,7 @@
-function dss2ss(A,B,C,D,E,lim=1e-10)
+function dss2ss(A,B,C,D,E)
 
-Q,S,P=svd(E)
-
-#Q'*E*P should = S
-
-S=S[S.>lim]
+Q,S,P=svd(E)  ##Q'*E*P should = S
+S=S[S.>(maximum(size(E))*eps(maximum(S)))]
 n=length(S)
 Sinv=diagm(1./S)
 
@@ -46,8 +43,7 @@ MR=OM*CM
 MR1=OM*AA*CM
 
 U,S,V=svd(MR)
-
-S=S[S.>lim]
+S=S[S.>(maximum(size(MR))*eps(maximum(S)))]
 p=length(S)
 Si=diagm(S.^-0.5)
 S=diagm(S.^0.5)

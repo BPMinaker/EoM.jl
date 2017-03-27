@@ -13,9 +13,11 @@ type body
 	products_of_inertia::Vector{Float64}
 	velocity::Vector{Float64}
 	angular_velocity::Vector{Float64}
+	deflection::Vector{Float64}
+	angular_deflection::Vector{Float64}
 
-	function body(name,group="body",location=[0,0,0],orientation=[0,0,0],mass=0,moments_of_inertia=[0,0,0],products_of_inertia=[0,0,0],velocity=[0,0,0],angular_velocity=[0,0,0])
-		new(name,group,location,orientation,mass,moments_of_inertia,products_of_inertia,velocity,angular_velocity)
+	function body(name,group="body",location=[0,0,0],orientation=[0,0,0],mass=0,moments_of_inertia=[0,0,0],products_of_inertia=[0,0,0],velocity=[0,0,0],angular_velocity=[0,0,0],deflection=[NaN,NaN,NaN],angular_deflection=[NaN,NaN,NaN])
+		new(name,group,location,orientation,mass,moments_of_inertia,products_of_inertia,velocity,angular_velocity,deflection,angular_deflection)
 	end
 end
 

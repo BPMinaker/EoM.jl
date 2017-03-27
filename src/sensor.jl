@@ -1,4 +1,5 @@
 export sensor
+export name
 export gain
 
 type sensor
@@ -42,6 +43,10 @@ type sensor
 	b_mtx=[[0 0;0 0],[0 0;0 0]])
 		new(name,group,location,body,body_number,forces,moments,twist,radius,gain,order,frame,actuator,actuator_number,length,unit,nu,b_mtx)
 	end
+end
+
+function name(obj::sensor)
+	obj.name
 end
 
 function gain(obj::sensor)

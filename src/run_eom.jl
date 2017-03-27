@@ -36,25 +36,15 @@ for i=1:length(vpts)
 end
 
 result=Vector{matrix_struct}(length(vpts))
-tic
+#tic()
 for i=1:length(vpts)
 	result[i]=build_eom(the_system[i],(i<2)*option.analyze)  ## Build eom
 end
-toc
-
-writedlm(joinpath(pwd(),config.dir_raw,"A'.out"),result[1].A)
-writedlm(joinpath(pwd(),config.dir_raw,"B'.out"),result[1].B)
-writedlm(joinpath(pwd(),config.dir_raw,"C'.out"),result[1].C)
-writedlm(joinpath(pwd(),config.dir_raw,"D'.out"),result[1].D)
-writedlm(joinpath(pwd(),config.dir_raw,"E'.out"),result[1].E)
+#toc()
 
 option.analyze && linear_analysis!(result)  ## Do all the eigen, freqresp, etc.
-#println(result[1])
 
-writedlm(joinpath(pwd(),config.dir_raw,"A.out"),result[1].AA)
-writedlm(joinpath(pwd(),config.dir_raw,"B.out"),result[1].BB)
-writedlm(joinpath(pwd(),config.dir_raw,"C.out"),result[1].CC)
-writedlm(joinpath(pwd(),config.dir_raw,"D.out"),result[1].DD)
+write_output(config,option,vpts,the_system[1],result)
 
 println("Done.")
 

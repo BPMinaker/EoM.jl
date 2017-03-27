@@ -35,7 +35,7 @@ end
 data.force,data.load_stiffness=force(the_system.loads,n)
 
 ## Build the stiffness matrix due to deflections of elastic elements
-data.stiffness,data.damping,data.eq_mass,data.deflection,data.selection,data.preload,data.spring_stiffness,data.subset_spring_stiffness=elastic_connections(the_system,verb)
+data.stiffness,data.damping,data.deflection,data.selection,data.preload,data.spring_stiffness,data.subset_spring_stiffness=elastic_connections(the_system,verb)
 
 ## Build the matrices describing the rigid constraints
 data.constraint,data.nh_constraint,data.right_jacobian,data.left_jacobian,data.momentum,data.velocity=rigid_constraints(the_system,verb)
@@ -43,6 +43,7 @@ data.constraint,data.nh_constraint,data.right_jacobian,data.left_jacobian,data.m
 ## Solve for the internal and reaction forces and distribute
 data.lambda,data.static=preload(data,verb)
 const_frc_deal!(the_system,data.lambda,verb)
+defln_deal!(the_system,data.static,verb)
 
 ## Build the tangent stiffness matrix from the computed preloads
 data.tangent_stiffness=tangent(the_system,verb)

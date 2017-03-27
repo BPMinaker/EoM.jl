@@ -15,7 +15,7 @@ function assemble_eom!(data,column,verb)
 ## Build angular stiffness matrix from motion of items with preload, both rigid and flexible
 verb && println("Building equations of motion...")
 
-mass_mtx=data.mass+data.eq_mass
+mass_mtx=data.mass
 stiff_mtx=data.stiffness+data.tangent_stiffness+data.load_stiffness  ## Sum total system stiffness
 damp_mtx=data.damping+data.momentum
 #symmetric_stiffness=issymmetric(stiff_mtx,1.e-3);  ## Check symmetry of stiffness matrix, if 'stiff_mtx' is symmetric to the tolerance 1.e-3, return the dimension, otherwise return zero
@@ -63,7 +63,7 @@ for i=1:nout
 	else
 		error("Matrix size error")
 	end
-	C[i,:]=data.output[i,:]'*mask  ## Note transpose here -- behaviour different than Matlab/Octave 
+	C[i,:]=data.output[i,:]'*mask  ## Note transpose here -- behaviour different than Matlab/Octave
 end
 
 data.C=C*r_orth

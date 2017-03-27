@@ -16,32 +16,35 @@ vpts=length(result)  ## Number of points to plot
 wpts=Int(round(1500/vpts))
 w=2*pi*logspace(-1,2,wpts)
 
-
 for i=1:vpts
 
-# 	if(n>2000)  ## If it's really big, then forget it
-# 		println("Huge system. Stopping..."')
-# 		return
-# 	end
+	result[i].w=w
 
+	val,vec=eig(result[i].A,result[i].E)  ## Find the eigen for this speed
+	result[i].e_val=val[isfinite(val)]  ## Discard modes with Inf or Nan vals
+	result[i].e_vect=vec[:,isfinite(val)]
 
-		val_tmp,vec_tmp=eig(result[i].A,result[i].E)  ## Find the eigen for this speed
-		println(val_tmp)
-	#	println(vec_tmp)
+	result[i].Am,result[i].Bm,result[i].Cm,result[i].Dm=dss2ss(result[i].A,result[i].B,result[i].C,result[i].D,result[i].E)
+	n=size(result[i].Am,1)
+	nin=size(result[i].Bm,2)
+	nout=size(result[i].Cm,1)
 
-		result[i].e_val=val_tmp[isfinite(val_tmp)]  ## Discard modes with Inf or Nan vals
-		result[i].e_vect=vec_tmp[:,isfinite(val_tmp)]
+	result[i].freq_resp=zeros(nout,nin,length(w))
 
-	#	println(result[i].e_vect)
+	for j=1:wpts
+		result[i].freq_resp[:,:,j]=result[i].Cm*((I*w[j]im-result[i].Am)\result[i].Bm)+result[i].Dm
+	end
 
- 	#	m=size(result[i].e_val)
-		#println("Size of e_val is $m")
+	result[i].ss_resp=-result[i].Cm*(result[i].Am\result[i].Bm)+result[i].Dm
 
-	#	println(result[i].e_vect(1:m,:))
- 	#	vec=1e-6*round(result[i].e_vect(1:m,:)*1e6)
+	CM=zeros(n,n*nin)
+	OM=zeros(n*nout,n)
+	for j=0:(n-1)
+		CM[:,j*nin+1:j*nin+nin]=result[i].Am^j*result[i].Bm
+		OM[j*nout+1:j*nout+nout,:]=result[i].Cm*result[i].Am^j
+	end
 
-		result[i].AA,result[i].BB,result[i].CC,result[i].DD=dss2ss(result[i].A,result[i].B,result[i].C,result[i].D,result[i].E)
-
+	result[i].hsv=svdvals(OM*CM)
 
 # 		if(vpts<10)
 #			r=rank(vec)
@@ -75,6 +78,5 @@ for i=1:vpts
 
 
 end
-
 
 end ## Leave
