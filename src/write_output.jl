@@ -211,4 +211,13 @@ file=open(out,"w")
 write(file,tp)
 close(file)
 
+out=joinpath(config.dir_output,"switch.tex")
+file=open(out,"w")
+if(length(vpts)>1)
+	write(file,"\\include{analyses}")
+else
+	write(file,"\\include{analysis}")
+end
+close(file)
+
 end ## Leave

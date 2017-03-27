@@ -37,14 +37,14 @@ for i=1:vpts
 
 	result[i].ss_resp=-result[i].Cm*(result[i].Am\result[i].Bm)+result[i].Dm
 
-	CM=zeros(n,n*nin)
-	OM=zeros(n*nout,n)
-	for j=0:(n-1)
-		CM[:,j*nin+1:j*nin+nin]=result[i].Am^j*result[i].Bm
-		OM[j*nout+1:j*nout+nout,:]=result[i].Cm*result[i].Am^j
+	tmp=eigvals(result[i].Am)
+	if(sum(real(tmp).>0)==0)
+		WC=lyap(result[i].Am,result[i].Bm*result[i].Bm')
+		WO=lyap(result[i].Am',result[i].Cm'*result[i].Cm)
+		result[i].hsv=sqrt(eigvals(WC*WO))
+	else
+		result[i].hsv=zeros(length(tmp))
 	end
-
-	result[i].hsv=svdvals(OM*CM)
 
 # 		if(vpts<10)
 #			r=rank(vec)
