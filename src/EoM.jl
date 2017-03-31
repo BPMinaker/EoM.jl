@@ -17,6 +17,7 @@ include("sensor.jl")
 
 include("run_eom.jl")
 include("setup.jl")
+include("mass.jl")
 include("sort_system.jl")
 include("find_bodynum.jl")
 include("find_radius.jl")
@@ -43,6 +44,16 @@ include("dss2ss.jl")
 include("write_output.jl")
 include("load_defln.jl")
 include("syst_props.jl")
+
+include("tex_eig_pgftable.jl")
+include("tex_eig_pgfplot.jl")
+include("tex_bode_pgfplot.jl")
+include("tex_bode3_pgfplot.jl")
+include("tex_sstf_pgftable.jl")
+include("tex_sstf_pgfplot.jl")
+include("tex_hsv_pgftable.jl")
+include("tex_hsv_pgfplot.jl")
+
 
 type mbd_system
 	name::String
@@ -77,11 +88,12 @@ end
 
 type matrix_struct
 	mass::Array{Float64,2}  ## mass matrix from bodies
- 	damping::Array{Float64,2}  ## damping matrix from dampers
- 	stiffness::Array{Float64,2}  ## stiffness matrix from springs
+	inertia::Array{Float64,2}  ## mass matrix from springs
+	damping::Array{Float64,2}  ## damping matrix from dampers
+	stiffness::Array{Float64,2}  ## stiffness matrix from springs
 	tangent_stiffness::Array{Float64,2}  ## stiffness matrix from internal loads
 	load_stiffness::Array{Float64,2}  ## stiffness matrix from external loads
- 	velocity::Array{Float64,2}  ## velocity matrix for kinematics differential equation
+	velocity::Array{Float64,2}  ## velocity matrix for kinematics differential equation
 	momentum::Array{Float64,2}  ## momentum matrix that gets added to damping matrix
 	constraint::Array{Float64,2}  ## holonomic constraint jacobian
 	nh_constraint::Array{Float64,2}  ## nonholonomic constraint jacobian
@@ -117,11 +129,12 @@ type matrix_struct
 
 	function matrix_struct(
 	mass=Array{Float64}(0,0),
- 	damping=Array{Float64}(0,0),
- 	stiffness=Array{Float64}(0,0),
+	inertia=Array{Float64}(0,0),
+	damping=Array{Float64}(0,0),
+	stiffness=Array{Float64}(0,0),
 	tangent_stiffness=Array{Float64}(0,0),
 	load_stiffness=Array{Float64}(0,0),
- 	velocity=Array{Float64}(0,0),
+	velocity=Array{Float64}(0,0),
 	momentum=Array{Float64}(0,0),
 	constraint=Array{Float64}(0,0),
 	nh_constraint=Array{Float64}(0,0),
@@ -154,7 +167,7 @@ type matrix_struct
 	freq_resp=Array{Float64}(0,0,0),
 	ss_resp=Array{Float64}(0,0),
 	hsv=Vector{Float64}(0))
-		new(mass,damping,stiffness,tangent_stiffness,load_stiffness,velocity,momentum,constraint,nh_constraint,deflection,lambda,static,selection,spring_stiffness,subset_spring_stiffness,left_jacobian,right_jacobian,force,preload,input,input_rate,output,feedthrough,A,B,C,D,E,Am,Bm,Cm,Dm,e_vect,e_val,w,freq_resp,ss_resp,hsv)
+		new(mass,inertia,damping,stiffness,tangent_stiffness,load_stiffness,velocity,momentum,constraint,nh_constraint,deflection,lambda,static,selection,spring_stiffness,subset_spring_stiffness,left_jacobian,right_jacobian,force,preload,input,input_rate,output,feedthrough,A,B,C,D,E,Am,Bm,Cm,Dm,e_vect,e_val,w,freq_resp,ss_resp,hsv)
 	end
 end
 

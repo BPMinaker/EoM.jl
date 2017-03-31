@@ -13,7 +13,7 @@ function linear_analysis!(result)
 ##--------------------------------------------------------------------
 
 vpts=length(result)  ## Number of points to plot
-wpts=Int(round(1500/vpts))
+wpts=Int(round(2000/vpts))
 w=2*pi*logspace(-1,2,wpts)
 
 for i=1:vpts
@@ -24,7 +24,6 @@ for i=1:vpts
 	result[i].e_val=val[isfinite(val)]  ## Discard modes with Inf or Nan vals
 	result[i].e_vect=vec[:,isfinite(val)]
 
-	result[i].Am,result[i].Bm,result[i].Cm,result[i].Dm=dss2ss(result[i].A,result[i].B,result[i].C,result[i].D,result[i].E)
 	n=size(result[i].Am,1)
 	nin=size(result[i].Bm,2)
 	nout=size(result[i].Cm,1)
@@ -42,6 +41,7 @@ for i=1:vpts
 		WC=lyap(result[i].Am,result[i].Bm*result[i].Bm')
 		WO=lyap(result[i].Am',result[i].Cm'*result[i].Cm)
 		result[i].hsv=sqrt(eigvals(WC*WO))
+#		result[i].hsv=zeros(length(tmp))
 	else
 		result[i].hsv=zeros(length(tmp))
 	end

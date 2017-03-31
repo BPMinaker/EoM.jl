@@ -67,7 +67,7 @@ if(s>0)
 			println("Trying to use item stiffness to determine preloads...")
 		end
 
-		temp=ind_test_mtx\[zeros(q);-data.force;data.preload]
+		temp=pinv(ind_test_mtx)*[zeros(q);-data.force;data.preload]
 		static=-temp[q+1:q+r]
 		lambda=[temp[1:q];[diagm(data.spring_stiffness)*data.deflection data.selection'*diagm(data.subset_spring_stiffness)]*temp[q+1:end]]
 

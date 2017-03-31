@@ -20,22 +20,15 @@ verb && println("Okay, got the system info, building equations of motion...")
 ## Build container
 data=matrix_struct()
 
-n=length(the_system.bodys)
-d=6*(n-1)
-
 ## Build the mass matrix
-temp=broadcast(mass_mtx,the_system.bodys)
-data.mass=zeros(d,d) ## Find the dimension of the system from number of bodies, subtract one for ground body
-for i=1:n-1
-	data.mass[6*i-5:6*i,6*i-5:6*i]=temp[i]  ## Build mass matrix from body info
-end
+data.mass=mass(the_system,verb)
 
 ## Sum external forces and cast into vector
 ## Determine stiffness matrix for angular motion resulting from applied forces
-data.force,data.load_stiffness=force(the_system.loads,n)
+data.force,data.load_stiffness=force(the_system,verb)
 
 ## Build the stiffness matrix due to deflections of elastic elements
-data.stiffness,data.damping,data.deflection,data.selection,data.preload,data.spring_stiffness,data.subset_spring_stiffness=elastic_connections(the_system,verb)
+data.stiffness,data.damping,data.inertia,data.deflection,data.selection,data.preload,data.spring_stiffness,data.subset_spring_stiffness=elastic_connections(the_system,verb)
 
 ## Build the matrices describing the rigid constraints
 data.constraint,data.nh_constraint,data.right_jacobian,data.left_jacobian,data.momentum,data.velocity=rigid_constraints(the_system,verb)
@@ -56,6 +49,9 @@ data.output,data.feedthrough,col=outputs(the_system,verb)
 
 ## Assemble the system equations of motion
 assemble_eom!(data,col,verb)
+
+## Reduce to standard form
+dss2ss!(data)
 
 data
 

@@ -15,7 +15,7 @@ function assemble_eom!(data,column,verb)
 ## Build angular stiffness matrix from motion of items with preload, both rigid and flexible
 verb && println("Building equations of motion...")
 
-mass_mtx=data.mass
+mass_mtx=data.mass+data.inertia
 stiff_mtx=data.stiffness+data.tangent_stiffness+data.load_stiffness  ## Sum total system stiffness
 damp_mtx=data.damping+data.momentum
 #symmetric_stiffness=issymmetric(stiff_mtx,1.e-3);  ## Check symmetry of stiffness matrix, if 'stiff_mtx' is symmetric to the tolerance 1.e-3, return the dimension, otherwise return zero
@@ -59,7 +59,7 @@ for i=1:nout
 		mask=-pinv(M[dim+1:2*dim,dim+1:2*dim])*KC(dim+1:2*dim,:)
 
 	elseif(column[i]==5) ## p dot dot
-			mask=[data.velocity^2 -data.velocity  zeros(dim,nin)] - pinv(M[dim+1:2*dim,dim+1:2*dim])*KC(dim+1:2*dim,:)
+			mask=[data.velocity^2 -data.velocity  zeros(dim,nin)] - pinv(M[dim+1:2*dim,dim+1:2*dim])*KC[dim+1:2*dim,:]
 	else
 		error("Matrix size error")
 	end

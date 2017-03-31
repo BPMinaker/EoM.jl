@@ -34,7 +34,7 @@ if(s>0)  ## If the deflection matrix has more than zero rows (i.e. there are ela
 	## Gather all stiffness and damping coefficients into a vector
 	spring_stiff=broadcast(stiffness,the_system.springs)
 	spring_dmpng=broadcast(damping,the_system.springs)
-	spring_inertia=broadcast(eq_mass,the_system.springs)
+	spring_inertia=broadcast(inertance,the_system.springs)
 	preload_vec=broadcast(preload,the_system.springs)
 
 	## Find the springs where the preload is given
@@ -81,9 +81,8 @@ if(s>0)  ## If the deflection matrix has more than zero rows (i.e. there are ela
  	#zeros(1,3*the_system.ntriangle_3s) zeros(1,5*the_system.ntriangle_5s) ])
 
 	## Compute the diagonal inertia values, mostly zero except the inertance of the springs
-	inertia=zeros(dmpng)
+	inertia=zeros(stiff)
 	inertia[1:length(the_system.springs)]=spring_inertia
-	#inertia=blkdiag(diag(spring_inertia,zeros(size(flex_point_stiff)),zeros(size(beam_stiff))))
 	#	zeros(1,3*the_system.ntriangle_3s) ...
 	#	zeros(1,5*the_system.ntriangle_5s)]), ...
 	#	wing_inertia);
@@ -92,12 +91,13 @@ if(s>0)  ## If the deflection matrix has more than zero rows (i.e. there are ela
 	## Build stiffness matrix
 	stiff_mtx=defln_mtx'*diagm(stiff)*defln_mtx  ## Use the deflection matrices to determine the stiffness matrix that results from the deflection of the elastic items -> Combines delfn_mtx (row for each elastic item, six columns for each body) with 'stiff' (row, column for each elastic constraint) to give proper stiffness matrix
  	dmpng_mtx=defln_mtx'*diagm(dmpng)*defln_mtx  ## ...likewise for damping
-
+	inertia_mtx=defln_mtx'*diagm(inertia)*defln_mtx
 else
 	verb && println("No flexible connectors.")  ## If there are no springs or flex point items, define empty matrices
 
 	stiff_mtx=zeros(6*(n-1),6*(n-1))
 	dmpng_mtx=zeros(6*(n-1),6*(n-1))
+	inertia_mtx=zeros(6*(n-1),6*(n-1))
 
 	slct_mtx=Array{Float64}(0,0)
 	preload_vec=Array{Float64}(0)
@@ -106,7 +106,7 @@ else
 
 end
 
-stiff_mtx,dmpng_mtx,defln_mtx,slct_mtx,preload_vec,stiff,subset_spring_stiff
+stiff_mtx,dmpng_mtx,inertia_mtx,defln_mtx,slct_mtx,preload_vec,stiff,subset_spring_stiff
 
 end  ## Leave
 

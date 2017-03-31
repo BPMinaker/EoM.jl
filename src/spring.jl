@@ -13,7 +13,7 @@ type spring
 	stiffness::Float64
 	damping::Float64
 	preload::Float64
-	eq_mass::Float64
+	inertance::Float64
 	length::Float64
 	unit::Vector{Float64}
 	nu::Array{Float64,2}
@@ -32,12 +32,12 @@ type spring
 	stiffness=0,
 	damping=0,
 	preload=NaN,
-	eq_mass=0,
+	inertance=0,
 	length=0,
 	unit=[0,0,0],
 	nu=[[0,0,0] [0,0,0]],
 	b_mtx=[[0 0;0 0],[0 0;0 0]])
-		new(name,group,location,body,body_number,forces,moments,twist,radius,stiffness,damping,preload,eq_mass,length,unit,nu,b_mtx)
+		new(name,group,location,body,body_number,forces,moments,twist,radius,stiffness,damping,preload,inertance,length,unit,nu,b_mtx)
 	end
 end
 
@@ -53,6 +53,6 @@ function preload(obj::spring)
 	obj.preload
 end
 
-function eq_mass(obj::spring)
-	obj.eq_mass
+function inertance(obj::spring)
+	obj.inertance
 end

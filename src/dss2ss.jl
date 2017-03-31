@@ -1,13 +1,13 @@
-function dss2ss(A,B,C,D,E)
+function dss2ss!(data)
 
-Q,S,P=svd(E)  ##Q'*E*P should = S
-S=S[S.>(maximum(size(E))*eps(maximum(S)))]
+Q,S,P=svd(data.E)  ##Q'*E*P should = S
+S=S[S.>(maximum(size(data.E))*eps(maximum(S)))]
 n=length(S)
 Sinv=diagm(1./S)
 
-Atilde=Q'*A*P
-Btilde=Q'*B
-Ctilde=C*P
+Atilde=Q'*data.A*P
+Btilde=Q'*data.B
+Ctilde=data.C*P
 
 A11=Atilde[1:n,1:n]
 A12=Atilde[1:n,n+1:end]
@@ -25,7 +25,7 @@ A22inv=inv(A22)
 AA=Sinv*(A11-A12*A22inv*A21)
 BB=Sinv*(B1-A12*A22inv*B2)
 CC=C1-C2*A22inv*A21
-DD=D-C2*A22inv*B2
+DD=data.D-C2*A22inv*B2
 
 n=size(AA,1)
 nin=size(BB,2)
@@ -51,10 +51,11 @@ S=diagm(S.^0.5)
 Un=U[:,1:p]
 Vn=V[:,1:p]
 
-Am=Si*Un'*MR1*Vn*Si
-Bm=(S*Vn')[:,1:nin]
-Cm=(Un*S)[1:nout,:]
-Dm=DD
+data.Am=Si*Un'*MR1*Vn*Si
+data.Bm=(S*Vn')[:,1:nin]
+data.Cm=(Un*S)[1:nout,:]
+data.Dm=DD
 
-Am,Bm,Cm,Dm
+#Am,Bm,Cm,Dm
+
 end

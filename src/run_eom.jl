@@ -1,4 +1,4 @@
-function run_eom(sysin,vpts=1:1,flags=[])
+function run_eom(sysin,vpts=1:1,flags=[];parms...)
 ## Copyright (C) 2017, Bruce Minaker
 ## run_eom.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -15,37 +15,37 @@ function run_eom(sysin,vpts=1:1,flags=[])
 config,option=setup(flags)  ## Clear screen, set pager, etc.
 
 option.analyze && println("Calling function $sysin...")
-
 include(joinpath(pwd(),config.dir_input,"$sysin.jl"))
-s=Symbol(sysin)
-f=getfield(Main,s)
+func=getfield(Main,Symbol(sysin))
 
 the_system=Vector{mbd_system}(0)
 for i in vpts ## Build all the input structs
-	temp=f(i)
-	push!(the_system,temp)
+	push!(the_system,func(i;parms...))
 end
 
-n=the_system[1].name
-option.analyze && println("Running analysis of $n ...")
-n=length(the_system[1].item)
-option.analyze && println("Found $n items...")
+option.analyze && println("Running analysis of $(the_system[1].name) ...")
+option.analyze && println("Found $(length(the_system[1].item)) items...")
 
 for i=1:length(vpts)
-	sort_system!(the_system[i],i<2)  ## Sort all the input structs
+	sort_system!(the_system[i],(i<2)*option.analyze)  ## Sort all the input structs
 end
 
 result=Vector{matrix_struct}(length(vpts))
-#tic()
-for i=1:length(vpts)
+@time for i=1:length(vpts)
 	result[i]=build_eom(the_system[i],(i<2)*option.analyze)  ## Build eom
 end
-#toc()
 
 option.analyze && linear_analysis!(result)  ## Do all the eigen, freqresp, etc.
-
-write_output(config,option,vpts,the_system[1],result)
+option.analyze && write_output(config,option,vpts,the_system[1],result)
+# sleep(10)
+# if(option.analyze && is_linux())
+# 	println("Running LaTeX...")
+# 	run(`cd $(config.dir_output); /usr/bin/pdflatex -interaction batchmode report.tex`)
+# 	println(tmp)
+# end
 
 println("Done.")
+
+result[1].Am,result[1].Bm,result[1].Cm,result[1].Dm
 
 end

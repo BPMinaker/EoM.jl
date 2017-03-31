@@ -68,7 +68,6 @@ option=option_struct()
 
 for i in flags ## Loop over them
 	if(isa(i,String))  ## Otherwise, look for output control strings
-		println(i)
 		if(i=="report")
 			option.report=true
 		elseif(i=="animate")
@@ -93,22 +92,10 @@ end
 
 if(option.analyze)
 	config.dir_output=joinpath(config.dir_output,config.dtstr,config.tmstr)
-#	mkdir(joinpath(pwd(),config.dir_output))  ## Create new empty output folder date/time
 	cp(joinpath(pwd(),config.dir_stock),config.dir_output)  ## Create new empty output folder date/time
-
-#	config.dir_vrml=joinpath(config.dir_output,"vrml")
-#	mkdir(joinpath(pwd(),config.dir_vrml))  ## Create vrml folder
 
 	config.dir_raw=joinpath(config.dir_output,"unformatted")
 	mkdir(joinpath(pwd(),config.dir_raw))  ## Create unformatted folder
-
-#	fin=joinpath(config.dir_data,"tables","table_def.tex")  ## Make a copy of the table defn for tex
-#	fout=joinpath(config.dir_output,"table_def.tex")
-#	cp(fin,fout)
-
-#	fin=joinpath(config.dir_data,"images","uwlogo.pdf")  ## Make a copy of the logo pdf for tex
-#	fout=joinpath(config.dir_output,"uwlogo.pdf")
-#	cp(fin,fout);
 
 end
 
