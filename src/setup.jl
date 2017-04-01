@@ -86,11 +86,14 @@ for i in flags ## Loop over them
 	end
 end
 
-if(~isdir(joinpath(pwd(),config.dir_output,config.dtstr)) && option.analyze==true)  ## If no dated output folder exists
-	mkdir(joinpath(pwd(),config.dir_output,config.dtstr))  ## Create new empty dated output folder
-end
+if(option.report)
 
-if(option.analyze)
+	option.analyze=true  ## Must analyze to write report
+
+	if(~isdir(joinpath(pwd(),config.dir_output,config.dtstr)))  ## If no dated output folder exists
+		mkdir(joinpath(pwd(),config.dir_output,config.dtstr))  ## Create new empty dated output folder
+	end
+
 	config.dir_output=joinpath(config.dir_output,config.dtstr,config.tmstr)
 	cp(joinpath(pwd(),config.dir_stock),config.dir_output)  ## Create new empty output folder date/time
 

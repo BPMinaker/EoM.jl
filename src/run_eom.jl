@@ -15,7 +15,10 @@ function run_eom(sysin,vpts=1:1,flags=[];parms...)
 config,option=setup(flags)  ## Clear screen, set pager, etc.
 
 option.analyze && println("Calling function $sysin...")
-include(joinpath(pwd(),config.dir_input,"$sysin.jl"))
+
+if(~isdefined(parse(sysin)))
+	include(joinpath(pwd(),config.dir_input,"$sysin.jl"))
+end
 func=getfield(Main,Symbol(sysin))
 
 the_system=Vector{mbd_system}(0)
@@ -31,21 +34,25 @@ for i=1:length(vpts)
 end
 
 result=Vector{matrix_struct}(length(vpts))
-@time for i=1:length(vpts)
+#@time
+for i=1:length(vpts)
 	result[i]=build_eom(the_system[i],(i<2)*option.analyze)  ## Build eom
 end
 
 option.analyze && linear_analysis!(result)  ## Do all the eigen, freqresp, etc.
-option.analyze && write_output(config,option,vpts,the_system[1],result)
-# sleep(10)
-# if(option.analyze && is_linux())
-# 	println("Running LaTeX...")
-# 	run(`cd $(config.dir_output); /usr/bin/pdflatex -interaction batchmode report.tex`)
-# 	println(tmp)
-# end
+option.report && write_output(config,option,vpts,the_system[1],result)
 
-println("Done.")
+if(option.report && is_linux())
+	println("Running LaTeX...")
 
-result[1].Am,result[1].Bm,result[1].Cm,result[1].Dm
+	cmd="cd $(config.dir_output); /usr/bin/pdflatex -shell-escape -interaction batchmode report.tex"
+	run(`bash -c $cmd`)
+	run(`bash -c $cmd`)
+
+end
+
+option.analyze && println("Done.")
+
+result
 
 end

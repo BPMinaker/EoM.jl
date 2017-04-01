@@ -11,18 +11,6 @@ function write_output(config,option,vpts,the_system,result)
 ## General Public License for more details at www.gnu.org/copyleft/gpl.html.
 ##
 ##--------------------------------------------------------------------
-
-writedlm(joinpath(pwd(),config.dir_raw,"A.out"),result[1].A)
-writedlm(joinpath(pwd(),config.dir_raw,"B.out"),result[1].B)
-writedlm(joinpath(pwd(),config.dir_raw,"C.out"),result[1].C)
-writedlm(joinpath(pwd(),config.dir_raw,"D.out"),result[1].D)
-writedlm(joinpath(pwd(),config.dir_raw,"E.out"),result[1].E)
-
-writedlm(joinpath(pwd(),config.dir_raw,"Amin.out"),result[1].Am)
-writedlm(joinpath(pwd(),config.dir_raw,"Bmin.out"),result[1].Bm)
-writedlm(joinpath(pwd(),config.dir_raw,"Cmin.out"),result[1].Cm)
-writedlm(joinpath(pwd(),config.dir_raw,"Dmin.out"),result[1].Dm)
-
 cmplx=0  ## Creates variable for number of oscillatory modes
 dmpd=0  ## Creates variable for number of non-oscillatory modes
 nstbl=0  ## Creates variable for number of unstable modes
@@ -150,74 +138,72 @@ end
 preload,defln=load_defln(the_system)
 bodydata,pointdata,linedata,stiffnessdata=syst_props(the_system)
 
-out=joinpath(config.dir_output,"bodydata.out")
-file=open(out,"w")
-write(file,bodydata)
-close(file)
+data_out=[bodydata pointdata linedata stiffnessdata]
+file_name=["bodydata.out" "pointdata.out" "linedata.out" "stiffnessdata.out"]
 
-out=joinpath(config.dir_output,"pointdata.out")
-file=open(out,"w")
-write(file,pointdata)
-close(file)
+for i=1:length(data_out)
+	out=joinpath(config.dir_output,file_name[i])
+	file=open(out,"w")
+	write(file,data_out[i])
+	close(file)
+end
 
-out=joinpath(config.dir_output,"linedata.out")
-file=open(out,"w")
-write(file,linedata)
-close(file)
+data_out=[eigen freq bode sstf hsv preload defln]
+file_name=["eigen.out" "freq.out" "bode.out" "sstf.out" "hsv.out" "preload.out" "defln.out"]
 
-out=joinpath(config.dir_output,"stiffnessdata.out")
-file=open(out,"w")
-write(file,stiffnessdata)
-close(file)
+for i=1:length(data_out)
+	out=joinpath(config.dir_output,file_name[i])
+	file=open(out,"w")
+	write(file,data_out[i])
+	close(file)
+end
 
-out=joinpath(config.dir_output,"eigen.out")
-file=open(out,"w")
-write(file,eigen)
-close(file)
-
-out=joinpath(config.dir_output,"freq.out")
-file=open(out,"w")
-write(file,freq)
-close(file)
-
-out=joinpath(config.dir_output,"bode.out")
-file=open(out,"w")
-write(file,bode)
-close(file)
-
-out=joinpath(config.dir_output,"sstf.out")
-file=open(out,"w")
-write(file,sstf)
-close(file)
-
-out=joinpath(config.dir_output,"hsv.out")
-file=open(out,"w")
-write(file,hsv)
-close(file)
-
-out=joinpath(config.dir_output,"preload.out")
-file=open(out,"w")
-write(file,preload)
-close(file)
-
-out=joinpath(config.dir_output,"defln.out")
-file=open(out,"w")
-write(file,defln)
-close(file)
-
-tp="\\title{\nEoM Analysis\\\\\n$(the_system.name)\n\\\\\n}\n\\author{\nJohn Smith: ID 12345678\n\\\\\nJane Smith: ID 87654321\n\\\\\n}\n"
+tp="\\title{\nEoM Analysis\\\\\n$(the_system.name)\n\\\\\n}\n"
+tp*="\\author{\nJohn Smith: ID 12345678\n\\\\\nJane Smith: ID 87654321\n\\\\\n}\n"
 out=joinpath(config.dir_output,"titlepage.tex")
 file=open(out,"w")
 write(file,tp)
 close(file)
 
-out=joinpath(config.dir_output,"switch.tex")
-file=open(out,"w")
+rprt="\\chapter{Analysis}\n"
+rprt*="Replace this text with the body of your report.  Add sections or subsections as appropriate.\n"
+
 if(length(vpts)>1)
-	write(file,"\\include{analyses}")
+	rprt*=tex_eig_pgfplot() ## Plot the eigenvalues
+	if(n*nin*nout>0 && nin*nout<16)
+		rprt*=tex_bode3_pgfplot(input_names,output_names)  ## Bode plots, but 3D
+		rprt*=tex_sstf_pgfplot(input_names,output_names)  ## Plot the steady state results
+		rprt*=tex_hsv_pgfplot()
+	end
 else
-	write(file,"\\include{analysis}")
+	rprt*=tex_eig_pgftable()
+
+#	rprt*='There are ' num2str(result{1}.data.dimension-result{1}.eom.rigid.rkr) ' degrees of freedom.  '];
+	rprt*="There are $cmplx oscillatory modes, $dmpd damped modes, $nstbl unstable modes, and $rgd rigid body modes.\n\\pagebreak\n"
+
+	if(n*nin*nout>0 && nin*nout<16)
+		rprt*=tex_bode_pgfplot(input_names,output_names)  ## Bode plots
+	end
+
+	rprt*=tex_sstf_pgftable()  ## Print the steady state results
+	rprt*=tex_hsv_pgftable()
 end
+rprt*="\\input{load}"
+
+out=joinpath(config.dir_output,"analysis.tex")
+file=open(out,"w")
+write(file,rprt)
 close(file)
+
+writedlm(joinpath(pwd(),config.dir_raw,"A.out"),result[1].A)
+writedlm(joinpath(pwd(),config.dir_raw,"B.out"),result[1].B)
+writedlm(joinpath(pwd(),config.dir_raw,"C.out"),result[1].C)
+writedlm(joinpath(pwd(),config.dir_raw,"D.out"),result[1].D)
+writedlm(joinpath(pwd(),config.dir_raw,"E.out"),result[1].E)
+
+writedlm(joinpath(pwd(),config.dir_raw,"Amin.out"),result[1].Am)
+writedlm(joinpath(pwd(),config.dir_raw,"Bmin.out"),result[1].Bm)
+writedlm(joinpath(pwd(),config.dir_raw,"Cmin.out"),result[1].Cm)
+writedlm(joinpath(pwd(),config.dir_raw,"Dmin.out"),result[1].Dm)
 
 end ## Leave
