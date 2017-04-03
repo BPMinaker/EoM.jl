@@ -1,4 +1,4 @@
-function write_output(config,option,vpts,the_system,result)
+function write_output(dir_output,vpts,the_system,result;dir_raw="unformatted")
 ## Copyright (C) 2017, Bruce Minaker
 ## write_output.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -11,6 +11,7 @@ function write_output(config,option,vpts,the_system,result)
 ## General Public License for more details at www.gnu.org/copyleft/gpl.html.
 ##
 ##--------------------------------------------------------------------
+
 cmplx=0  ## Creates variable for number of oscillatory modes
 dmpd=0  ## Creates variable for number of non-oscillatory modes
 nstbl=0  ## Creates variable for number of unstable modes
@@ -88,10 +89,7 @@ for i=1:length(vpts)
 end
 
 if(nin*nout>0  && nin*nout<16)
-
 	for i=1:length(vpts)
-
-
 		if(length(vpts)==1)
 			sstf*="num outputtoinput gain\n"
 
@@ -142,7 +140,7 @@ data_out=[bodydata pointdata linedata stiffnessdata]
 file_name=["bodydata.out" "pointdata.out" "linedata.out" "stiffnessdata.out"]
 
 for i=1:length(data_out)
-	out=joinpath(config.dir_output,file_name[i])
+	out=joinpath(dir_output,file_name[i])
 	file=open(out,"w")
 	write(file,data_out[i])
 	close(file)
@@ -152,7 +150,7 @@ data_out=[eigen freq bode sstf hsv preload defln]
 file_name=["eigen.out" "freq.out" "bode.out" "sstf.out" "hsv.out" "preload.out" "defln.out"]
 
 for i=1:length(data_out)
-	out=joinpath(config.dir_output,file_name[i])
+	out=joinpath(dir_output,file_name[i])
 	file=open(out,"w")
 	write(file,data_out[i])
 	close(file)
@@ -160,7 +158,7 @@ end
 
 tp="\\title{\nEoM Analysis\\\\\n$(the_system.name)\n\\\\\n}\n"
 tp*="\\author{\nJohn Smith: ID 12345678\n\\\\\nJane Smith: ID 87654321\n\\\\\n}\n"
-out=joinpath(config.dir_output,"titlepage.tex")
+out=joinpath(dir_output,"titlepage.tex")
 file=open(out,"w")
 write(file,tp)
 close(file)
@@ -190,20 +188,20 @@ else
 end
 rprt*="\\input{load}"
 
-out=joinpath(config.dir_output,"analysis.tex")
+out=joinpath(dir_output,"analysis.tex")
 file=open(out,"w")
 write(file,rprt)
 close(file)
 
-writedlm(joinpath(pwd(),config.dir_raw,"A.out"),result[1].A)
-writedlm(joinpath(pwd(),config.dir_raw,"B.out"),result[1].B)
-writedlm(joinpath(pwd(),config.dir_raw,"C.out"),result[1].C)
-writedlm(joinpath(pwd(),config.dir_raw,"D.out"),result[1].D)
-writedlm(joinpath(pwd(),config.dir_raw,"E.out"),result[1].E)
+writedlm(joinpath(pwd(),dir_output,dir_raw,"A.out"),result[1].A)
+writedlm(joinpath(pwd(),dir_output,dir_raw,"B.out"),result[1].B)
+writedlm(joinpath(pwd(),dir_output,dir_raw,"C.out"),result[1].C)
+writedlm(joinpath(pwd(),dir_output,dir_raw,"D.out"),result[1].D)
+writedlm(joinpath(pwd(),dir_output,dir_raw,"E.out"),result[1].E)
 
-writedlm(joinpath(pwd(),config.dir_raw,"Amin.out"),result[1].Am)
-writedlm(joinpath(pwd(),config.dir_raw,"Bmin.out"),result[1].Bm)
-writedlm(joinpath(pwd(),config.dir_raw,"Cmin.out"),result[1].Cm)
-writedlm(joinpath(pwd(),config.dir_raw,"Dmin.out"),result[1].Dm)
+writedlm(joinpath(pwd(),dir_output,dir_raw,"Amin.out"),result[1].Am)
+writedlm(joinpath(pwd(),dir_output,dir_raw,"Bmin.out"),result[1].Bm)
+writedlm(joinpath(pwd(),dir_output,dir_raw,"Cmin.out"),result[1].Cm)
+writedlm(joinpath(pwd(),dir_output,dir_raw,"Dmin.out"),result[1].Dm)
 
 end ## Leave
