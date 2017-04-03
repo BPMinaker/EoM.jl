@@ -54,9 +54,3 @@ report && println("Done.")
 result
 
 end
-
-
-#if(~isdefined(parse(sysin)))
-#	include(joinpath(pwd(),config.dir_input,"$sysin.jl"))
-#end
-#func=getfield(Main,Symbol(sysin))
