@@ -4,16 +4,16 @@ module EoM
 export run_eom
 export mbd_system
 
-include("body.jl")
-include("link.jl")
-include("spring.jl")
-include("rigid_point.jl")
-include("flex_point.jl")
-include("nh_point.jl")
-include("beam.jl")
-include("load.jl")
-include("actuator.jl")
-include("sensor.jl")
+include(joinpath("types","body.jl"))
+include(joinpath("types","link.jl"))
+include(joinpath("types","spring.jl"))
+include(joinpath("types","rigid_point.jl"))
+include(joinpath("types","flex_point.jl"))
+include(joinpath("types","nh_point.jl"))
+include(joinpath("types","beam.jl"))
+include(joinpath("types","load.jl"))
+include(joinpath("types","actuator.jl"))
+include(joinpath("types","sensor.jl"))
 
 include("run_eom.jl")
 include("setup.jl")
@@ -45,15 +45,14 @@ include("write_output.jl")
 include("load_defln.jl")
 include("syst_props.jl")
 
-include("tex_eig_pgftable.jl")
-include("tex_eig_pgfplot.jl")
-include("tex_bode_pgfplot.jl")
-include("tex_bode3_pgfplot.jl")
-include("tex_sstf_pgftable.jl")
-include("tex_sstf_pgfplot.jl")
-include("tex_hsv_pgftable.jl")
-include("tex_hsv_pgfplot.jl")
-
+include(joinpath("tex","tex_eig_pgftable.jl"))
+include(joinpath("tex","tex_eig_pgfplot.jl"))
+include(joinpath("tex","tex_bode_pgfplot.jl"))
+include(joinpath("tex","tex_bode3_pgfplot.jl"))
+include(joinpath("tex","tex_sstf_pgftable.jl"))
+include(joinpath("tex","tex_sstf_pgfplot.jl"))
+include(joinpath("tex","tex_hsv_pgftable.jl"))
+include(joinpath("tex","tex_hsv_pgfplot.jl"))
 
 type mbd_system
 	name::String

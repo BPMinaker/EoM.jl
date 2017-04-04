@@ -1,4 +1,4 @@
-function setup(;dir_data="data",dir_output="output",dir_stock="stock")
+function setup()
 
 ## Copyright (C) 2017, Bruce Minaker
 ## setup.jl is free software; you can redistribute it and/or modify it
@@ -16,28 +16,24 @@ function setup(;dir_data="data",dir_output="output",dir_stock="stock")
 ## Record the date and time for the output filenames, ISO format
 dtstr=Dates.format(now(),"yyyy-mm-dd")
 tmstr=Dates.format(now(),"HH-MM-SS")
+dir_output=joinpath(dtstr,tmstr)
 
 ## Define data directories
-dir_output=joinpath(dir_data,dir_output)
-dir_stock=joinpath(dir_data,dir_stock)
+# dir=joinpath(pwd(),dir_output)
+# if(~isdir(dir))  ## If no output folder exists
+# 	mkdir(dir)  ## Create new empty output folder
+# end
 
-dir=joinpath(pwd(),dir_data)
-if(~isdir(dir))  ## If no data folder exists
-	mkdir(dir)  ## create new empty one
-end
-
-dir=joinpath(pwd(),dir_output)
-if(~isdir(dir))  ## If no output folder exists
-	mkdir(dir)  ## Create new empty output folder
-end
-
-dir=joinpath(pwd(),dir_output,dtstr)
+dir=joinpath(pwd(),dtstr)
 if(~isdir(dir))  ## If no dated output folder exists
 	mkdir(dir)  ## Create new empty dated output folder
 end
 
-dir_output=joinpath(dir_output,dtstr,tmstr)
-cp(joinpath(pwd(),dir_stock),dir_output)  ## Create new empty output folder date/time
+#if(isdir(dir_stock))
+cp(joinpath(Pkg.dir(),"EoM","src","report"),joinpath(pwd(),dir_output))  ## Create output folder date/time
+#else
+#	println("LaTeX folder missing...")
+#end
 
 dir_output
 
