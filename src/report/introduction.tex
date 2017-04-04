@@ -1,0 +1,76 @@
+\chapter{Introduction}
+
+Replace this text with the introduction of your report.
+
+\section{System Description}
+
+The properties of the bodies are given in Tables~\ref{bodycoords}~and~\ref{bodyinertia}.  The properties of the connections are given in Tables~\ref{pointcoords},~\ref{linecoords},~and~\ref{connectcoords}.
+
+\begin{center}
+\begin{footnotesize}
+\pgfplotstabletypeset[%
+begin table=\begin{longtable},
+end table=\end{longtable},
+every head row/.style={output empty row,
+before row={\caption{Body CG Locations and Mass}\label{bodycoords}\\
+\toprule No. & Body Name &
+\multicolumn{6}{c}{Location [m]} &
+\multicolumn{2}{c}{Mass [kg]}\\},
+after row=\midrule},
+columns={num,name,rx,ry,rz,mass}]{bodydata.out}
+\end{footnotesize}
+\end{center}
+
+\begin{center}
+\begin{footnotesize}
+\pgfplotstabletypeset[%
+begin table=\begin{longtable},
+end table=\end{longtable},
+every head row/.style={output empty row,
+before row={\caption{Body Inertia Properties}\label{bodyinertia}\\
+\toprule No. & Body Name &
+\multicolumn{12}{c}{Inertia$^\dagger$ [\si{\kg.\m^2}] ($I_\text{xx}$, $I_\text{yy}$, $I_\text{zz}$; $I_\text{xy}$, $I_\text{yz}$, $I_\text{zx}$)}\\},
+after row=\midrule},
+every last row/.style={after row=\bottomrule \multicolumn{14}{l}{$^\dagger$Inertias are defined as the positive integral over the body.}\\ \multicolumn{14}{l}{For example, $I_{\text{xy}}=+\! \int \! r_\text{x}r_\text{y} \,\text{d}m $.}},
+columns={num,name,ixx,iyy,izz,ixy,iyz,ixz}]{bodydata.out}
+\end{footnotesize}
+\end{center}
+
+\begin{center}
+\begin{footnotesize}
+\pgfplotstabletypeset[%
+begin table=\begin{longtable},
+end table=\end{longtable},
+every head row/.style={output empty row,
+before row={\caption{Connection Location and Direction}\label{pointcoords}\\
+\toprule No. & Connection Name &
+\multicolumn{6}{c}{Location [m]} & \multicolumn{6}{c}{Unit Axis}\\},
+after row=\midrule}]{pointdata.out}
+\end{footnotesize}
+\end{center}
+
+\begin{center}
+\begin{footnotesize}
+\pgfplotstabletypeset[%
+begin table=\begin{longtable},
+end table=\end{longtable},
+every head row/.style={output empty row,
+before row={\caption{Connection Locations}\label{linecoords}\\
+\toprule No. & Connection Name &
+\multicolumn{6}{c}{Location [m]} & \multicolumn{6}{c}{Location [m]}\\},
+after row=\midrule}]{linedata.out}
+\end{footnotesize}
+\end{center}
+
+\begin{center}
+\begin{footnotesize}
+\pgfplotstabletypeset[%
+begin table=\begin{longtable},
+end table=\end{longtable},
+every head row/.style={output empty row,
+before row={\caption{Connection Properties}\label{connectcoords}\\
+\toprule No. & Connection Name &
+\multicolumn{1}{c}{Stiffness [\si{\N/\m}]} & \multicolumn{1}{c}{Damping [\si{\N\s/\m}]}\\},
+after row=\midrule}, columns={num,name,stiffness,damping}]{stiffnessdata.out}
+\end{footnotesize}
+\end{center}

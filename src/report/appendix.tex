@@ -1,0 +1,325 @@
+\chapter{Equations of Motion}
+The equations of motion are of the form
+\[
+\begin{bmatrix}
+{\mathbf I} & {\bm 0} & {\bm 0} \\ {\bm 0} & {\mathbf M} & -{\mathbf G} \\ {\bm 0} & {\bm 0} & {\bm 0}
+\end{bmatrix}
+\begin{Bmatrix}
+\dot{\bm p}\\ \dot{\bm w} \\ \dot{\bm u}
+\end{Bmatrix}
++\begin{bmatrix}
+{\mathbf V} & -{\mathbf I} & {\bm 0} \\ {\mathbf K} & {\mathbf L} & -{\mathbf F} \\ {\bm 0} & {\bm 0} & {\mathbf I}
+\end{bmatrix}
+\begin{Bmatrix}
+{\bm p}\\ {\bm w}\\ {\bm u}
+\end{Bmatrix}
+=\begin{bmatrix}
+{\bm 0}\\ {\bm 0}\\ {\mathbf I}
+\end{bmatrix}
+\begin{Bmatrix}
+{\bm u}
+\end{Bmatrix}
+\]
+The system is subject to constraints
+\[
+\begin{bmatrix}
+\mathbf{J}_\textrm{h} & {\bm 0} & {\bm 0}\\-{\mathbf J}_\textrm{h}{\mathbf V} & {\mathbf J}_\textrm{h} & {\bm 0}\\ {\bm 0} & {\mathbf J}_\textrm{nh} & {\bm 0}
+\end{bmatrix}
+\begin{bmatrix}
+\dot{\bm p} & {\bm p} \\ \dot{\bm w} & {\bm w} \\ \dot{\bm u} & {\bm u}
+\end{bmatrix}
+=\begin{bmatrix}
+{\bm 0} & {\bm 0}\\{\bm 0} & {\bm 0}\\{\bm 0} & {\bm 0}
+\end{bmatrix}
+\]
+% The mass matrix of the system is
+% \begin{footnotesize}
+% \begin{center}
+% \pgfplotstabletypeset[
+% begin table=\begin{longtable},
+% end table=\end{longtable},
+% columns={[index]0,[index]1,[index]2,[index]0,[index]1,[index]2},
+% display columns/0/.style={select equal part entry of={0}{2}},
+% display columns/1/.style={select equal part entry of={0}{2}},
+% display columns/2/.style={select equal part entry of={0}{2}},
+% display columns/3/.style={select equal part entry of={1}{2}},
+% display columns/4/.style={select equal part entry of={1}{2}},
+% display columns/5/.style={select equal part entry of={1}{2}},
+% columns/0/.style={int detect, column type=c,column name={Row}},
+% columns/1/.style={int detect, column type=c,column name={Column}},
+% columns/2/.style={sci,sci zerofill,precision=8,dec sep align,column name={Value}}]
+% {unformatted/mass_matrix.out}
+% \end{center}
+% \end{footnotesize}
+% The damping matrix is
+% \begin{footnotesize}
+% \begin{center}
+% \pgfplotstabletypeset[
+% begin table=\begin{longtable},
+% end table=\end{longtable},
+% columns={[index]0,[index]1,[index]2,[index]0,[index]1,[index]2},
+% display columns/0/.style={select equal part entry of={0}{2}},
+% display columns/1/.style={select equal part entry of={0}{2}},
+% display columns/2/.style={select equal part entry of={0}{2}},
+% display columns/3/.style={select equal part entry of={1}{2}},
+% display columns/4/.style={select equal part entry of={1}{2}},
+% display columns/5/.style={select equal part entry of={1}{2}},
+% columns/0/.style={int detect, column type=c,column name={Row}},
+% columns/1/.style={int detect, column type=c,column name={Column}},
+% columns/2/.style={sci,sci zerofill,precision=8,dec sep align,column name={Value}}]
+% {unformatted/damping_matrix.out}
+% \end{center}
+% \end{footnotesize}
+% The stiffness matrix is
+% \begin{footnotesize}
+% \begin{center}
+% \pgfplotstabletypeset[
+% begin table=\begin{longtable},
+% end table=\end{longtable},
+% columns={[index]0,[index]1,[index]2,[index]0,[index]1,[index]2},
+% display columns/0/.style={select equal part entry of={0}{2}},
+% display columns/1/.style={select equal part entry of={0}{2}},
+% display columns/2/.style={select equal part entry of={0}{2}},
+% display columns/3/.style={select equal part entry of={1}{2}},
+% display columns/4/.style={select equal part entry of={1}{2}},
+% display columns/5/.style={select equal part entry of={1}{2}},
+% columns/0/.style={int detect, column type=c,column name={Row}},
+% columns/1/.style={int detect, column type=c,column name={Column}},
+% columns/2/.style={sci,sci zerofill,precision=8,dec sep align,column name={Value}}]
+% {unformatted/stiffness_matrix.out}
+% \end{center}
+% \end{footnotesize}
+% The velocity matrix is
+% \begin{footnotesize}
+% \begin{center}
+% \pgfplotstabletypeset[
+% begin table=\begin{longtable},
+% end table=\end{longtable},
+% columns={[index]0,[index]1,[index]2,[index]0,[index]1,[index]2},
+% display columns/0/.style={select equal part entry of={0}{2}},
+% display columns/1/.style={select equal part entry of={0}{2}},
+% display columns/2/.style={select equal part entry of={0}{2}},
+% display columns/3/.style={select equal part entry of={1}{2}},
+% display columns/4/.style={select equal part entry of={1}{2}},
+% display columns/5/.style={select equal part entry of={1}{2}},
+% columns/0/.style={int detect, column type=c,column name={Row}},
+% columns/1/.style={int detect, column type=c,column name={Column}},
+% columns/2/.style={sci,sci zerofill,precision=8,dec sep align,column name={Value}}]
+% {unformatted/velocity_matrix.out}
+% \end{center}
+% \end{footnotesize}
+% The input force matrix is
+% \begin{footnotesize}
+% \begin{center}
+% \pgfplotstabletypeset[
+% begin table=\begin{longtable},
+% end table=\end{longtable},
+% columns={[index]0,[index]1,[index]2,[index]0,[index]1,[index]2},
+% display columns/0/.style={select equal part entry of={0}{2}},
+% display columns/1/.style={select equal part entry of={0}{2}},
+% display columns/2/.style={select equal part entry of={0}{2}},
+% display columns/3/.style={select equal part entry of={1}{2}},
+% display columns/4/.style={select equal part entry of={1}{2}},
+% display columns/5/.style={select equal part entry of={1}{2}},
+% columns/0/.style={int detect, column type=c,column name={Row}},
+% columns/1/.style={int detect, column type=c,column name={Column}},
+% columns/2/.style={sci,sci zerofill,precision=8,dec sep align,column name={Value}}]
+% {unformatted/forcing_matrix.out}
+% \end{center}
+% \end{footnotesize}
+% The input force rate matrix is
+% \begin{footnotesize}
+% \begin{center}
+% \pgfplotstabletypeset[
+% begin table=\begin{longtable},
+% end table=\end{longtable},
+% columns={[index]0,[index]1,[index]2,[index]0,[index]1,[index]2},
+% display columns/0/.style={select equal part entry of={0}{2}},
+% display columns/1/.style={select equal part entry of={0}{2}},
+% display columns/2/.style={select equal part entry of={0}{2}},
+% display columns/3/.style={select equal part entry of={1}{2}},
+% display columns/4/.style={select equal part entry of={1}{2}},
+% display columns/5/.style={select equal part entry of={1}{2}},
+% columns/0/.style={int detect, column type=c,column name={Row}},
+% columns/1/.style={int detect, column type=c,column name={Column}},
+% columns/2/.style={sci,sci zerofill,precision=8,dec sep align,column name={Value}}]
+% {unformatted/forcing_rate_matrix.out}
+% \end{center}
+% \end{footnotesize}
+% \begin{footnotesize}
+% \begin{center}
+% \pgfplotstabletypeset[
+% begin table=\begin{longtable},
+% end table=\end{longtable},
+% columns={[index]0,[index]1,[index]2,[index]0,[index]1,[index]2},
+% display columns/0/.style={select equal part entry of={0}{2}},
+% display columns/1/.style={select equal part entry of={0}{2}},
+% display columns/2/.style={select equal part entry of={0}{2}},
+% display columns/3/.style={select equal part entry of={1}{2}},
+% display columns/4/.style={select equal part entry of={1}{2}},
+% display columns/5/.style={select equal part entry of={1}{2}},
+% columns/0/.style={int detect, column type=c,column name={Row}},
+% columns/1/.style={int detect, column type=c,column name={Column}},
+% columns/2/.style={sci,sci zerofill,precision=8,dec sep align,column name={Value}}]
+% {unformatted/jacobian_matrix.out}
+% \end{center}
+% \end{footnotesize}
+\noindent The full state space equations:
+\[
+\begin{bmatrix}
+{\mathbf E} & {\bm 0} \\ {\bm 0} & {\mathbf I}
+\end{bmatrix}
+\begin{Bmatrix}
+\dot{\bm x}\\ {\bm y}
+\end{Bmatrix}
+=\begin{bmatrix}
+\mathbf{A} & \mathbf{B} \\ \mathbf{C} & \mathbf{D}
+\end{bmatrix}
+\begin{Bmatrix}
+{\bm x}\\ {\bm u}\end{Bmatrix}
+\]
+\pgfplotstabletypeset[sci,sci zerofill,precision=8,dec sep align,
+every head row/.style={output empty row},
+every last row/.style={after row={}},
+write to macro=\A,
+typeset=false]
+{unformatted/A.out}
+\begin{tiny}
+\[
+{\mathbf A}=
+\left[
+\A
+\right]
+\]
+\end{tiny}
+
+\pgfplotstabletypeset[sci,sci zerofill,precision=8,dec sep align,
+every head row/.style={output empty row},
+every last row/.style={after row={}},
+write to macro=\B,
+typeset=false]
+{unformatted/B.out}
+\begin{tiny}
+\[
+{\mathbf B}=
+\left[
+\B
+\right]
+\]
+\end{tiny}
+
+\pgfplotstabletypeset[sci,sci zerofill,precision=8,dec sep align,
+every head row/.style={output empty row},
+every last row/.style={after row={}},
+write to macro=\C,
+typeset=false]
+{unformatted/C.out}
+\begin{tiny}
+\[
+{\mathbf C}=
+\left[
+\C
+\right]
+\]
+\end{tiny}
+
+\pgfplotstabletypeset[sci,sci zerofill,precision=8,dec sep align,
+every head row/.style={output empty row},
+every last row/.style={after row={}},
+write to macro=\D,
+typeset=false]
+{unformatted/D.out}
+\begin{tiny}
+\[
+{\mathbf D}=
+\left[
+\D
+\right]
+\]
+\end{tiny}
+
+\pgfplotstabletypeset[sci,sci zerofill,precision=8,dec sep align,
+every head row/.style={output empty row},
+every last row/.style={after row={}},
+write to macro=\E,
+typeset=false]
+{unformatted/E.out}
+\begin{tiny}
+\[
+{\mathbf E}=
+\left[
+\E
+\right]
+\]
+\end{tiny}
+
+\noindent The reduced state space equations:
+\[
+\begin{Bmatrix}
+\dot{\bm x}\\ {\bm y}
+\end{Bmatrix}
+=\begin{bmatrix}
+\mathbf{A} & \mathbf{B} \\ \mathbf{C} & \mathbf{D}
+\end{bmatrix}
+\begin{Bmatrix}
+{\bm x}\\ {\bm u}\end{Bmatrix}
+\]
+\pgfplotstabletypeset[sci,sci zerofill,precision=8,dec sep align,
+every head row/.style={output empty row},
+every last row/.style={after row={}},
+write to macro=\Am,
+typeset=false]
+{unformatted/Amin.out}
+\begin{tiny}
+\[
+{\mathbf A}=
+\left[
+\Am
+\right]
+\]
+\end{tiny}
+
+\pgfplotstabletypeset[sci,sci zerofill,precision=8,dec sep align,
+every head row/.style={output empty row},
+every last row/.style={after row={}},
+write to macro=\Bm,
+typeset=false]
+{unformatted/Bmin.out}
+\begin{tiny}
+\[
+{\mathbf B}=
+\left[
+\Bm
+\right]
+\]
+\end{tiny}
+
+\pgfplotstabletypeset[sci,sci zerofill,precision=8,dec sep align,
+every head row/.style={output empty row},
+every last row/.style={after row={}},
+write to macro=\Cm,
+typeset=false]
+{unformatted/Cmin.out}
+\begin{tiny}
+\[
+{\mathbf C}=
+\left[
+\Cm
+\right]
+\]
+\end{tiny}
+
+\pgfplotstabletypeset[sci,sci zerofill,precision=8,dec sep align,
+every head row/.style={output empty row},
+every last row/.style={after row={}},
+write to macro=\Dm,
+typeset=false]
+{unformatted/Dmin.out}
+\begin{tiny}
+\[
+{\mathbf D}=
+\left[
+\Dm
+\right]
+\]
+\end{tiny}
