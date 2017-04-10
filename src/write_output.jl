@@ -204,4 +204,10 @@ writedlm(joinpath(pwd(),dir_output,dir_raw,"Bmin.out"),result[1].Bm)
 writedlm(joinpath(pwd(),dir_output,dir_raw,"Cmin.out"),result[1].Cm)
 writedlm(joinpath(pwd(),dir_output,dir_raw,"Dmin.out"),result[1].Dm)
 
+writedlm(joinpath(pwd(),dir_output,dir_raw,"mass.out"),result[1].mass)
+writedlm(joinpath(pwd(),dir_output,dir_raw,"input.out"),result[1].input)
+writedlm(joinpath(pwd(),dir_output,dir_raw,"output.out"),result[1].output)
+
+
+
 end ## Leave

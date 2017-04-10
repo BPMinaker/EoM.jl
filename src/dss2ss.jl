@@ -1,5 +1,6 @@
 function dss2ss!(data)
 
+println(size(data.A))
 Q,S,P=svd(data.E)  ##Q'*E*P should = S
 S=S[S.>(maximum(size(data.E))*eps(maximum(S)))]
 n=length(S)
@@ -27,6 +28,8 @@ BB=Sinv*(B1-A12*A22inv*B2)
 CC=C1-C2*A22inv*A21
 DD=data.D-C2*A22inv*B2
 
+println(size(AA))
+
 n=size(AA,1)
 nin=size(BB,2)
 nout=size(CC,1)
@@ -43,6 +46,13 @@ MR=OM*CM
 MR1=OM*AA*CM
 
 U,S,V=svd(MR)
+
+println(U)
+println(S)
+println(V)
+
+println(rank(MR))
+
 S=S[S.>(maximum(size(MR))*eps(maximum(S)))]
 p=length(S)
 Si=diagm(S.^-0.5)
@@ -55,6 +65,8 @@ data.Am=Si*Un'*MR1*Vn*Si
 data.Bm=(S*Vn')[:,1:nin]
 data.Cm=(Un*S)[1:nout,:]
 data.Dm=DD
+
+println(size(data.Am))
 
 #Am,Bm,Cm,Dm
 

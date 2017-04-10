@@ -23,10 +23,10 @@ for item in the_system.rigid_points
 	frc=pload[1:3]
 	mmt=pload[4:6]
 	preload*="{$idx} {$(item.name)}"
-	if(~(norm(frc)<lim && norm(mmt)>0))
+	if(~(norm(frc)<lim && norm(mmt)>lim))
 		preload*=" force $(frc[1]) $(frc[2]) $(frc[3]) $(norm(frc))\n"
 	end
-	if(norm(mmt)>0)
+	if(norm(mmt)>lim)
 		preload*="{} {} moment $(mmt[1]) $(mmt[2]) $(mmt[3]) $(norm(mmt))\n"
 	end
 	idx+=1
@@ -37,10 +37,10 @@ for item in the_system.flex_points
 	frc=pload[1:3]
 	mmt=pload[4:6]
 	preload*="{$idx} {$(item.name)}"
-	if(~(norm(frc)<lim && norm(mmt)>0))
+	if(~(norm(frc)<lim && norm(mmt)>lim))
 		preload*=" force $(frc[1]) $(frc[2]) $(frc[3]) $(norm(frc))\n"
 	end
-	if(norm(mmt)>0)
+	if(norm(mmt)>lim)
 		preload*="{} {} moment $(mmt[1]) $(mmt[2]) $(mmt[3]) $(norm(mmt))\n"
 	end
 	idx+=1
@@ -52,9 +52,9 @@ for item in the_system.springs
 	mmt=pload[4:6]
 	preload*="{$idx} {$(item.name)}"
 	if(item.twist==0)
-		preload*=" force $(frc[1]) $(frc[2]) $(frc[3]) $item.preload\n"
+		preload*=" force $(frc[1]) $(frc[2]) $(frc[3]) $(item.preload)\n"
 	else
-		preload*=" moment $(mmt[1]) $(mmt[2]) $(mmt[3]) $item.preload\n"
+		preload*=" moment $(mmt[1]) $(mmt[2]) $(mmt[3]) $(item.preload)\n"
 	end
 	idx+=1
 end
@@ -65,9 +65,9 @@ for item in the_system.links
 	mmt=pload[4:6]
 	preload*="{$idx} {$(item.name)}"
 	if(item.twist==0)
-		preload*=" force $(frc[1]) $(frc[2]) $(frc[3]) $item.preload\n"
+		preload*=" force $(frc[1]) $(frc[2]) $(frc[3]) $(item.preload)\n"
 	else
-		preload*=" moment $(mmt[1]) $(mmt[2]) $(mmt[3]) $item.preload\n"
+		preload*=" moment $(mmt[1]) $(mmt[2]) $(mmt[3]) $(item.preload)\n"
 	end
 	idx+=1
 end

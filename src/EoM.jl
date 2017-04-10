@@ -44,6 +44,7 @@ include("dss2ss.jl")
 include("write_output.jl")
 include("load_defln.jl")
 include("syst_props.jl")
+include("thin_rod.jl")
 
 include(joinpath("tex","tex_eig_pgftable.jl"))
 include(joinpath("tex","tex_eig_pgfplot.jl"))

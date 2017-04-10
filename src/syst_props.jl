@@ -66,7 +66,7 @@ for item in the_system.nh_points
 end
 
 idx=1
-for i in the_system.springs
+for item in the_system.springs
 	linedata*="{$idx} {$(item.name)}"
 	linedata*=" $(item.location[1,1]) $(item.location[2,1]) $(item.location[3,1])"
 	linedata*=" $(item.location[1,2]) $(item.location[2,2]) $(item.location[3,2])\n"
@@ -75,14 +75,14 @@ for i in the_system.springs
 	idx2+=1
 end
 
-for i in the_system.links
+for item in the_system.links
 	linedata*="{$idx} {$(item.name)}"
 	linedata*=" $(item.location[1,1]) $(item.location[2,1]) $(item.location[3,1])"
 	linedata*=" $(item.location[1,2]) $(item.location[2,2]) $(item.location[3,2])\n"
 	idx+=1
 end
 
-for i in the_system.beams
+for item in the_system.beams
 	linedata*="{$idx} {$(item.name)}"
 	linedata*=" $(item.location[1,1]) $(item.location[2,1]) $(item.location[3,1])"
 	linedata*=" $(item.location[1,2]) $(item.location[2,2]) $(item.location[3,2])\n"
