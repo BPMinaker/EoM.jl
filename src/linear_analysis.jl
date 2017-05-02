@@ -13,7 +13,7 @@ function linear_analysis!(result)
 ##--------------------------------------------------------------------
 
 vpts=length(result)  ## Number of points to plot
-wpts=Int(round(2000/vpts))
+wpts=Int(round(4000/vpts))
 w=2*pi*logspace(-1,2,wpts)
 
 for i=1:vpts
@@ -24,25 +24,25 @@ for i=1:vpts
 	result[i].e_val=val[isfinite(val)]  ## Discard modes with Inf or Nan vals
 	result[i].e_vect=vec[:,isfinite(val)]
 
-	n=size(result[i].Am,1)
-	nin=size(result[i].Bm,2)
-	nout=size(result[i].Cm,1)
+	nin=size(result[i].B,2)
+	nout=size(result[i].C,1)
 
 	result[i].freq_resp=zeros(nout,nin,length(w))
-
 	for j=1:wpts
-	#	result[i].freq_resp[:,:,j]=result[i].Cm*((I*w[j]im-result[i].Am)\result[i].Bm)+result[i].Dm
-		result[i].freq_resp[:,:,j]=result[i].C*((result[i].E*w[j]im-result[i].A)\result[i].B)+result[i].D
+		result[i].freq_resp[:,:,j]=result[i].Cm*((I*w[j]im-result[i].Am)\result[i].Bm)+result[i].Dm
+		#result[i].freq_resp[:,:,j]=result[i].C*((result[i].E*w[j]im-result[i].A)\result[i].B)+result[i].D
 	end
 
 	result[i].ss_resp=-result[i].Cm*(result[i].Am\result[i].Bm)+result[i].Dm
+	#result[i].ss_resp=-result[i].Ct*(result[i].At\result[i].Bt)+result[i].Dt
+
+	# result[i].zero_val=eigvals([result[i].A result[i].B;result[i].C result[i].D],[result[i].E zeros(result[i].B);zeros(result[i].C) zeros(result[i].D)])
 
 	tmp=eigvals(result[i].Am)
 	if(sum(real(tmp).>0)==0)
 		WC=lyap(result[i].Am,result[i].Bm*result[i].Bm')
 		WO=lyap(result[i].Am',result[i].Cm'*result[i].Cm)
 		result[i].hsv=sqrt(eigvals(WC*WO))
-#		result[i].hsv=zeros(length(tmp))
 	else
 		result[i].hsv=zeros(length(tmp))
 	end

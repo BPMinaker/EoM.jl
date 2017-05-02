@@ -1,6 +1,8 @@
-function dss2ss!(data)
+function dss2ss!(data,verb)
 
-println(size(data.A))
+verb && println("System is of dimension $(size(data.A)).")
+verb && println("Converting from descriptor form to standard state space...")
+
 Q,S,P=svd(data.E)  ##Q'*E*P should = S
 S=S[S.>(maximum(size(data.E))*eps(maximum(S)))]
 n=length(S)
@@ -28,7 +30,13 @@ BB=Sinv*(B1-A12*A22inv*B2)
 CC=C1-C2*A22inv*A21
 DD=data.D-C2*A22inv*B2
 
-println(size(AA))
+data.At=AA;
+data.Bt=BB;
+data.Ct=CC;
+data.Dt=DD;
+
+verb && println("System is now of dimension $(size(AA)).")
+verb && println("Computing minimal realization...")
 
 n=size(AA,1)
 nin=size(BB,2)
@@ -37,24 +45,43 @@ nout=size(CC,1)
 CM=zeros(n,n*nin)
 OM=zeros(n*nout,n)
 
-for i=0:(n-1)
-	CM[:,i*nin+1:i*nin+nin]=AA^i*BB
-	OM[i*nout+1:i*nout+nout,:]=CC*AA^i
+AAA=AA/sum(diag(AA))
+
+temp=eye(n)
+U=0
+S=0
+V=0
+p=0
+for i=1:n
+	CM[:,(i-1)*nin+1:i*nin]=temp*BB
+	OM[(i-1)*nout+1:i*nout,:]=CC*temp
+	temp*=AAA
+
+	MR=OM*CM
+	U,S,V=svd(MR)
+	S=S[S.>(maximum(size(MR))*eps(maximum(S)))]
+	p=length(S)
+
+	if(p<i && p>0)
+		break
+	end
+end
+
+CM=zeros(n,n*nin)
+OM=zeros(n*nout,n)
+temp=eye(n)
+
+for i=1:p
+	CM[:,(i-1)*nin+1:i*nin]=temp*BB
+	OM[(i-1)*nout+1:i*nout,:]=CC*temp
+	temp*=AA
 end
 
 MR=OM*CM
-MR1=OM*AA*CM
-
 U,S,V=svd(MR)
+S=S[1:p]
 
-println(U)
-println(S)
-println(V)
-
-println(rank(MR))
-
-S=S[S.>(maximum(size(MR))*eps(maximum(S)))]
-p=length(S)
+MR1=OM*AA*CM
 Si=diagm(S.^-0.5)
 S=diagm(S.^0.5)
 
@@ -66,8 +93,6 @@ data.Bm=(S*Vn')[:,1:nin]
 data.Cm=(Un*S)[1:nout,:]
 data.Dm=DD
 
-println(size(data.Am))
-
-#Am,Bm,Cm,Dm
+verb && println("System is now of dimension $(size(data.Am)).")
 
 end

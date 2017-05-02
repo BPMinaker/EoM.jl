@@ -1,4 +1,4 @@
-function inputs(the_system,verb)
+function inputs!(the_system,data,verb)
 ## Copyright (C) 2017, Bruce Minaker
 ## inputs.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ temp=point_line_jacobian(the_system.actuators,n)
 f_mtx=-diagm(broadcast(gain,the_system.actuators))*temp
 g_mtx=-diagm(broadcast(rate_gain,the_system.actuators))*temp
 
-f_mtx',g_mtx'  ## Transpose
+data.input=f_mtx'
+data.input_rate=g_mtx'  ## Transpose
 
 end

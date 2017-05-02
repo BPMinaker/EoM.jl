@@ -1,4 +1,4 @@
-function tangent(the_system,verb)
+function tangent!(the_system,data,verb)
 ## Copyright (C) 2017, Bruce Minaker
 ## tangent.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -23,6 +23,6 @@ k_geo+=line_stretch_hessian(the_system.springs,n)
 k_geo+=point_hessian(the_system.flex_points,n)
 k_geo+=point_hessian(the_system.rigid_points,n)
 
-k_geo
+data.tangent_stiffness=k_geo
 
 end

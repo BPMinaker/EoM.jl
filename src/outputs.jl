@@ -1,4 +1,4 @@
-function outputs(the_system,verb)
+function outputs!(the_system,data,verb)
 ## Copyright (C) 2017, Bruce Minaker
 ## outputs.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -36,6 +36,9 @@ for i in the_system.sensors
 	idx+=1
 end
 
-sensor_mtx,d_mtx,column
+data.output=sensor_mtx
+data.feedthrough=d_mtx
+
+column
 
 end ## Leave

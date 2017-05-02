@@ -1,6 +1,6 @@
 function input_smd_alt(u;m=1,c=1,k=1)
 
-the_system=mbd_system("Spring Mass Damper")
+the_system=mbd_system("Alt Spring Mass Damper")
 
 ## Add the body
 item=body("block")
@@ -32,7 +32,7 @@ item.stiffness=[k,0]
 item.damping=[c,0]
 item.forces=1
 item.axis=[0,0,1]
-push!(the_system.item,item)
+#push!(the_system.item,item)
 
 item=flex_point("bush 2")
 item.body[1]="block"
@@ -51,7 +51,7 @@ item.location[:,1]=[0,0,1]
 item.location[:,2]=[0,0,0]
 item.stiffness=k
 item.damping=c
-#push!(the_system.item,item)
+push!(the_system.item,item)
 
 item=spring("spring 2")
 item.body[1]="block"
@@ -61,7 +61,7 @@ item.location[:,2]=[0,0,0]
 item.stiffness=k
 item.damping=c
 item.preload=1
-#push!(the_system.item,item)
+push!(the_system.item,item)
 
 item=spring("spring 3")
 item.body[1]="block"
@@ -71,7 +71,7 @@ item.location[:,2]=[0,0,0]
 item.stiffness=k
 item.damping=c
 item.preload=1
-#push!(the_system.item,item)
+push!(the_system.item,item)
 
 
 item=spring("spring 4")
@@ -79,9 +79,9 @@ item.body[1]="block"
 item.body[2]="ground"
 item.location[:,1]=[0,0,1]
 item.location[:,2]=[0,0,0]
-item.stiffness=k
+item.stiffness=2k
 item.damping=c
-#push!(the_system.item,item)
+push!(the_system.item,item)
 
 item=beam("beam 1")
 item.body[1]="block"
@@ -132,7 +132,7 @@ push!(the_system.item,item)
 
 ## Add a flex_point, with damping, to connect our body to ground, aligned with z-axis
 
-item=flex_point("bush 1")
+item=flex_point("bush 3")
 item.body[1]="block 2"
 item.body[2]="ground"
 item.location=[1,0,0.5]

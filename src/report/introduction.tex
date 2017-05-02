@@ -14,8 +14,8 @@ end table=\end{longtable},
 every head row/.style={output empty row,
 before row={\caption{Body CG Locations and Mass}\label{bodycoords}\\
 \toprule No. & Body Name &
-\multicolumn{6}{c}{Location [m]} &
-\multicolumn{2}{c}{Mass [kg]}\\},
+\multicolumn{6}{c}{Location [\si{\m}]} &
+\multicolumn{2}{c}{Mass [\si{\kg}]}\\},
 after row=\midrule},
 columns={num,name,rx,ry,rz,mass}]{bodydata.out}
 \end{footnotesize}
@@ -44,7 +44,7 @@ end table=\end{longtable},
 every head row/.style={output empty row,
 before row={\caption{Connection Location and Direction}\label{pointcoords}\\
 \toprule No. & Connection Name &
-\multicolumn{6}{c}{Location [m]} & \multicolumn{6}{c}{Unit Axis}\\},
+\multicolumn{6}{c}{Location [\si{\m}]} & \multicolumn{6}{c}{Unit Axis}\\},
 after row=\midrule}]{pointdata.out}
 \end{footnotesize}
 \end{center}
@@ -57,7 +57,7 @@ end table=\end{longtable},
 every head row/.style={output empty row,
 before row={\caption{Connection Locations}\label{linecoords}\\
 \toprule No. & Connection Name &
-\multicolumn{6}{c}{Location [m]} & \multicolumn{6}{c}{Location [m]}\\},
+\multicolumn{6}{c}{Location [\si{\m}]} & \multicolumn{6}{c}{Location [\si{\m}]}\\},
 after row=\midrule}]{linedata.out}
 \end{footnotesize}
 \end{center}

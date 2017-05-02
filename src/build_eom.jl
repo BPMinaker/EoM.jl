@@ -21,37 +21,37 @@ verb && println("Okay, got the system info, building equations of motion...")
 data=matrix_struct()
 
 ## Build the mass matrix
-data.mass=mass(the_system,verb)
+mass!(the_system,data,verb)
 
 ## Sum external forces and cast into vector
 ## Determine stiffness matrix for angular motion resulting from applied forces
-data.force,data.load_stiffness=force(the_system,verb)
+force!(the_system,data,verb)
 
 ## Build the stiffness matrix due to deflections of elastic elements
-data.stiffness,data.damping,data.inertia,data.deflection,data.selection,data.preload,data.spring_stiffness,data.subset_spring_stiffness=elastic_connections(the_system,verb)
+elastic_connections!(the_system,data,verb)
 
 ## Build the matrices describing the rigid constraints
-data.constraint,data.nh_constraint,data.right_jacobian,data.left_jacobian,data.momentum,data.velocity=rigid_constraints(the_system,verb)
+rigid_constraints!(the_system,data,verb)
 
 ## Solve for the internal and reaction forces and distribute
-data.lambda,data.static=preload(data,verb)
+preload!(data,verb)
 const_frc_deal!(the_system,data.lambda,verb)
 defln_deal!(the_system,data.static,verb)
 
 ## Build the tangent stiffness matrix from the computed preloads
-data.tangent_stiffness=tangent(the_system,verb)
+tangent!(the_system,data,verb)
 
 ## Build the input matrix
-data.input,data.input_rate=inputs(the_system,verb)
+inputs!(the_system,data,verb)
 
 ## Build the output matrix
-data.output,data.feedthrough,col=outputs(the_system,verb)
+col=outputs!(the_system,data,verb)
 
 ## Assemble the system equations of motion
 assemble_eom!(data,col,verb)
 
 ## Reduce to standard form
-dss2ss!(data)
+dss2ss!(data,verb)
 
 data
 

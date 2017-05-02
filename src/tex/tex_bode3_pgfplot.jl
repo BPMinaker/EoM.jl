@@ -24,7 +24,7 @@ for i=1:nin  ## For each input-output pair
 		s*="\\pgfplotsset{colormap={windsor}{color=(gray) color=(white) color=(gray)}}\n"
 		s*="\\pgfplotsset{tick label style={font=\\scriptsize},label style={font=\\scriptsize},title style={font=\\small},xminorticks={false}}\n"
 		s*="\\begin{tikzpicture}\n"
-		s*="\\begin{semilogxaxis}[height=3in,width=4in,tick style={thin,black},view={45}{45},xlabel={Frequency [Hz]},ylabel={Speed [m/s]},zlabel={Transfer Function [dB]},enlargelimits=false,xlabel style={sloped like x axis}, ylabel style={sloped like y axis}]\n"
+		s*="\\begin{semilogxaxis}[height=3in,width=4in,tick style={thin,black},view={45}{45},xlabel={Frequency [\\si{\\hertz}]},ylabel={Speed [\\si{\\m/\\s}]},zlabel={Transfer Function [\\si{\\decibel}]},enlargelimits=false,xlabel style={sloped like x axis}, ylabel style={sloped like y axis}]\n"
 		s*="\\addplot3[surf] table[x=frequency,y=speed,z=m$((i-1)*nout+j)]{bode.out};\n"
 		s*="\\end{semilogxaxis}\n"
 		s*="\\end{tikzpicture}\n"

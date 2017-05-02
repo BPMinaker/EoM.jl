@@ -1,4 +1,4 @@
-function rigid_constraints(the_system,verb)
+function rigid_constraints!(the_system,data,verb)
 ## Copyright (C) 2017, Bruce Minaker
 ## rigid_constraints.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ negjv_mtx=-cnsrt_mtx*v_mtx;  ## Build transformation - constraint matrix
 ## Check condition of constraint matrix
 verb && println("Checking constraint items...")
 if(q+t>0) ## If the jacobian matrix has more than zero rows (i.e. there are rigid constraint items in the system)
-	rkr=rank([cnsrt_mtx;nhcnsrt_mtx])  ## rk = the rank (the maximum number of linearly independent rows or columns) of the constraint matrix
+	rkr=rank(full([cnsrt_mtx;nhcnsrt_mtx]))  ## rk = the rank (the maximum number of linearly independent rows or columns) of the constraint matrix
 	if (rkr==(q+t))  ## If the rank = the number of rows, then there are no redundant constraints (the constraints are all linearly independent)
 		verb && println("No redundant constraints in the system. Good.")
 	else
@@ -42,15 +42,21 @@ if(q+t>0) ## If the jacobian matrix has more than zero rows (i.e. there are rigi
 
 	d=6*(n-1)
 	## Assemble the individual constraint matrices to system constraint matrix
-	J_r=[cnsrt_mtx zeros(q,d); negjv_mtx cnsrt_mtx; zeros(t,d) nhcnsrt_mtx]
-	J_l=[cnsrt_mtx zeros(q,d); zeros(q,d) cnsrt_mtx; zeros(t,d) nhcnsrt_mtx]
+	J_r=sparse([cnsrt_mtx zeros(q,d); negjv_mtx cnsrt_mtx; zeros(t,d) nhcnsrt_mtx])
+	J_l=sparse([cnsrt_mtx zeros(q,d); zeros(q,d) cnsrt_mtx; zeros(t,d) nhcnsrt_mtx])
 
 else
 
-	J_l=Array{Float64}(0,2*d)
-	J_r=Array{Float64}(0,2*d)
+	J_l=spzeros(0,2*d)
+	J_r=spzeros(0,2*d)
 
 end
 
-cnsrt_mtx,nhcnsrt_mtx,J_r,J_l,mv_mtx,v_mtx
+data.constraint=cnsrt_mtx
+data.nh_constraint=nhcnsrt_mtx
+data.right_jacobian=J_r
+data.left_jacobian=J_l
+data.momentum=mv_mtx
+data.velocity=v_mtx
+
 end

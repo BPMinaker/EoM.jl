@@ -1,4 +1,4 @@
-function elastic_connections(the_system,verb)
+function elastic_connections!(the_system,data,verb)
 ## Copyright (C) 2017, Bruce Minaker
 ## elastic_connections.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ line_bend_jacobian(the_system.beams,n)]
 
 s=size(defln_mtx,1)  ## s=the number of rows in the deflection matrix
 if(s>0)  ## If the deflection matrix has more than zero rows (i.e. there are elastic items in the system)
-	rk=rank(defln_mtx) ## rk=the rank (the number of linearly independent rows or columns) of the deflection matrix
+	rk=rank(full(defln_mtx)) ## rk=the rank (the number of linearly independent rows or columns) of the deflection matrix
 	if(rk==s) ## If the rank equals the number of rows, the flexible connectors are statically determinate
 		verb && println("Flexible connectors are statically determinate. Good.")  ## Give success message
 	else
@@ -89,9 +89,9 @@ if(s>0)  ## If the deflection matrix has more than zero rows (i.e. there are ela
 
 
 	## Build stiffness matrix
-	stiff_mtx=defln_mtx'*diagm(stiff)*defln_mtx  ## Use the deflection matrices to determine the stiffness matrix that results from the deflection of the elastic items -> Combines delfn_mtx (row for each elastic item, six columns for each body) with 'stiff' (row, column for each elastic constraint) to give proper stiffness matrix
- 	dmpng_mtx=defln_mtx'*diagm(dmpng)*defln_mtx  ## ...likewise for damping
-	inertia_mtx=defln_mtx'*diagm(inertia)*defln_mtx
+	stiff_mtx=defln_mtx'*spdiagm(stiff)*defln_mtx  ## Use the deflection matrices to determine the stiffness matrix that results from the deflection of the elastic items -> Combines delfn_mtx (row for each elastic item, six columns for each body) with 'stiff' (row, column for each elastic constraint) to give proper stiffness matrix
+ 	dmpng_mtx=defln_mtx'*spdiagm(dmpng)*defln_mtx  ## ...likewise for damping
+	inertia_mtx=defln_mtx'*spdiagm(inertia)*defln_mtx
 else
 	verb && println("No flexible connectors.")  ## If there are no springs or flex point items, define empty matrices
 
@@ -106,11 +106,16 @@ else
 
 end
 
-stiff_mtx,dmpng_mtx,inertia_mtx,defln_mtx,slct_mtx,preload_vec,stiff,subset_spring_stiff
+data.stiffness=stiff_mtx
+data.damping=dmpng_mtx
+data.inertia=inertia_mtx
+data.deflection=defln_mtx
+data.selection=slct_mtx
+data.preload=preload_vec
+data.spring_stiffness=stiff
+data.subset_spring_stiffness=subset_spring_stiff
 
 end  ## Leave
-
-
 
 
 

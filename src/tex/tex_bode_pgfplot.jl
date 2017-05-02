@@ -23,7 +23,7 @@ for i=1:nin  ## For each input
 	s*="\\begin{tikzpicture}\n"
   s*="\\begin{semilogxaxis}[height=2in,width=5in,tick style={thin,black},"
   s*="extra y ticks={0},extra y tick style={grid=major},major y grid style={dotted,black},"
-  s*="xlabel={Frequency [Hz]},ylabel={Transfer Function [dB]},enlarge x limits=false,"
+  s*="xlabel={Frequency [\\si{\\hertz}]},ylabel={Transfer Function [\\si{\\decibel}]},enlarge x limits=false,"
   s*="legend style={at={(1.0,1.03)},anchor=south east},legend columns=1,legend cell align=left,cycle list name=linestyles*]\n"
 	for j=1:nout  ## For each output
 		s*="\\addplot+[black,line width=1pt,mark=none] table[x=frequency,y=m$((i-1)*nout+j)]{bode.out};\n"
@@ -34,7 +34,7 @@ for i=1:nin  ## For each input
 	s*="\\begin{tikzpicture}\n"
 	s*="\\begin{semilogxaxis}[height=2in,width=5in,ymin=-180,ymax=180,ytick={-180,-90,0,90,180},"
 	s*="tick style={thin,black},extra y ticks={0},extra y tick style={grid=major},major y grid style={dotted,black},"
-	s*="xlabel={Frequency [Hz]},ylabel={Phase Angle [\$^\\circ\$]},enlargelimits=false,cycle list name=linestyles*,"
+	s*="xlabel={Frequency [\\si{\\hertz}]},ylabel={Phase Angle [\\si{\\degree}]},enlargelimits=false,cycle list name=linestyles*,"
 	s*="restrict y to domain= -180:180,unbounded coords=jump]\n"
 	for j=1:nout
 		s*="\\addplot+[black,line width=1pt,mark=none] table[x=frequency,y=p$((i-1)*nout+j)]{bode.out};\n"

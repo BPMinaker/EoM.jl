@@ -1,4 +1,4 @@
-function force(the_system,verb)
+function force!(the_system,data,verb)
 ## Copyright (C) 2017, Bruce Minaker
 ## force.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ for i in the_system.loads ## for each external loads
 end
 
 n=6*(num-1)
-
-vec[1:n],mtx[1:n,1:n]
+data.force=vec[1:n]
+data.load_stiffness=mtx[1:n,1:n]
 
 end  ## Leave

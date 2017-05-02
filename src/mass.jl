@@ -1,4 +1,4 @@
-function mass(the_system,verb)
+function mass!(the_system,data,verb)
 ## Copyright (C) 2017, Bruce Minaker
 ## mass.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -23,6 +23,6 @@ for i=1:n-1
 	mtx[6*i-5:6*i,6*i-5:6*i]=temp[i]  ## Build mass matrix from body info
 end
 
-mtx
+data.mass=mtx
 
 end ## Leave
