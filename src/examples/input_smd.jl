@@ -1,4 +1,4 @@
-function input_smd(m::Float64,c::Float64,k::Float64)
+function input_smd(;m=1.0,c=1.0,k=1.0)
 the_system=mbd_system("Spring Mass Damper")
 
 ## Add the body

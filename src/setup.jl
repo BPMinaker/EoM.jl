@@ -18,22 +18,12 @@ dtstr=Dates.format(now(),"yyyy-mm-dd")
 tmstr=Dates.format(now(),"HH-MM-SS")
 dir_output=joinpath(dtstr,tmstr)
 
-## Define data directories
-# dir=joinpath(pwd(),dir_output)
-# if(~isdir(dir))  ## If no output folder exists
-# 	mkdir(dir)  ## Create new empty output folder
-# end
-
 dir=joinpath(pwd(),dtstr)
 if(~isdir(dir))  ## If no dated output folder exists
 	mkdir(dir)  ## Create new empty dated output folder
 end
 
-#if(isdir(dir_stock))
 cp(joinpath(Pkg.dir(),"EoM","src","report"),joinpath(pwd(),dir_output))  ## Create output folder date/time
-#else
-#	println("LaTeX folder missing...")
-#end
 
 dir_output
 

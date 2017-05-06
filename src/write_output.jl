@@ -189,9 +189,9 @@ end
 rprt*="\\input{load}"
 
 out=joinpath(dir_output,"analysis.tex")
-file=open(out,"w")
-write(file,rprt)
-close(file)
+open(out,"w") do file
+	write(file,rprt)
+end
 
 writedlm(joinpath(pwd(),dir_output,dir_raw,"A.out"),result[1].A)
 writedlm(joinpath(pwd(),dir_output,dir_raw,"B.out"),result[1].B)
