@@ -14,10 +14,11 @@ function tex_bode_pgfplot(ins,outs)
 
 nin=length(ins)
 nout=length(outs)
+
 s="\\section{Frequency Response Plots}\n"
 
 for i=1:nin  ## For each input
-	s="\\begin{figure}[hbtp]\n"
+	s*="\\begin{figure}[hbtp]\n"
 	s*="\\begin{center}\n"
 	s*="\\begin{footnotesize}\n"
 	s*="\\begin{tikzpicture}\n"

@@ -205,40 +205,9 @@ writedlm(joinpath(pwd(),dir_output,dir_raw,"Cmin.out"),result[1].Cm)
 writedlm(joinpath(pwd(),dir_output,dir_raw,"Dmin.out"),result[1].Dm)
 
 
-# mtx=sparse(result[1].mass+result[1].inertia)
-# temp=zeros(length(mtx.nzval),3)
-#
-# temp[:,1]=mtx.rowval
-# temp[:,3]=mtx.nzval
-# for i=1:length(mtx.colptr)-1
-# 	temp[mtx.colptr[i]:mtx.colptr[i+1]-1,2]=i
-# end
-# writedlm(joinpath(pwd(),dir_output,dir_raw,"mass_matrix.out"),temp)
-#
-#
-
-
-# println(result[1].stiffness)
-# println(result[1].tangent_stiffness)
-# println(result[1].load_stiffness)
-
 mtx=result[1].stiffness+result[1].tangent_stiffness+result[1].load_stiffness
 r,c,v=findnz(mtx)
 writedlm(joinpath(pwd(),dir_output,dir_raw,"stiffness_matrix.out"),[r c v])
-
-
-# mtx=sparse(result[1].right_jacobian)
-# temp=zeros(length(mtx.nzval),3)
-#
-# temp[:,1]=mtx.rowval
-# temp[:,3]=mtx.nzval
-# for i=1:length(mtx.colptr)-1
-# 	temp[mtx.colptr[i]:mtx.colptr[i+1]-1,2]=i
-# end
-# writedlm(joinpath(pwd(),dir_output,dir_raw,"jacobian.out"),temp)
-
-
-
 
 
 #writedlm(joinpath(pwd(),dir_output,dir_raw,"M.out"),result[1].M)
