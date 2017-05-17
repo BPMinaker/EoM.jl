@@ -69,9 +69,6 @@ end
 data.C=C*r_orth
 data.D=data.feedthrough  ## Add the user defined feed forward
 
-# state_space=dss(A,B,C,D,E);
-# phys=r_orth(1:dim,:);  ## Relate the physical coordinates to the minimal ones
-#
 verb && println("Okay, built equations of motion.")
 
 end  ## Leave
