@@ -116,7 +116,7 @@ push!(the_system.item,item)
 
 
 ## Constrain to linear motion in z direction (bounce)
-item=rigid_point("road")
+item=rigid_point("road frc")
 item.body[1]="chassis"
 item.body[2]="ground"
 item.location=[0,0,0.25]
@@ -125,6 +125,11 @@ item.moments=0
 item.axis=[0,0,1]
 push!(the_system.item,item)
 
+
+item=rigid_point("road mmt")
+item.body[1]="chassis"
+item.body[2]="ground"
+item.location=[0,0,0.25]
 item.forces=0  ## Constrain to rotational motion around y axis (pitch)
 item.moments=2  ## Reset forces, moments axis, all other properties are the same
 item.axis=[0,1,0]
@@ -149,14 +154,19 @@ item.location[:,1]=[0,0,0.25]
 item.location[:,2]=[0,0,0]
 push!(the_system.item,item)
 
-item.name="\$\\theta\$"
+
+item=sensor("\$\\theta\$")
+item.body[1]="chassis"
+item.body[2]="ground"
+item.location[:,1]=[0,0,0.25]
 item.location[:,2]=[0,0.25,0.25]
 item.gain=180/pi;  ## deg/rad
 item.twist=1;
 push!(the_system.item,item)
 
+
 ## Add measure between ground and unsprung mass
-item.name="\$z_2-z_0\$"
+item=sensor("\$z_2-z_0\$")
 item.body[1]="front unsprung"
 item.actuator="front bump"
 item.location[:,1]=[0.1,0,0.3]
@@ -168,5 +178,3 @@ push!(the_system.item,item)
 the_system
 
 end
-
-
