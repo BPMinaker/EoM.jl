@@ -32,6 +32,7 @@ negjv_mtx=-cnsrt_mtx*v_mtx;  ## Build transformation - constraint matrix
 
 ## Check condition of constraint matrix
 verb && println("Checking constraint items...")
+d=6*(n-1)
 if(q+t>0) ## If the jacobian matrix has more than zero rows (i.e. there are rigid constraint items in the system)
 	rkr=rank(full([cnsrt_mtx;nhcnsrt_mtx]))  ## rk = the rank (the maximum number of linearly independent rows or columns) of the constraint matrix
 	if (rkr==(q+t))  ## If the rank = the number of rows, then there are no redundant constraints (the constraints are all linearly independent)
@@ -39,17 +40,13 @@ if(q+t>0) ## If the jacobian matrix has more than zero rows (i.e. there are rigi
 	else
 		println("Warning: there are redundant constraints in the system!")
 	end
-
-	d=6*(n-1)
 	## Assemble the individual constraint matrices to system constraint matrix
 	J_r=sparse([cnsrt_mtx zeros(q,d); negjv_mtx cnsrt_mtx; zeros(t,d) nhcnsrt_mtx])
 	J_l=sparse([cnsrt_mtx zeros(q,d); zeros(q,d) cnsrt_mtx; zeros(t,d) nhcnsrt_mtx])
-
 else
 
 	J_l=spzeros(0,2*d)
 	J_r=spzeros(0,2*d)
-
 end
 
 data.constraint=cnsrt_mtx
