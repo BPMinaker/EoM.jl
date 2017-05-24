@@ -1,5 +1,5 @@
 function line_stretch_hessian(items,num)
-	## Copyright (C) 2017, Bruce Minaker
+## Copyright (C) 2017, Bruce Minaker
 ## line_stretch_hessian.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 2, or (at your option)

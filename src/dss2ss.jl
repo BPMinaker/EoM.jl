@@ -45,7 +45,9 @@ nout=size(CC,1)
 CM=zeros(n,n*nin)
 OM=zeros(n*nout,n)
 
-AAA=AA/sum(diag(AA))
+tr=sum(diag(AA))
+
+AAA=AA/tr
 
 temp=eye(n)
 U=0
@@ -61,34 +63,21 @@ for i=1:n
 	U,S,V=svd(MR)
 	S=S[S.>(maximum(size(MR))*eps(maximum(S)))]
 	p=length(S)
-
+	# println(p)
+	# println(i)
 	if(p<i && p>0)
 		break
 	end
 end
 
-CM=zeros(n,n*nin)
-OM=zeros(n*nout,n)
-temp=eye(n)
-
-for i=1:p
-	CM[:,(i-1)*nin+1:i*nin]=temp*BB
-	OM[(i-1)*nout+1:i*nout,:]=CC*temp
-	temp*=AA
-end
-
-MR=OM*CM
-U,S,V=svd(MR)
-S=S[1:p]
-
-MR1=OM*AA*CM
+MR1=OM*AAA*CM
 Si=diagm(S.^-0.5)
 S=diagm(S.^0.5)
 
 Un=U[:,1:p]
 Vn=V[:,1:p]
 
-data.Am=Si*Un'*MR1*Vn*Si
+data.Am=Si*Un'*MR1*Vn*Si*tr
 data.Bm=(S*Vn')[:,1:nin]
 data.Cm=(Un*S)[1:nout,:]
 data.Dm=DD

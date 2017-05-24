@@ -1,4 +1,4 @@
-function run_eom(sysin::Function,vpts=1;analyze=false,report=false)
+function run_eom(sysin::Function,vpts=0;analyze=false,report=false)
 ## Copyright (C) 2017, Bruce Minaker
 ## run_eom.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by

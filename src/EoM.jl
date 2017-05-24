@@ -4,17 +4,12 @@ module EoM
 export run_eom
 export mbd_system
 
-include(joinpath("types","body.jl"))
-include(joinpath("types","link.jl"))
-include(joinpath("types","spring.jl"))
-include(joinpath("types","rigid_point.jl"))
-include(joinpath("types","flex_point.jl"))
-include(joinpath("types","nh_point.jl"))
-include(joinpath("types","beam.jl"))
-include(joinpath("types","load.jl"))
-include(joinpath("types","actuator.jl"))
-include(joinpath("types","sensor.jl"))
-include(joinpath("types","thin_rod.jl"))
+
+fldr=joinpath(Pkg.dir(),"EoM","src","types")
+types=readdir(fldr)
+for i in types
+	include(joinpath(fldr,i))
+end
 
 include("run_eom.jl")
 include("setup.jl")
@@ -46,14 +41,17 @@ include("write_output.jl")
 include("load_defln.jl")
 include("syst_props.jl")
 
-include(joinpath("tex","tex_eig_pgftable.jl"))
-include(joinpath("tex","tex_eig_pgfplot.jl"))
-include(joinpath("tex","tex_bode_pgfplot.jl"))
-include(joinpath("tex","tex_bode3_pgfplot.jl"))
-include(joinpath("tex","tex_sstf_pgftable.jl"))
-include(joinpath("tex","tex_sstf_pgfplot.jl"))
-include(joinpath("tex","tex_hsv_pgftable.jl"))
-include(joinpath("tex","tex_hsv_pgfplot.jl"))
+fldr=joinpath(Pkg.dir(),"EoM","src","tex")
+tex=readdir(fldr)
+for i in tex
+	include(joinpath(fldr,i))
+end
+
+fldr=joinpath(Pkg.dir(),"EoM","src","examples")
+xmpls=readdir(fldr)
+for i in xmpls
+	include(joinpath(fldr,i))
+end
 
 type mbd_system
 	name::String

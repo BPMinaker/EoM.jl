@@ -30,7 +30,8 @@ for i=1:vpts
 	result[i].freq_resp=zeros(nout,nin,length(w))
 	for j=1:wpts
 		result[i].freq_resp[:,:,j]=result[i].Cm*((I*w[j]im-result[i].Am)\result[i].Bm)+result[i].Dm
-		#result[i].freq_resp[:,:,j]=result[i].C*((result[i].E*w[j]im-result[i].A)\result[i].B)+result[i].D
+		#result[i].freq_resp[:,:,j]=result[i].Ct*((I*w[j]im-result[i].At)\result[i].Bt)+result[i].Dt
+	#	result[i].freq_resp[:,:,j]=result[i].C*((result[i].E*w[j]im-result[i].A)\result[i].B)+result[i].D
 	end
 
 	result[i].ss_resp=-result[i].Cm*(result[i].Am\result[i].Bm)+result[i].Dm
