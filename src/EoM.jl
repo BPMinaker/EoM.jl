@@ -4,7 +4,6 @@ module EoM
 export run_eom
 export mbd_system
 
-
 fldr=joinpath(Pkg.dir(),"EoM","src","types")
 types=readdir(fldr)
 for i in types

@@ -39,12 +39,15 @@ for i=1:vpts
 
 	# result[i].zero_val=eigvals([result[i].A result[i].B;result[i].C result[i].D],[result[i].E zeros(result[i].B);zeros(result[i].C) zeros(result[i].D)])
 
-	tmp=eigvals(result[i].Am)
-	if(sum(real(tmp).>0)==0)
+	tmp=size(result[i].Am,1)
+#	tmp=eigvals(result[i].Am)
+#	if(sum(real(tmp).>0)==0 && length(tmp)>1)
+
+	try
 		WC=lyap(result[i].Am,result[i].Bm*result[i].Bm')
 		WO=lyap(result[i].Am',result[i].Cm'*result[i].Cm)
 		result[i].hsv=sqrt(eigvals(WC*WO))
-	else
+	catch
 		result[i].hsv=zeros(length(tmp))
 	end
 

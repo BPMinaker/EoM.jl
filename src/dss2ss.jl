@@ -46,7 +46,10 @@ CM=zeros(n,n*nin)
 OM=zeros(n*nout,n)
 
 tr=sum(diag(AA))
-
+#println(tr)
+if(abs(tr)<eps(Float64(n)))
+	tr=1
+end
 AAA=AA/tr
 
 temp=eye(n)
@@ -63,8 +66,8 @@ for i=1:n
 	U,S,V=svd(MR)
 	S=S[S.>(maximum(size(MR))*eps(maximum(S)))]
 	p=length(S)
-	# println(p)
-	# println(i)
+	#println(p)
+	#println(i)
 	if(p<i && p>0)
 		break
 	end
