@@ -1,6 +1,9 @@
 ##__precompile__()
 
 module EoM
+
+using EoM_TeX
+
 export run_eom
 export mbd_system
 
@@ -11,7 +14,6 @@ for i in types
 end
 
 include("run_eom.jl")
-include("setup.jl")
 include("mass.jl")
 include("sort_system.jl")
 include("find_bodynum.jl")
@@ -40,13 +42,7 @@ include("write_output.jl")
 include("load_defln.jl")
 include("syst_props.jl")
 
-fldr=joinpath(Pkg.dir(),"EoM","src","tex")
-tex=readdir(fldr)
-for i in tex
-	include(joinpath(fldr,i))
-end
-
-fldr=joinpath(Pkg.dir(),"EoM","src","examples")
+fldr=joinpath(Pkg.dir(),"EoM","examples")
 xmpls=readdir(fldr)
 for i in xmpls
 	include(joinpath(fldr,i))
