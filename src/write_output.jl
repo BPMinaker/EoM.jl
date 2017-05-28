@@ -109,7 +109,11 @@ if(nin*nout>0  && nin*nout<16)
 		end
 
 		phs=angle(result[i].freq_resp)  ## Search for where angle changes by almost 1 rotation
-#		phs[abs(diff(phs,1,3))>6]=Inf  ## Replace with Inf to trigger plot skip
+		for u=1:nout
+			for v=1:nin
+				phs[u,v,find(abs(diff(phs[u,v,:])).>6)]=Inf  ## Replace with Inf to trigger plot skip
+			end
+		end
 
 		for j=1:length(result[i].w) ## Loop over frequency range
 			## Each row starts with freq in Hz, then speed

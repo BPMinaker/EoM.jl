@@ -13,7 +13,10 @@ function linear_analysis!(result)
 ##--------------------------------------------------------------------
 
 vpts=length(result)  ## Number of points to plot
-wpts=Int(round(4000/vpts))
+wpts=500
+if(wpts*vpts>4000)
+	wpts=Int(round(4000/vpts))
+end
 w=2*pi*logspace(-1,2,wpts)
 
 for i=1:vpts
