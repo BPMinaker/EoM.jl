@@ -1,4 +1,4 @@
-function linear_analysis!(result)
+function linear_analysis!(result,verb=false)
 ## Copyright (C) 2017, Bruce Minaker
 ## linear_analysis.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -11,6 +11,8 @@ function linear_analysis!(result)
 ## General Public License for more details at www.gnu.org/copyleft/gpl.html.
 ##
 ##--------------------------------------------------------------------
+
+verb && println("Running linear analysis...")
 
 vpts=length(result)  ## Number of points to plot
 wpts=500

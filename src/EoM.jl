@@ -2,7 +2,7 @@
 
 module EoM
 
-using EoM_TeX
+#using EoM_TeX
 
 export run_eom
 export mbd_system
@@ -14,6 +14,7 @@ for i in types
 end
 
 include("run_eom.jl")
+include("setup.jl")
 include("mass.jl")
 include("sort_system.jl")
 include("find_bodynum.jl")
@@ -80,6 +81,9 @@ type mbd_system
 end
 
 type matrix_struct
+	name::String
+	input_names::Vector{String}
+	output_names::Vector{String}
 	mass::SparseMatrixCSC{Float64,Int32}  ## mass matrix from bodies
 	inertia::SparseMatrixCSC{Float64,Int32}  ## mass matrix from springs
 	damping::SparseMatrixCSC{Float64,Int32}  ## damping matrix from dampers
@@ -128,6 +132,9 @@ type matrix_struct
 	hsv::Vector{Float64}
 
 	function matrix_struct(
+	name="",
+	input_names=[],
+	output_names=[],
 	mass=speye(0),
 	inertia=speye(0),
 	damping=speye(0),
@@ -174,7 +181,7 @@ type matrix_struct
 	ss_resp=Array{Float64}(0,0),
 	zero_val=Vector{Float64}(0),
 	hsv=Vector{Float64}(0))
-		new(mass,inertia,damping,stiffness,tangent_stiffness,load_stiffness,velocity,momentum,constraint,nh_constraint,deflection,lambda,static,selection,spring_stiffness,subset_spring_stiffness,left_jacobian,right_jacobian,force,preload,input,input_rate,output,feedthrough,M,KC,A,B,C,D,E,At,Bt,Ct,Dt,Am,Bm,Cm,Dm,e_vect,e_val,w,freq_resp,ss_resp,zero_val,hsv)
+		new(name,input_names,output_names,mass,inertia,damping,stiffness,tangent_stiffness,load_stiffness,velocity,momentum,constraint,nh_constraint,deflection,lambda,static,selection,spring_stiffness,subset_spring_stiffness,left_jacobian,right_jacobian,force,preload,input,input_rate,output,feedthrough,M,KC,A,B,C,D,E,At,Bt,Ct,Dt,Am,Bm,Cm,Dm,e_vect,e_val,w,freq_resp,ss_resp,zero_val,hsv)
 	end
 end
 

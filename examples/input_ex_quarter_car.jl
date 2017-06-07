@@ -1,4 +1,4 @@
-function input_ex_quarter_car(u...;mu=50,ms=500,ks=18000,kt=180000,cs=1500)
+function input_ex_quarter_car(;mu=50,ms=500,ks=18000,kt=180000,cs=1500)
 the_system=mbd_system("Quarter Car Model")
 
 ## Copyright (C) 2017, Bruce Minaker

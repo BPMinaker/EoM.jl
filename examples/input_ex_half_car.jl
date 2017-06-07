@@ -1,4 +1,4 @@
-function input_ex_half_car(u::Real;a=1.189,b=2.885-1.189,kf=35000,kr=38000,cf=1000,cr=1200,m=16975/9.81,I=3267,kt=300000,muf=50,mur=50)
+function input_ex_half_car(;u=0,a=1.189,b=2.885-1.189,kf=35000,kr=38000,cf=1000,cr=1200,m=16975/9.81,I=3267,kt=300000,muf=50,mur=50)
 the_system=mbd_system("Half Car Model")
 
 ## Copyright (C) 2017, Bruce Minaker
@@ -14,18 +14,15 @@ the_system=mbd_system("Half Car Model")
 ##
 ##--------------------------------------------------------------------
 
-
-## A bounce pitch model 
+## A bounce pitch model
 ## Note tire and suspension properties are for both left and right sides summed
-
-
 
 ## Add one body representing the chassis
 item=body("chassis")
 item.mass=m
 item.moments_of_inertia=[0,I,0]  ## Only the Iy term matters here
 item.products_of_inertia=[0,0,0]
-item.location=[0,0,0.25]  ## Put cg at origin, but offset vertically to make animation more clear 
+item.location=[0,0,0.25]  ## Put cg at origin, but offset vertically to make animation more clear
 item.velocity=[u,0,0]
 push!(the_system.item,item)
 push!(the_system.item,weight(item))

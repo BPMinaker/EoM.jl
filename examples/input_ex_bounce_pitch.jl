@@ -1,4 +1,4 @@
-function input_ex_bounce_pitch(u::Real;a=1.189,b=2.885-1.189,kf=35000,kr=38000,cf=1000,cr=1200,m=16975/9.81,I=3267)
+function input_ex_bounce_pitch(;u=0,a=1.189,b=2.885-1.189,kf=35000,kr=38000,cf=1000,cr=1200,m=16975/9.81,I=3267)
 the_system=mbd_system("Bounce Pitch Model")
 
 ## Copyright (C) 2017, Bruce Minaker

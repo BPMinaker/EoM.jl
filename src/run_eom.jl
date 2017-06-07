@@ -1,4 +1,4 @@
-function run_eom(sysin::Function,vpts=0;analyze=false,report=false)
+function run_eom(sysin::Function,vpts=0;report=false,analyze=report,verbose=false)
 ## Copyright (C) 2017, Bruce Minaker
 ## run_eom.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -12,45 +12,36 @@ function run_eom(sysin::Function,vpts=0;analyze=false,report=false)
 ##
 ##--------------------------------------------------------------------
 
-if(report)
-	analyze=true
-	dir_output=setup()  ## Create output folder
-end
-
-the_system=Vector{mbd_system}(0)
-
-analyze && println("Calling user function...")
-for i in vpts ## Build all the input structs
-	push!(the_system,sysin(i))
-end
-
-analyze && println("Running analysis of $(the_system[1].name) ...")
-analyze && println("Found $(length(the_system[1].item)) items...")
-
-for i=1:length(vpts)
-	sort_system!(the_system[i],(i<2)*analyze)  ## Sort all the input structs
-end
-
+the_system=Vector{mbd_system}(length(vpts))  ## create empty system holder
 result=Vector{matrix_struct}(length(vpts))
-#@time
+
+verbose && println("Calling system function...")
+
 for i=1:length(vpts)
-	result[i]=build_eom(the_system[i],(i<2)*analyze)  ## Build eom
+	the_system[i]=sysin(vpts[i])  ## Build the input structs
 end
 
-analyze && linear_analysis!(result)  ## Do all the eigen, freqresp, etc.
-report && write_output(dir_output,vpts,the_system[1],result)
+verbose && println("Running analysis of $(the_system[1].name) ...")
+verbose && println("Found $(length(the_system[1].item)) items...")
 
-if(report && is_linux())
-	println("Running LaTeX...")
-
-	cmd="cd $(dir_output); /usr/bin/pdflatex -shell-escape -interaction batchmode report.tex"
-	run(`bash -c $cmd`)
-	run(`bash -c $cmd`)
-
+for i=1:length(vpts)
+	sort_system!(the_system[i],(i<2)*verbose)  ## Sort all the input structs
+	result[i]=build_eom(the_system[i],(i<2)*verbose)  ## Build eom
 end
 
-analyze && println("Done.")
+analyze && linear_analysis!(result,verbose)  ## Do all the eigen, freqresp, etc.
 
-result
+if report
+	dir_output=setup()  ## Create output folder
+	write_output(dir_output,vpts,the_system[1],result,verbose)
+end
+
+verbose && println("Done.")
+
+if report
+	result,dir_output
+else
+	result
+end
 
 end

@@ -1,4 +1,4 @@
-function input_ex_bicycle_rider(u)
+function input_ex_bicycle_rider(;u=0.1)
 the_system=mbd_system("Rigid Rider Bicycle")
 
 ## Copyright (C) 2017, Bruce Minaker
@@ -13,7 +13,6 @@ the_system=mbd_system("Rigid Rider Bicycle")
 ## General Public License for more details at www.gnu.org/copyleft/gpl.html.
 ##
 ##--------------------------------------------------------------------
-
 
 ##  This is the benchmark bicycle problem that has been well studied in the literature
 ##  Meijaard, J.P., Papadopoulos, J.M., Ruina, A., Schwab, A.L., linearised dynamics equations for the balance and steer of a bicycle: a benchmark and review, Proc. Roy. Soc. A., Volume 463, Number 2084, 2007
@@ -30,7 +29,6 @@ item.velocity=[u,0,0]
 push!(the_system.item,item)
 push!(the_system.item,weight(item,g))
 
-
 item=body("fork")  ## The front fork, same velocities as the frame
 item.mass=4
 item.moments_of_inertia=[0.05892,0.06,0.00708]
@@ -39,7 +37,6 @@ item.location=[0.9,0,-0.7]
 item.velocity=[u,0,0]
 push!(the_system.item,item)
 push!(the_system.item,weight(item,g))
-
 
 item=body("front-wheel")  ## The front-wheel, with non-zero angular velocity
 item.mass=3
@@ -51,7 +48,6 @@ item.angular_velocity=[0,-u/0.35,0]
 push!(the_system.item,item)
 push!(the_system.item,weight(item,g))
 
-
 item=body("rear-wheel")  ## The rear-wheel, also with non-zero angular velocity
 item.mass=2
 item.moments_of_inertia=[0.0603,0.12,0.0603]
@@ -62,7 +58,6 @@ item.angular_velocity=[0,-u/0.3,0]
 push!(the_system.item,item)
 push!(the_system.item,weight(item,g))
 
-
 item=rigid_point("head")   ;  ## The steering head bearing, connects the frame and fork
 item.body[1]="frame"
 item.body[2]="fork"
@@ -71,7 +66,6 @@ item.forces=3
 item.moments=2
 item.axis=[sin(rake),0,cos(rake)]
 push!(the_system.item,item)
-
 
 item=rigid_point("rear axle")  ## Rear axle rigid item
 item.body[1]="frame"

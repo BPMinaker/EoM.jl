@@ -1,4 +1,4 @@
-function build_eom(the_system,verb)
+function build_eom(the_system,verb=false)
 ## Copyright (C) 2017, Bruce Minaker
 ## build_eom.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -19,6 +19,10 @@ verb && println("Okay, got the system info, building equations of motion...")
 
 ## Build container
 data=matrix_struct()
+
+data.name=the_system.name
+data.input_names=broadcast(name,the_system.actuators)
+data.output_names=broadcast(name,the_system.sensors)
 
 ## Build the mass matrix
 mass!(the_system,data,verb)

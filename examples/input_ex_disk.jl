@@ -1,4 +1,4 @@
-function input_ex_disk(v::Real;m=4,r=0.5)
+function input_ex_disk(;v=0.1,m=4,r=0.5)
 the_system=mbd_system("Rolling Disk")
 
 ## Copyright (C) 2017, Bruce Minaker

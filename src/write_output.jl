@@ -1,4 +1,4 @@
-function write_output(dir_output,vpts,the_system,result;dir_raw="unformatted")
+function write_output(dir_output,vpts,the_system,result,verb=false;dir_raw="unformatted")
 ## Copyright (C) 2017, Bruce Minaker
 ## write_output.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -12,17 +12,16 @@ function write_output(dir_output,vpts,the_system,result;dir_raw="unformatted")
 ##
 ##--------------------------------------------------------------------
 
+verb && println("Writing output...")
+
 cmplx=0  ## Creates variable for number of oscillatory modes
 dmpd=0  ## Creates variable for number of non-oscillatory modes
 nstbl=0  ## Creates variable for number of unstable modes
 rgd=0  ## Number of rigid body modes
 
-n=size(result[1].Am,1)
-nin=size(result[1].Bm,2)
-nout=size(result[1].Cm,1)
-
-input_names=broadcast(name,the_system.actuators)
-output_names=broadcast(name,the_system.sensors)
+#n=size(result[1].Am,1)
+nin=size(result[1].B,2)
+nout=size(result[1].C,1)
 
 ## Initialize output strings
 eigen="###### Eigenvalues\nnum speed real imag realhz imaghz\n"
@@ -62,24 +61,24 @@ for i=1:length(vpts)
 		lambda=2*pi/abs(imagpt)
 
 		if(isreal(result[i].e_val[j]))
-			counter=1
+			# counter=1
 			omegan=NaN
 			zeta=NaN
-			if(realpt==0)
-				rgd+=1
-			end
+			# if(realpt==0)
+			# 	rgd+=1
+			# end
 		else
-			counter=1/2
-			cmplx+=1/2
+			# counter=1/2
+			# cmplx+=1/2
 			omegan=abs(result[i].e_val[j])
 			zeta=-realpt/omegan
 		end
 
-		if(realpt>0)
-			nstbl+=counter
-		elseif(realpt<0)
-			dmpd+=counter
-		end
+		# if(realpt>0)
+		# 	nstbl+=counter
+		# elseif(realpt<0)
+		# 	dmpd+=counter
+		# end
 
 		eigen*="{$j} $(vpts[i]) $realpt $imagpt $(realpt/2/pi) $(imagpt/2/pi)\n"  ## Write the number, the speed, then the eigenvalue
 		freq*="{$j} $(vpts[i]) $(omegan/2/pi) $zeta $tau $lambda\n"  ## Write nat freq, etc.
@@ -96,7 +95,7 @@ if(nin*nout>0  && nin*nout<16)
 			for j=1:nout
 				for k=1:nin
 					sstf*="{$((j-1)*nin+k)}"
-					sstf*=" {$(output_names[j])/$(input_names[k])} $(result[1].ss_resp[j,k])\n"
+					sstf*=" {$(result[i].output_names[j])/$(result[i].input_names[k])} $(result[1].ss_resp[j,k])\n"
 				end
 			end
 		else
@@ -158,43 +157,6 @@ for i=1:length(data_out)
 	file=open(out,"w")
 	write(file,data_out[i])
 	close(file)
-end
-
-tp="\\title{\nEoM Analysis\\\\\n$(the_system.name)\n\\\\\n}\n"
-tp*="\\author{\nJohn Smith: ID 12345678\n\\\\\nJane Smith: ID 87654321\n\\\\\n}\n"
-out=joinpath(dir_output,"titlepage.tex")
-file=open(out,"w")
-write(file,tp)
-close(file)
-
-rprt="\\chapter{Analysis}\n"
-rprt*="Replace this text with the body of your report.  Add sections or subsections as appropriate.\n"
-
-if(length(vpts)>1)
-	rprt*=tex_eig_pgfplot() ## Plot the eigenvalues
-	if(n*nin*nout>0 && nin*nout<16)
-		rprt*=tex_bode3_pgfplot(input_names,output_names)  ## Bode plots, but 3D
-		rprt*=tex_sstf_pgfplot(input_names,output_names)  ## Plot the steady state results
-		rprt*=tex_hsv_pgfplot()
-	end
-else
-	rprt*=tex_eig_pgftable()
-
-#	rprt*='There are ' num2str(result{1}.data.dimension-result{1}.eom.rigid.rkr) ' degrees of freedom.  '];
-	rprt*="There are $cmplx oscillatory modes, $dmpd damped modes, $nstbl unstable modes, and $rgd rigid body modes.\n\\pagebreak\n"
-
-	if(n*nin*nout>0 && nin*nout<16)
-		rprt*=tex_bode_pgfplot(input_names,output_names)  ## Bode plots
-	end
-
-	rprt*=tex_sstf_pgftable()  ## Print the steady state results
-	rprt*=tex_hsv_pgftable()
-end
-rprt*="\\input{load}"
-
-out=joinpath(dir_output,"analysis.tex")
-open(out,"w") do file
-	write(file,rprt)
 end
 
 writedlm(joinpath(pwd(),dir_output,dir_raw,"A.out"),result[1].A)

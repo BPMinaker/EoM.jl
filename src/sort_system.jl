@@ -1,4 +1,4 @@
-function sort_system!(the_system,verb)
+function sort_system!(the_system,verb=false)
 ## Copyright (C) 2017, Bruce Minaker
 ## sort_system.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -78,6 +78,6 @@ item_init!(the_system.actuators,false)
 #println(the_system.actuators[1].location)
 
 
- 
+
 verb && println("System sorted.")
 end  ## Leave

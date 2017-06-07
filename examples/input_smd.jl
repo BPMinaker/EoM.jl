@@ -1,4 +1,4 @@
-function input_smd(u...;m=1.0,c=1.0,k=1.0)
+function input_smd(;m=1.0,c=1.0,k=1.0)
 the_system=mbd_system("Spring Mass Damper")
 
 ## Copyright (C) 2017, Bruce Minaker

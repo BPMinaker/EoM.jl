@@ -1,4 +1,4 @@
-function input_ex_yaw_plane(u::Real;a=1.189,b=2.885-1.189,cf=80000.0,cr=80000.0,m=16975/9.81,I=3508.0)
+function input_ex_yaw_plane(;u=10.0,a=1.189,b=2.885-1.189,cf=80000.0,cr=80000.0,m=16975/9.81,I=3508.0)
 the_system=mbd_system("Yaw Plane Vehicle")
 
 ## Copyright (C) 2017, Bruce Minaker
