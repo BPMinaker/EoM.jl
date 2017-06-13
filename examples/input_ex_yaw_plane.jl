@@ -88,7 +88,7 @@ item.moments=0
 item.axis=[1,0,0]
 push!(the_system.item,item)
 
-## Measure the yaw rate
+## Measure the yaw rate in rad/s
 item=sensor("\$r\$")
 item.body[1]="chassis"
 item.body[2]="ground"
@@ -98,7 +98,7 @@ item.twist=1
 item.order=2
 push!(the_system.item,item)
 
-## Measure the body slip angle
+## Measure the body slip angle in rad/s
 item=sensor("\$\\beta\$")
 item.body[1]="chassis"
 item.body[2]="ground"
@@ -109,13 +109,14 @@ item.frame=0
 item.gain=1/u
 push!(the_system.item,item)
 
-## Measure the lateral acceleration
+## Measure the lateral acceleration in g
 item=sensor("\$a_{\\text{lat}}\$")
 item.body[1]="chassis"
 item.body[2]="ground"
 item.location[:,1]=[0,0,0]
 item.location[:,2]=[0,0.1,0]
 item.order=3
+item.gain=1/9.81
 push!(the_system.item,item)
 
 
