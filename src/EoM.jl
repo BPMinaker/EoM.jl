@@ -13,9 +13,9 @@ for i in types
 	include(joinpath(fldr,i))
 end
 
-include("rotate.jl")
-include("run_eom_nl.jl")
-include("xdot.jl")
+#include("rotate.jl")
+#include("run_eom_nl.jl")
+#include("xdot.jl")
 
 include("run_eom.jl")
 include("setup.jl")
