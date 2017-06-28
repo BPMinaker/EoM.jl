@@ -1,4 +1,4 @@
-function linear_analysis!(result,verb=false)
+function linear_analysis(eoms,verb=false)
 ## Copyright (C) 2017, Bruce Minaker
 ## linear_analysis.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -14,44 +14,47 @@ function linear_analysis!(result,verb=false)
 
 verb && println("Running linear analysis...")
 
-vpts=length(result)  ## Number of points to plot
+nvpts=length(eoms)  ## Number of points to plot
 wpts=500
-if(wpts*vpts>4000)
-	wpts=Int(round(4000/vpts))
+if(wpts*nvpts>4000)
+	wpts=Int(round(4000/nvpts))
 end
 w=2*pi*logspace(-1,2,wpts)
 
-for i=1:vpts
+result=Vector{analysis}(nvpts)
 
+for i=1:nvpts
+
+	result[i]=analysis()
 	result[i].w=w
 
-	val,vec=eig(result[i].A,result[i].E)  ## Find the eigen for this speed
-	result[i].e_val=val[isfinite(val)]  ## Discard modes with Inf or Nan vals
-	result[i].e_vect=vec[:,isfinite(val)]
+	val,vec=eig(eoms[i].A,eoms[i].E)  ## Find the eigen for this speed
+	result[i].e_val=val[isfinite.(val)]  ## Discard modes with Inf or Nan vals
+	result[i].e_vect=vec[:,isfinite.(val)]
 
-	nin=size(result[i].B,2)
-	nout=size(result[i].C,1)
+	nin=size(eoms[i].B,2)
+	nout=size(eoms[i].C,1)
 
 	result[i].freq_resp=zeros(nout,nin,length(w))
 	for j=1:wpts
-		result[i].freq_resp[:,:,j]=result[i].Cm*((I*w[j]im-result[i].Am)\result[i].Bm)+result[i].Dm
-		#result[i].freq_resp[:,:,j]=result[i].Ct*((I*w[j]im-result[i].At)\result[i].Bt)+result[i].Dt
-	#	result[i].freq_resp[:,:,j]=result[i].C*((result[i].E*w[j]im-result[i].A)\result[i].B)+result[i].D
+		result[i].freq_resp[:,:,j]=eoms[i].Cm*((I*w[j]im-eoms[i].Am)\eoms[i].Bm)+eoms[i].Dm
+		#result[i].freq_resp[:,:,j]=eoms[i].Ct*((I*w[j]im-eoms[i].At)\eoms[i].Bt)+eoms[i].Dt
+		#result[i].freq_resp[:,:,j]=eoms[i].C*((eoms[i].E*w[j]im-eoms[i].A)\eoms[i].B)+eoms[i].D
 	end
 
-	result[i].ss_resp=-result[i].Cm*(result[i].Am\result[i].Bm)+result[i].Dm
-	#result[i].ss_resp=-result[i].Ct*(result[i].At\result[i].Bt)+result[i].Dt
+	result[i].ss_resp=-eoms[i].Cm*(eoms[i].Am\eoms[i].Bm)+eoms[i].Dm
+	#result[i].ss_resp=-eoms[i].Ct*(eoms[i].At\eoms[i].Bt)+eoms[i].Dt
 
-	# result[i].zero_val=eigvals([result[i].A result[i].B;result[i].C result[i].D],[result[i].E zeros(result[i].B);zeros(result[i].C) zeros(result[i].D)])
+	# result[i].zero_val=eigvals([eoms[i].A eoms[i].B;eoms[i].C eoms[i].D],[eoms[i].E zeros(eoms[i].B);zeros(eoms[i].C) zeros(eoms[i].D)])
 
-	tmp=size(result[i].Am,1)
-#	tmp=eigvals(result[i].Am)
+	tmp=size(eoms[i].Am,1)
+#	tmp=eigvals(eoms[i].Am)
 #	if(sum(real(tmp).>0)==0 && length(tmp)>1)
 
 	try
-		WC=lyap(result[i].Am,result[i].Bm*result[i].Bm')
-		WO=lyap(result[i].Am',result[i].Cm'*result[i].Cm)
-		result[i].hsv=sqrt(eigvals(WC*WO))
+		WC=lyap(eoms[i].Am,eoms[i].Bm*eoms[i].Bm')
+		WO=lyap(eoms[i].Am',eoms[i].Cm'*eoms[i].Cm)
+		result[i].hsv=sqrt.(eigvals(WC*WO))
 	catch
 		result[i].hsv=zeros(length(tmp))
 	end
@@ -88,5 +91,7 @@ for i=1:vpts
 
 
 end
+
+result
 
 end ## Leave

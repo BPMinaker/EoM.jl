@@ -15,7 +15,7 @@ function setup(dir_raw="unformatted")
 
 ## Record the date and time for the output filenames, ISO format
 dtstr=Dates.format(now(),"yyyy-mm-dd")
-tmstr=Dates.format(now(),"HH-MM-SS")
+tmstr=Dates.format(now(),"HH-MM-SS-s")
 dir_output=joinpath(dtstr,tmstr)
 
 dir=joinpath(pwd(),dtstr)
@@ -24,9 +24,7 @@ if(~isdir(dir))  ## If no dated output folder exists
 end
 
 dir=joinpath(pwd(),dir_output)
-if(~isdir(dir))  ## If no timed output folder exists
-	mkdir(dir)  ## Create new empty timed output folder
-end
+mkdir(dir)  ## Create new empty timed output folder
 
 dir=joinpath(pwd(),dir_output,dir_raw)
 if(~isdir(dir))  ## If no timed output folder exists

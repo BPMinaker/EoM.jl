@@ -3,6 +3,11 @@ export name
 export location
 export weight
 
+#export inertia_mtx
+#export lcn_orn
+#export welocity
+
+
 type body
 	name::String
 	group::String
@@ -29,19 +34,20 @@ function location(obj::body)
 	obj.location
 end
 
+function lcn_orn(obj::body)
+	[obj.location;obj.orientation]
+end
+
+function welocity(obj::body)
+	[obj.velocity;obj.angular_velocity]
+end
+
 function inertia_mtx(obj::body)
-	mtx=diagm(obj.moments_of_inertia)  ## Put inertia on diagonal
-	mtx[1,2]=-obj.products_of_inertia[1]  ## Put -ve cross products in
-	mtx[2,1]=-obj.products_of_inertia[1]
-	mtx[2,3]=-obj.products_of_inertia[2]
-	mtx[3,2]=-obj.products_of_inertia[2]
-	mtx[1,3]=-obj.products_of_inertia[3]
-	mtx[3,1]=-obj.products_of_inertia[3]
-	mtx
+	diagm(obj.moments_of_inertia)-diagm(obj.products_of_inertia[1:2],1)-diagm(obj.products_of_inertia[1:2],-1)-diagm([obj.products_of_inertia[3]],2)-diagm([obj.products_of_inertia[3]],-2)
 end
 
 function mass_mtx(obj::body)
-	[obj.mass*eye(3) zeros(3,3); zeros(3,3) inertia_mtx(obj)]  ## Stack mass and inertia terms
+	sparse([obj.mass*eye(3) zeros(3,3); zeros(3,3) inertia_mtx(obj)])  ## Stack mass and inertia terms
 end
 
 function weight(obj::body,g=9.81)

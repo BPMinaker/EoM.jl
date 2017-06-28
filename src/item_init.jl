@@ -17,7 +17,7 @@ verb && println("Initializing...")
 for i in items
 
 	## If the item has one node
-	if(typeof(i)==rigid_point||typeof(i)==flex_point||typeof(i)==nh_point) 
+	if(typeof(i)==rigid_point||typeof(i)==flex_point||typeof(i)==nh_point)
 		if(norm(i.axis)>0)
 			i.unit=i.axis/norm(i.axis)  ## Normalize any non-unit axis vectors
 		end
@@ -36,7 +36,7 @@ for i in items
 			i.moments=Int(i.twist)
 		end
 	## If the item has three nodes
-	
+
 	else
 		println("Three nodes")
 		## find the normal to the triangle, but use Newell method rather than null()
@@ -45,8 +45,8 @@ for i in items
 		#uz=det([in(i).location(1:2,:);1 1 1]);
 		#in(i).unit=[ux;uy;uz]/norm([ux;uy;uz]);
 	end
-	
-	i.nu=nullspace(i.unit')  ## Find directions perp to beam axis
+
+	i.nu=nullspace(Matrix(i.unit'))  ## Find directions perp to beam axis
 	if(~(round(i.unit'*cross(i.nu[:,1],i.nu[:,2]))==1))  ## Make sure it's right handed
 		i.nu=circshift(i.nu,[0,1]);
 	end
@@ -63,7 +63,7 @@ for i in items
 	b=i.nu  ## Plane of constraint
 
 	if(i.forces==3) ## For 3 forces, i.e. ball joint
-		i.b_mtx[1]=[eye(3) zeros(3,3)] ## 
+		i.b_mtx[1]=[eye(3) zeros(3,3)] ##
 	elseif(i.forces==2) ## For 2 forces, i.e. cylindrical or pin joint
 		i.b_mtx[1]=[b' zeros(2,3)]
 	elseif(i.forces==1) ## For 1 force, i.e. planar
@@ -92,7 +92,7 @@ end
 # 		in(i).mod_mtx=in(i).modulus/(1-in(i).psn_ratio^2)*[1 in(i).psn_ratio 0; in(i).psn_ratio 1 0; 0 0 0.5-in(i).psn_ratio/2];
 # 	end
 # end
-# 
+#
 # if(ismember(type,{'wings','surfs'}))
 # 	for i=1:length(in)
 # 		if(in(i).area==0)

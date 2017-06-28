@@ -13,7 +13,7 @@ function run_eom(sysin::Function,vpts=0;report=false,analyze=report,verbose=fals
 ##--------------------------------------------------------------------
 
 the_system=Vector{mbd_system}(length(vpts))  ## create empty system holder
-result=Vector{matrix_struct}(length(vpts))
+eoms=Vector{matrix_struct}(length(vpts))
 
 verbose && println("Calling system function...")
 
@@ -26,22 +26,22 @@ verbose && println("Found $(length(the_system[1].item)) items...")
 
 for i=1:length(vpts)
 	sort_system!(the_system[i],(i<2)*verbose)  ## Sort all the input structs
-	result[i]=build_eom(the_system[i],(i<2)*verbose)  ## Build eom
+	eoms[i]=build_eom(the_system[i],(i<2)*verbose)  ## Build eom
 end
 
-analyze && linear_analysis!(result,verbose)  ## Do all the eigen, freqresp, etc.
-
 if report
+	results=linear_analysis(eoms,verbose)  ## Do all the eigen, freqresp, etc.
 	dir_output=setup()  ## Create output folder
-	write_output(dir_output,vpts,the_system[1],result,verbose)
-end
-
-verbose && println("Done.")
-
-if report
-	result,dir_output
+	write_output(dir_output,vpts,the_system[1],eoms,results,verbose)
+	verbose && println("Done.")
+	eoms,results,dir_output
+elseif analyze
+	results=linear_analysis(eoms,verbose)  ## Do all the eigen, freqresp, etc.
+	verbose && println("Done.")
+	eoms,results
 else
-	result
+	verbose && println("Done.")
+	eoms
 end
 
 end

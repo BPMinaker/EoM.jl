@@ -25,7 +25,7 @@ data.input_names=broadcast(name,the_system.actuators)
 data.output_names=broadcast(name,the_system.sensors)
 
 ## Build the mass matrix
-mass!(the_system,data,verb)
+data.mass=mass(the_system,verb)
 
 ## Sum external forces and cast into vector
 ## Determine stiffness matrix for angular motion resulting from applied forces

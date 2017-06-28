@@ -24,9 +24,9 @@ dim=size(data.constraint,2)
 nin=size(data.input,2)
 nout=size(data.output,1)
 
-data.M=[eye(dim) zeros(dim,dim+nin); zeros(dim,dim) mass_mtx -data.input_rate; zeros(nin,2*dim+nin)]
+data.M=[speye(dim) spzeros(dim,dim+nin); spzeros(dim,dim) mass_mtx -data.input_rate; spzeros(nin,2*dim+nin)]
 
-data.KC=[data.velocity -eye(dim) zeros(dim,nin); stiff_mtx damp_mtx  -data.input; zeros(nin,2*dim) eye(nin)];
+data.KC=[data.velocity -speye(dim) spzeros(dim,nin); stiff_mtx damp_mtx  -data.input; spzeros(nin,2*dim) eye(nin)];
 
 s=size(data.right_jacobian,1)  ## Compute size of J matrices
 
@@ -47,10 +47,10 @@ C=zeros(nout,2*dim+nin)
 
 for i=1:nout
 	if(column[i]==1) ## p
- 			mask=[eye(dim) zeros(dim,dim+nin)]
+ 			mask=[speye(dim) spzeros(dim,dim+nin)]
 
 	elseif(column[i]==2)  ## w
-		mask=[zeros(dim,dim) eye(dim) zeros(dim,nin)]
+		mask=[spzeros(dim,dim) speye(dim) spzeros(dim,nin)]
 
 	elseif(column[i]==3)  ## p dot
 		mask=-data.KC[1:dim,:]
@@ -63,6 +63,7 @@ for i=1:nout
 	else
 		error("Matrix size error")
 	end
+
 	C[i,:]=data.output[i,:]'*mask  ## Note transpose here -- behaviour different than Matlab/Octave
 end
 

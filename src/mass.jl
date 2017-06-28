@@ -1,4 +1,4 @@
-function mass!(the_system,data,verb)
+function mass(the_system,verb)
 ## Copyright (C) 2017, Bruce Minaker
 ## mass.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -14,15 +14,13 @@ function mass!(the_system,data,verb)
 
 verb && println("Building mass matrix...")
 
-n=length(the_system.bodys)
-d=6*(n-1)
+temp=broadcast(mass_mtx,the_system.bodys[1:end-1])
+mtx=spzeros(0,0)
 
-temp=broadcast(mass_mtx,the_system.bodys)
-mtx=zeros(d,d) ## Find the dimension of the system from number of bodies, subtract one for ground body
-for i=1:n-1
-	mtx[6*i-5:6*i,6*i-5:6*i]=temp[i]  ## Build mass matrix from body info
+for i in temp
+	mtx=blkdiag(mtx,i)
 end
 
-data.mass=mtx
+mtx
 
 end ## Leave

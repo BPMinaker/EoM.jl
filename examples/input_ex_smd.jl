@@ -1,4 +1,4 @@
-function input_smd(;m=1.0,c=1.0,k=1.0)
+function input_ex_smd(;m=1.0,c=1.0,k=1.0,v=[0,0,0],w=[0,0,0],I=[1,1,1])
 the_system=mbd_system("Spring Mass Damper")
 
 ## Copyright (C) 2017, Bruce Minaker
@@ -17,9 +17,11 @@ the_system=mbd_system("Spring Mass Damper")
 ## Add the body
 item=body("block")
 item.mass=m
-item.moments_of_inertia=[0,0,0]
+item.moments_of_inertia=I
 item.products_of_inertia=[0,0,0]
 item.location=[0,0,1]
+item.velocity=v
+item.angular_velocity=w
 push!(the_system.item,item)
 
 ## Constrain the body to one translation in z, and no rotations

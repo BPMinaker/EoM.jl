@@ -20,9 +20,6 @@ verb && println("Sorting system...")
 ground=body("ground")
 push!(the_system.item,ground)  ## Ground body is added last (important!)
 
-#println(fieldnames(the_system))
-#setfield!(the_system,:bodys,the_system.item[broadcast(typeof,the_system.item).==body])
-
 the_system.bodys=the_system.item[broadcast(typeof,the_system.item).==body]
 the_system.links=the_system.item[broadcast(typeof,the_system.item).==link]
 the_system.springs=the_system.item[broadcast(typeof,the_system.item).==spring]
@@ -33,7 +30,6 @@ the_system.beams=the_system.item[broadcast(typeof,the_system.item).==beam]
 the_system.loads=the_system.item[broadcast(typeof,the_system.item).==load]
 the_system.sensors=the_system.item[broadcast(typeof,the_system.item).==sensor]
 the_system.actuators=the_system.item[broadcast(typeof,the_system.item).==actuator]
-
 
 names=broadcast(name,the_system.bodys)
 
@@ -52,9 +48,7 @@ names=broadcast(name,the_system.actuators)
 
 find_actnum!(the_system.sensors,names,false)
 
-
 locations=broadcast(location,the_system.bodys)
-
 
 find_radius!(the_system.links,locations,false)
 find_radius!(the_system.springs,locations,false)
@@ -74,10 +68,6 @@ item_init!(the_system.nh_points,false)
 item_init!(the_system.beams,false)
 item_init!(the_system.sensors,false)
 item_init!(the_system.actuators,false)
-
-#println(the_system.actuators[1].location)
-
-
 
 verb && println("System sorted.")
 end  ## Leave

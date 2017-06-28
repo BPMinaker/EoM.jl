@@ -1,4 +1,4 @@
-function write_output(dir_output,vpts,the_system,result,verb=false;dir_raw="unformatted")
+function write_output(dir_output,vpts,the_system,eoms,results,verb=false;dir_raw="unformatted")
 ## Copyright (C) 2017, Bruce Minaker
 ## write_output.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -20,8 +20,8 @@ nstbl=0  ## Creates variable for number of unstable modes
 rgd=0  ## Number of rigid body modes
 
 #n=size(result[1].Am,1)
-nin=size(result[1].B,2)
-nout=size(result[1].C,1)
+nin=size(eoms[1].B,2)
+nout=size(eoms[1].C,1)
 
 ## Initialize output strings
 eigen="###### Eigenvalues\nnum speed real imag realhz imaghz\n"
@@ -53,14 +53,14 @@ end
 hsv="###### Hankel SVD\nnum speed hsv\n"
 
 for i=1:length(vpts)
-	for j=1:length(result[i].e_val)
-		realpt=real(result[i].e_val[j])
-		imagpt=imag(result[i].e_val[j])
+	for j=1:length(results[i].e_val)
+		realpt=real(results[i].e_val[j])
+		imagpt=imag(results[i].e_val[j])
 
 		tau=-1/realpt
 		lambda=2*pi/abs(imagpt)
 
-		if(isreal(result[i].e_val[j]))
+		if(isreal(results[i].e_val[j]))
 			# counter=1
 			omegan=NaN
 			zeta=NaN
@@ -70,7 +70,7 @@ for i=1:length(vpts)
 		else
 			# counter=1/2
 			# cmplx+=1/2
-			omegan=abs(result[i].e_val[j])
+			omegan=abs(results[i].e_val[j])
 			zeta=-realpt/omegan
 		end
 
@@ -95,30 +95,30 @@ if(nin*nout>0  && nin*nout<16)
 			for j=1:nout
 				for k=1:nin
 					sstf*="{$((j-1)*nin+k)}"
-					sstf*=" {$(result[i].output_names[j])/$(result[i].input_names[k])} $(result[1].ss_resp[j,k])\n"
+					sstf*=" {$(eoms[i].output_names[j])/$(eoms[i].input_names[k])} $(results[1].ss_resp[j,k])\n"
 				end
 			end
 		else
 			## Each row starts with vpoint, followed by first column, written as a row, then next column, as a row
 			sstf*="$(vpts[i])"
-			for k in reshape(result[i].ss_resp[:,:],1,nin*nout)
+			for k in reshape(results[i].ss_resp[:,:],1,nin*nout)
 				sstf*=" $k"
 			end
 			sstf*="\n"
 		end
 
-		phs=angle(result[i].freq_resp)  ## Search for where angle changes by almost 1 rotation
+		phs=angle.(results[i].freq_resp)  ## Search for where angle changes by almost 1 rotation
 		for u=1:nout
 			for v=1:nin
-				phs[u,v,find(abs(diff(phs[u,v,:])).>6)]=Inf  ## Replace with Inf to trigger plot skip
+				phs[u,v,find(abs.(diff(phs[u,v,:])).>6)]=Inf  ## Replace with Inf to trigger plot skip
 			end
 		end
 
-		for j=1:length(result[i].w) ## Loop over frequency range
+		for j=1:length(results[i].w) ## Loop over frequency range
 			## Each row starts with freq in Hz, then speed
-			bode*="$(result[i].w[j]/2/pi) $(vpts[i])"
+			bode*="$(results[i].w[j]/2/pi) $(vpts[i])"
 			## Followed by first mag column, written as a row, then next column, as a row
-			for k in reshape(20*log10(abs(result[i].freq_resp[:,:,j])),1,nin*nout)
+			for k in reshape(20*log10.(abs.(results[i].freq_resp[:,:,j])),1,nin*nout)
 				bode*=" $k"
 			end
 			for k in reshape(180/pi*phs[:,:,j],1,nin*nout)
@@ -129,8 +129,8 @@ if(nin*nout>0  && nin*nout<16)
 		bode*="\n"
 # #		strs.zeros=[strs.zeros sprintf('%4.12e ',real(result{i}.math.zros),imag(result{i}.math.zros))];
 
-  		for j=1:length(result[i].hsv)
-			hsv*="{$j} $(vpts[i]) $(result[i].hsv[j])\n"  ## Write the vpoint (e.g. speed), then the hankel_sv
+  		for j=1:length(results[i].hsv)
+			hsv*="{$j} $(vpts[i]) $(results[i].hsv[j])\n"  ## Write the vpoint (e.g. speed), then the hankel_sv
   		end
   		hsv*="\n"
 	end
@@ -159,19 +159,19 @@ for i=1:length(data_out)
 	close(file)
 end
 
-writedlm(joinpath(pwd(),dir_output,dir_raw,"A.out"),result[1].A)
-writedlm(joinpath(pwd(),dir_output,dir_raw,"B.out"),result[1].B)
-writedlm(joinpath(pwd(),dir_output,dir_raw,"C.out"),result[1].C)
-writedlm(joinpath(pwd(),dir_output,dir_raw,"D.out"),result[1].D)
-writedlm(joinpath(pwd(),dir_output,dir_raw,"E.out"),result[1].E)
+writedlm(joinpath(pwd(),dir_output,dir_raw,"A.out"),eoms[1].A)
+writedlm(joinpath(pwd(),dir_output,dir_raw,"B.out"),eoms[1].B)
+writedlm(joinpath(pwd(),dir_output,dir_raw,"C.out"),eoms[1].C)
+writedlm(joinpath(pwd(),dir_output,dir_raw,"D.out"),eoms[1].D)
+writedlm(joinpath(pwd(),dir_output,dir_raw,"E.out"),eoms[1].E)
 
-writedlm(joinpath(pwd(),dir_output,dir_raw,"Amin.out"),result[1].Am)
-writedlm(joinpath(pwd(),dir_output,dir_raw,"Bmin.out"),result[1].Bm)
-writedlm(joinpath(pwd(),dir_output,dir_raw,"Cmin.out"),result[1].Cm)
-writedlm(joinpath(pwd(),dir_output,dir_raw,"Dmin.out"),result[1].Dm)
+writedlm(joinpath(pwd(),dir_output,dir_raw,"Amin.out"),eoms[1].Am)
+writedlm(joinpath(pwd(),dir_output,dir_raw,"Bmin.out"),eoms[1].Bm)
+writedlm(joinpath(pwd(),dir_output,dir_raw,"Cmin.out"),eoms[1].Cm)
+writedlm(joinpath(pwd(),dir_output,dir_raw,"Dmin.out"),eoms[1].Dm)
 
 
-mtx=result[1].stiffness+result[1].tangent_stiffness+result[1].load_stiffness
+mtx=eoms[1].stiffness+eoms[1].tangent_stiffness+eoms[1].load_stiffness
 r,c,v=findnz(mtx)
 writedlm(joinpath(pwd(),dir_output,dir_raw,"stiffness_matrix.out"),[r c v])
 

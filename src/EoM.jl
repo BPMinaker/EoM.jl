@@ -2,7 +2,7 @@
 
 module EoM
 
-#using EoM_TeX
+export run_eom_nl
 
 export run_eom
 export mbd_system
@@ -12,6 +12,10 @@ types=readdir(fldr)
 for i in types
 	include(joinpath(fldr,i))
 end
+
+include("rotate.jl")
+include("run_eom_nl.jl")
+include("xdot.jl")
 
 include("run_eom.jl")
 include("setup.jl")
@@ -84,32 +88,32 @@ type matrix_struct
 	name::String
 	input_names::Vector{String}
 	output_names::Vector{String}
-	mass::SparseMatrixCSC{Float64,Int32}  ## mass matrix from bodies
-	inertia::SparseMatrixCSC{Float64,Int32}  ## mass matrix from springs
-	damping::SparseMatrixCSC{Float64,Int32}  ## damping matrix from dampers
-	stiffness::SparseMatrixCSC{Float64,Int32}  ## stiffness matrix from springs
-	tangent_stiffness::SparseMatrixCSC{Float64,Int32}  ## stiffness matrix from internal loads
-	load_stiffness::SparseMatrixCSC{Float64,Int32}  ## stiffness matrix from external loads
-	velocity::SparseMatrixCSC{Float64,Int32}  ## velocity matrix for kinematics differential equation
-	momentum::SparseMatrixCSC{Float64,Int32}  ## momentum matrix that gets added to damping matrix
-	constraint::SparseMatrixCSC{Float64,Int32}  ## holonomic constraint jacobian
-	nh_constraint::SparseMatrixCSC{Float64,Int32}  ## nonholonomic constraint jacobian
-	deflection::SparseMatrixCSC{Float64,Int32}   ## elactic deflections jacobian
+	mass::SparseMatrixCSC{Float64,Int64}  ## mass matrix from bodies
+	inertia::SparseMatrixCSC{Float64,Int64}  ## mass matrix from springs
+	damping::SparseMatrixCSC{Float64,Int64}  ## damping matrix from dampers
+	stiffness::SparseMatrixCSC{Float64,Int64}  ## stiffness matrix from springs
+	tangent_stiffness::SparseMatrixCSC{Float64,Int64}  ## stiffness matrix from internal loads
+	load_stiffness::SparseMatrixCSC{Float64,Int64}  ## stiffness matrix from external loads
+	velocity::SparseMatrixCSC{Float64,Int64}  ## velocity matrix for kinematics differential equation
+	momentum::SparseMatrixCSC{Float64,Int64}  ## momentum matrix that gets added to damping matrix
+	constraint::SparseMatrixCSC{Float64,Int64}  ## holonomic constraint jacobian
+	nh_constraint::SparseMatrixCSC{Float64,Int64}  ## nonholonomic constraint jacobian
+	deflection::SparseMatrixCSC{Float64,Int64}   ## elactic deflections jacobian
 	lambda::Vector{Float64}  ## lagrange multipliers, internal preloads
 	static::Vector{Float64}  ## static deflection
-	selection::SparseMatrixCSC{Float64,Int32}  ## indicator of which springs preload is known in advance
+	selection::SparseMatrixCSC{Float64,Int64}  ## indicator of which springs preload is known in advance
 	spring_stiffness::Vector{Float64}  ## all flexible item stiffnesses
 	subset_spring_stiffness::Vector{Float64}  ## stiffnesses of springs with known preload
-	left_jacobian::SparseMatrixCSC{Float64,Int32}
-	right_jacobian::SparseMatrixCSC{Float64,Int32}
+	left_jacobian::SparseMatrixCSC{Float64,Int64}
+	right_jacobian::SparseMatrixCSC{Float64,Int64}
 	force::Vector{Float64}  ## external forces
 	preload::Vector{Float64}  ## all known and NaN preloads
-	input::SparseMatrixCSC{Float64,Int32}
-	input_rate::SparseMatrixCSC{Float64,Int32}
-	output::SparseMatrixCSC{Float64,Int32}
-	feedthrough::SparseMatrixCSC{Float64,Int32}
-	M::SparseMatrixCSC{Float64,Int32}
-	KC::SparseMatrixCSC{Float64,Int32}
+	input::SparseMatrixCSC{Float64,Int64}
+	input_rate::SparseMatrixCSC{Float64,Int64}
+	output::SparseMatrixCSC{Float64,Int64}
+	feedthrough::SparseMatrixCSC{Float64,Int64}
+	M::SparseMatrixCSC{Float64,Int64}
+	KC::SparseMatrixCSC{Float64,Int64}
 	A::Array{Float64,2}
 	B::Array{Float64,2}
 	C::Array{Float64,2}
@@ -123,13 +127,6 @@ type matrix_struct
 	Bm::Array{Float64,2}
 	Cm::Array{Float64,2}
 	Dm::Array{Float64,2}
-	e_vect::Array{Complex{Float64},2}
-	e_val::Vector{Complex{Float64}}
-	w::Vector{Float64}
-	freq_resp::Array{Complex{Float64},3}
-	ss_resp::Array{Float64,2}
-	zero_val::Vector{Complex{Float64}}
-	hsv::Vector{Float64}
 
 	function matrix_struct(
 	name="",
@@ -173,7 +170,22 @@ type matrix_struct
 	Am=Array{Float64}(0,0),
 	Bm=Array{Float64}(0,0),
 	Cm=Array{Float64}(0,0),
-	Dm=Array{Float64}(0,0),
+	Dm=Array{Float64}(0,0))
+		new(name,input_names,output_names,mass,inertia,damping,stiffness,tangent_stiffness,load_stiffness,velocity,momentum,constraint,nh_constraint,deflection,lambda,static,selection,spring_stiffness,subset_spring_stiffness,left_jacobian,right_jacobian,force,preload,input,input_rate,output,feedthrough,M,KC,A,B,C,D,E,At,Bt,Ct,Dt,Am,Bm,Cm,Dm)
+	end
+end
+
+
+type analysis
+	e_vect::Array{Complex{Float64},2}
+	e_val::Vector{Complex{Float64}}
+	w::Vector{Float64}
+	freq_resp::Array{Complex{Float64},3}
+	ss_resp::Array{Float64,2}
+	zero_val::Vector{Complex{Float64}}
+	hsv::Vector{Float64}
+
+	function analysis(
 	e_vect=Array{Float64}(0,0),
 	e_val=Vector{Float64}(0),
 	w=Vector{Float64}(0),
@@ -181,7 +193,7 @@ type matrix_struct
 	ss_resp=Array{Float64}(0,0),
 	zero_val=Vector{Float64}(0),
 	hsv=Vector{Float64}(0))
-		new(name,input_names,output_names,mass,inertia,damping,stiffness,tangent_stiffness,load_stiffness,velocity,momentum,constraint,nh_constraint,deflection,lambda,static,selection,spring_stiffness,subset_spring_stiffness,left_jacobian,right_jacobian,force,preload,input,input_rate,output,feedthrough,M,KC,A,B,C,D,E,At,Bt,Ct,Dt,Am,Bm,Cm,Dm,e_vect,e_val,w,freq_resp,ss_resp,zero_val,hsv)
+		new(e_vect,e_val,w,freq_resp,ss_resp,zero_val,hsv)
 	end
 end
 

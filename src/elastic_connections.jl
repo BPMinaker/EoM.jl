@@ -38,7 +38,7 @@ if(s>0)  ## If the deflection matrix has more than zero rows (i.e. there are ela
 	preload_vec=broadcast(preload,the_system.springs)
 
 	## Find the springs where the preload is given
-	fnd=find(~broadcast(isnan,preload_vec))
+	fnd=find(.~broadcast(isnan,preload_vec))
 
 	## Record their stiffnesses
 	subset_spring_stiff=spring_stiff[fnd]
