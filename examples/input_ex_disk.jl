@@ -1,4 +1,4 @@
-function input_ex_disk(;v=0.1,m=4,r=0.5)
+function input_ex_disk(;u=0.1,m=4,r=0.5)
 the_system=mbd_system("Rolling Disk")
 
 ## Copyright (C) 2017, Bruce Minaker
@@ -25,8 +25,8 @@ item.mass=m
 item.moments_of_inertia=[0.25*m*r^2,0.5*m*r^2,0.25*m*r^2]
 item.products_of_inertia=[0,0,0]
 item.location=[0,0,r]
-item.velocity=[v,0,0]
-item.angular_velocity=[0,v/r,0]
+item.velocity=[u,0,0]
+item.angular_velocity=[0,u/r,0]
 push!(the_system.item,item)
 push!(the_system.item,weight(item))
 
