@@ -38,11 +38,13 @@ else
 	l_orth=r_orth
 end
 
-## Pre and post multiply by orthogonal complements, and then cast in standard form
 
-data.E=l_orth'*data.M*r_orth
-data.A=-l_orth'*data.KC*r_orth
-data.B=l_orth'*[zeros(2*dim,nin); eye(nin)]
+ss_eqns=ss_data()  ## Create empty state space holder
+
+## Pre and post multiply by orthogonal complements, and then cast in standard form
+ss_eqns.E=l_orth'*data.M*r_orth
+ss_eqns.A=-l_orth'*data.KC*r_orth
+ss_eqns.B=l_orth'*[zeros(2*dim,nin); eye(nin)]
 C=zeros(nout,2*dim+nin)
 
 for i=1:nout
@@ -67,9 +69,11 @@ for i=1:nout
 	C[i,:]=data.output[i,:]'*mask  ## Note transpose here -- behaviour different than Matlab/Octave
 end
 
-data.C=C*r_orth
-data.D=data.feedthrough  ## Add the user defined feed forward
+ss_eqns.C=C*r_orth
+ss_eqns.D=data.feedthrough  ## Add the user defined feed forward
 
 verb && println("Okay, built equations of motion.")
+
+ss_eqns
 
 end  ## Leave

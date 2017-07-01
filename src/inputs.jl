@@ -25,5 +25,4 @@ g_mtx=-diagm(broadcast(rate_gain,the_system.actuators))*temp
 
 data.input=f_mtx'
 data.input_rate=g_mtx'  ## Transpose
-
 end

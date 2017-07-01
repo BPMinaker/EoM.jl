@@ -1,20 +1,20 @@
-function linear_analysis(eoms,verb=false)
+function analyze(ss_eqns;verbose=false)
 ## Copyright (C) 2017, Bruce Minaker
-## linear_analysis.jl is free software; you can redistribute it and/or modify it
+## analyze.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 2, or (at your option)
 ## any later version.
 ##
-## linear_analysis.jl is distributed in the hope that it will be useful, but
+## analyze.jl is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ## General Public License for more details at www.gnu.org/copyleft/gpl.html.
 ##
 ##--------------------------------------------------------------------
 
-verb && println("Running linear analysis...")
+verbose && println("Running linear analysis...")
 
-nvpts=length(eoms)  ## Number of points to plot
+nvpts=length(ss_eqns)  ## Number of points to plot
 wpts=500
 if(wpts*nvpts>4000)
 	wpts=Int(round(4000/nvpts))
@@ -28,32 +28,32 @@ for i=1:nvpts
 	result[i]=analysis()
 	result[i].w=w
 
-	val,vec=eig(eoms[i].A,eoms[i].E)  ## Find the eigen for this speed
+	val,vec=eig(ss_eqns[i].A,ss_eqns[i].E)  ## Find the eigen for this speed
 	result[i].e_val=val[isfinite.(val)]  ## Discard modes with Inf or Nan vals
 	result[i].e_vect=vec[:,isfinite.(val)]
 
-	nin=size(eoms[i].B,2)
-	nout=size(eoms[i].C,1)
+	nin=size(ss_eqns[i].B,2)
+	nout=size(ss_eqns[i].C,1)
 
 	result[i].freq_resp=zeros(nout,nin,length(w))
 	for j=1:wpts
-		result[i].freq_resp[:,:,j]=eoms[i].Cm*((I*w[j]im-eoms[i].Am)\eoms[i].Bm)+eoms[i].Dm
-		#result[i].freq_resp[:,:,j]=eoms[i].Ct*((I*w[j]im-eoms[i].At)\eoms[i].Bt)+eoms[i].Dt
-		#result[i].freq_resp[:,:,j]=eoms[i].C*((eoms[i].E*w[j]im-eoms[i].A)\eoms[i].B)+eoms[i].D
+		result[i].freq_resp[:,:,j]=ss_eqns[i].Cm*((I*w[j]im-ss_eqns[i].Am)\ss_eqns[i].Bm)+ss_eqns[i].Dm
+		#result[i].freq_resp[:,:,j]=ss_eqns[i].Ct*((I*w[j]im-ss_eqns[i].At)\ss_eqns[i].Bt)+ss_eqns[i].Dt
+		#result[i].freq_resp[:,:,j]=ss_eqns[i].C*((ss_eqns[i].E*w[j]im-ss_eqns[i].A)\ss_eqns[i].B)+ss_eqns[i].D
 	end
 
-	result[i].ss_resp=-eoms[i].Cm*(eoms[i].Am\eoms[i].Bm)+eoms[i].Dm
-	#result[i].ss_resp=-eoms[i].Ct*(eoms[i].At\eoms[i].Bt)+eoms[i].Dt
+	result[i].ss_resp=-ss_eqns[i].Cm*(ss_eqns[i].Am\ss_eqns[i].Bm)+ss_eqns[i].Dm
+	#result[i].ss_resp=-ss_eqns[i].Ct*(ss_eqns[i].At\ss_eqns[i].Bt)+ss_eqns[i].Dt
 
-	# result[i].zero_val=eigvals([eoms[i].A eoms[i].B;eoms[i].C eoms[i].D],[eoms[i].E zeros(eoms[i].B);zeros(eoms[i].C) zeros(eoms[i].D)])
+	# result[i].zero_val=eigvals([ss_eqns[i].A ss_eqns[i].B;ss_eqns[i].C ss_eqns[i].D],[ss_eqns[i].E zeros(ss_eqns[i].B);zeros(ss_eqns[i].C) zeros(ss_eqns[i].D)])
 
-	tmp=size(eoms[i].Am,1)
-#	tmp=eigvals(eoms[i].Am)
+	tmp=size(ss_eqns[i].Am,1)
+#	tmp=eigvals(ss_eqns[i].Am)
 #	if(sum(real(tmp).>0)==0 && length(tmp)>1)
 
 	try
-		WC=lyap(eoms[i].Am,eoms[i].Bm*eoms[i].Bm')
-		WO=lyap(eoms[i].Am',eoms[i].Cm'*eoms[i].Cm)
+		WC=lyap(ss_eqns[i].Am,ss_eqns[i].Bm*ss_eqns[i].Bm')
+		WO=lyap(ss_eqns[i].Am',ss_eqns[i].Cm'*ss_eqns[i].Cm)
 		result[i].hsv=sqrt.(eigvals(WC*WO))
 	catch
 		result[i].hsv=zeros(length(tmp))

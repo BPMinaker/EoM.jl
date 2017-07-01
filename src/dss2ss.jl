@@ -1,16 +1,16 @@
-function dss2ss!(data,verb)
+function dss2ss!(ss_eqns,verb)
 
-verb && println("System is of dimension $(size(data.A)).")
+verb && println("System is of dimension $(size(ss_eqns.A)).")
 verb && println("Converting from descriptor form to standard state space...")
 
-Q,S,P=svd(data.E)  ##Q'*E*P should = S
-S=S[S.>(maximum(size(data.E))*eps(maximum(S)))]
+Q,S,P=svd(ss_eqns.E)  ##Q'*E*P should = S
+S=S[S.>(maximum(size(ss_eqns.E))*eps(maximum(S)))]
 n=length(S)
 Sinv=diagm(1./S)
 
-Atilde=Q'*data.A*P
-Btilde=Q'*data.B
-Ctilde=data.C*P
+Atilde=Q'*ss_eqns.A*P
+Btilde=Q'*ss_eqns.B
+Ctilde=ss_eqns.C*P
 
 A11=Atilde[1:n,1:n]
 A12=Atilde[1:n,n+1:end]
@@ -28,12 +28,12 @@ A22inv=inv(A22)
 AA=Sinv*(A11-A12*A22inv*A21)
 BB=Sinv*(B1-A12*A22inv*B2)
 CC=C1-C2*A22inv*A21
-DD=data.D-C2*A22inv*B2
+DD=ss_eqns.D-C2*A22inv*B2
 
-data.At=AA;
-data.Bt=BB;
-data.Ct=CC;
-data.Dt=DD;
+ss_eqns.At=AA;
+ss_eqns.Bt=BB;
+ss_eqns.Ct=CC;
+ss_eqns.Dt=DD;
 
 verb && println("System is now of dimension $(size(AA)).")
 verb && println("Computing minimal realization...")
@@ -80,11 +80,11 @@ S=diagm(S.^0.5)
 Un=U[:,1:p]
 Vn=V[:,1:p]
 
-data.Am=Si*Un'*MR1*Vn*Si*tr
-data.Bm=(S*Vn')[:,1:nin]
-data.Cm=(Un*S)[1:nout,:]
-data.Dm=DD
+ss_eqns.Am=Si*Un'*MR1*Vn*Si*tr
+ss_eqns.Bm=(S*Vn')[:,1:nin]
+ss_eqns.Cm=(Un*S)[1:nout,:]
+ss_eqns.Dm=DD
 
-verb && println("System is now of dimension $(size(data.Am)).")
+verb && println("System is now of dimension $(size(ss_eqns.Am)).")
 
 end

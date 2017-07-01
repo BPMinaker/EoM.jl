@@ -18,7 +18,7 @@ function build_eom(the_system,verb=false)
 verb && println("Okay, got the system info, building equations of motion...")
 
 ## Build container
-data=matrix_struct()
+data=eom_data()
 
 data.name=the_system.name
 data.input_names=broadcast(name,the_system.actuators)
@@ -52,12 +52,12 @@ inputs!(the_system,data,verb)
 col=outputs!(the_system,data,verb)
 
 ## Assemble the system equations of motion
-assemble_eom!(data,col,verb)
+ss_eqns=assemble_eom!(data,col,verb)
 
 ## Reduce to standard form
-dss2ss!(data,verb)
+dss2ss!(ss_eqns,verb)
 
-data
+data,ss_eqns
 
 ## End of routine
 end

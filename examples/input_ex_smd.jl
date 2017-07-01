@@ -1,4 +1,4 @@
-function input_ex_smd(;m=1.0,c=1.0,k=1.0,v=[0,0,0],w=[0,0,0],I=[1,1,1])
+function input_ex_smd(;m=1.0,c=0.1,k=10.0,v=[0,0,0],w=[0,0,0],I=[1,1,1])
 the_system=mbd_system("Spring Mass Damper")
 
 ## Copyright (C) 2017, Bruce Minaker

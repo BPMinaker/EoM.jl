@@ -1,10 +1,12 @@
-##__precompile__()
+#__precompile__()
 
 module EoM
 
-export run_eom_nl
-
 export run_eom
+export generate_eom
+export analyze
+export write_output
+
 export mbd_system
 
 fldr=joinpath(Pkg.dir(),"EoM","src","types")
@@ -13,6 +15,7 @@ for i in types
 	include(joinpath(fldr,i))
 end
 
+#export run_eom_nl
 #include("rotate.jl")
 #include("run_eom_nl.jl")
 #include("xdot.jl")
@@ -24,7 +27,7 @@ include("sort_system.jl")
 include("find_bodynum.jl")
 include("find_radius.jl")
 include("item_init.jl")
-include("build_eom.jl")
+include("generate_eom.jl")
 include("force.jl")
 include("skew.jl")
 include("elastic_connections.jl")
@@ -41,7 +44,7 @@ include("tangent.jl")
 include("line_stretch_hessian.jl")
 include("point_hessian.jl")
 include("assemble_eom.jl")
-include("linear_analysis.jl")
+include("analyze.jl")
 include("dss2ss.jl")
 include("write_output.jl")
 include("load_defln.jl")
@@ -55,6 +58,7 @@ end
 
 type mbd_system
 	name::String
+	vpt::Float64
 	item::Vector{Any}
 	bodys::Vector{body}
 	links::Vector{link}
@@ -69,6 +73,7 @@ type mbd_system
 
 	function mbd_system(
 	name="Unnamed System",
+	vpt=0,
 	item=Vector{Any}(0),
 	bodys=Vector{body}(0),
 	links=Vector{link}(0),
@@ -80,11 +85,11 @@ type mbd_system
 	loads=Vector{load}(0),
 	sensors=Vector{sensor}(0),
 	actuators=Vector{actuator}(0))
-		new(name,item,bodys,links,springs,rigid_points,flex_points,nh_points,beams,loads,sensors,actuators)
+		new(name,vpt,item,bodys,links,springs,rigid_points,flex_points,nh_points,beams,loads,sensors,actuators)
 	end
 end
 
-type matrix_struct
+type eom_data
 	name::String
 	input_names::Vector{String}
 	output_names::Vector{String}
@@ -114,21 +119,8 @@ type matrix_struct
 	feedthrough::SparseMatrixCSC{Float64,Int64}
 	M::SparseMatrixCSC{Float64,Int64}
 	KC::SparseMatrixCSC{Float64,Int64}
-	A::Array{Float64,2}
-	B::Array{Float64,2}
-	C::Array{Float64,2}
-	D::Array{Float64,2}
-	E::Array{Float64,2}
-	At::Array{Float64,2}
-	Bt::Array{Float64,2}
-	Ct::Array{Float64,2}
-	Dt::Array{Float64,2}
-	Am::Array{Float64,2}
-	Bm::Array{Float64,2}
-	Cm::Array{Float64,2}
-	Dm::Array{Float64,2}
 
-	function matrix_struct(
+	function eom_data(
 	name="",
 	input_names=[],
 	output_names=[],
@@ -157,24 +149,46 @@ type matrix_struct
 	output=speye(0),
 	feedthrough=speye(0),
 	M=speye(0),
-	KC=speye(0),
-	A=Array{Float64}(0,0),
-	B=Array{Float64}(0,0),
-	C=Array{Float64}(0,0),
-	D=Array{Float64}(0,0),
-	E=Array{Float64}(0,0),
-	At=Array{Float64}(0,0),
-	Bt=Array{Float64}(0,0),
-	Ct=Array{Float64}(0,0),
-	Dt=Array{Float64}(0,0),
-	Am=Array{Float64}(0,0),
-	Bm=Array{Float64}(0,0),
-	Cm=Array{Float64}(0,0),
-	Dm=Array{Float64}(0,0))
-		new(name,input_names,output_names,mass,inertia,damping,stiffness,tangent_stiffness,load_stiffness,velocity,momentum,constraint,nh_constraint,deflection,lambda,static,selection,spring_stiffness,subset_spring_stiffness,left_jacobian,right_jacobian,force,preload,input,input_rate,output,feedthrough,M,KC,A,B,C,D,E,At,Bt,Ct,Dt,Am,Bm,Cm,Dm)
+	KC=speye(0))
+		new(name,input_names,output_names,mass,inertia,damping,stiffness,tangent_stiffness,load_stiffness,velocity,momentum,constraint,nh_constraint,deflection,lambda,static,selection,spring_stiffness,subset_spring_stiffness,left_jacobian,right_jacobian,force,preload,input,input_rate,output,feedthrough,M,KC)
 	end
 end
 
+
+type ss_data
+	A::Array{Float64,2}
+	B::Array{Float64,2}
+	C::Array{Float64,2}
+	D::Array{Float64,2}
+	E::Array{Float64,2}
+	At::Array{Float64,2}
+	Bt::Array{Float64,2}
+	Ct::Array{Float64,2}
+	Dt::Array{Float64,2}
+	Am::Array{Float64,2}
+	Bm::Array{Float64,2}
+	Cm::Array{Float64,2}
+	Dm::Array{Float64,2}
+
+
+	function ss_data(
+		A=Array{Float64}(0,0),
+		B=Array{Float64}(0,0),
+		C=Array{Float64}(0,0),
+		D=Array{Float64}(0,0),
+		E=Array{Float64}(0,0),
+		At=Array{Float64}(0,0),
+		Bt=Array{Float64}(0,0),
+		Ct=Array{Float64}(0,0),
+		Dt=Array{Float64}(0,0),
+		Am=Array{Float64}(0,0),
+		Bm=Array{Float64}(0,0),
+		Cm=Array{Float64}(0,0),
+		Dm=Array{Float64}(0,0))
+			new(A,B,C,D,E,At,Bt,Ct,Dt,Am,Bm,Cm,Dm)
+	end
+
+end
 
 type analysis
 	e_vect::Array{Complex{Float64},2}

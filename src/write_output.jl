@@ -1,4 +1,4 @@
-function write_output(dir_output,vpts,the_system,eoms,results,verb=false;dir_raw="unformatted")
+function write_output(the_system,eoms,results;verbose=false,dir_raw="unformatted")
 ## Copyright (C) 2017, Bruce Minaker
 ## write_output.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -12,7 +12,7 @@ function write_output(dir_output,vpts,the_system,eoms,results,verb=false;dir_raw
 ##
 ##--------------------------------------------------------------------
 
-verb && println("Writing output...")
+verbose && println("Writing output...")
 
 cmplx=0  ## Creates variable for number of oscillatory modes
 dmpd=0  ## Creates variable for number of non-oscillatory modes
@@ -22,6 +22,8 @@ rgd=0  ## Number of rigid body modes
 #n=size(result[1].Am,1)
 nin=size(eoms[1].B,2)
 nout=size(eoms[1].C,1)
+
+nvpts=length(the_system)
 
 ## Initialize output strings
 eigen="###### Eigenvalues\nnum speed real imag realhz imaghz\n"
@@ -42,7 +44,7 @@ bode*="\n"
 #zeros=['###### Zeros\n'	'Speed \n'];
 
 sstf="###### Steady State Transfer Function\n"
-if (length(vpts)>1)
+if (nvpts>1)
 	sstf*="speed"
 	for i=1:nin*nout
 		sstf*=" $i"
@@ -52,7 +54,7 @@ end
 
 hsv="###### Hankel SVD\nnum speed hsv\n"
 
-for i=1:length(vpts)
+for i=1:nvpts
 	for j=1:length(results[i].e_val)
 		realpt=real(results[i].e_val[j])
 		imagpt=imag(results[i].e_val[j])
@@ -80,27 +82,30 @@ for i=1:length(vpts)
 		# 	dmpd+=counter
 		# end
 
-		eigen*="{$j} $(vpts[i]) $realpt $imagpt $(realpt/2/pi) $(imagpt/2/pi)\n"  ## Write the number, the speed, then the eigenvalue
-		freq*="{$j} $(vpts[i]) $(omegan/2/pi) $zeta $tau $lambda\n"  ## Write nat freq, etc.
+		eigen*="{$j} $(the_system[i].vpt) $realpt $imagpt $(realpt/2/pi) $(imagpt/2/pi)\n"  ## Write the number, the speed, then the eigenvalue
+		freq*="{$j} $(the_system[i].vpt) $(omegan/2/pi) $zeta $tau $lambda\n"  ## Write nat freq, etc.
 	end
 	eigen*="\n"
 	freq*="\n"
 end
 
-if(nin*nout>0  && nin*nout<16)
-	for i=1:length(vpts)
-		if(length(vpts)==1)
+input_names=broadcast(EoM.name,the_system[1].actuators)
+output_names=broadcast(EoM.name,the_system[1].sensors)
+
+if(nin*nout>0 && nin*nout<16)
+	for i=1:nvpts
+		if(nvpts==1)
 			sstf*="num outputtoinput gain\n"
 
 			for j=1:nout
 				for k=1:nin
 					sstf*="{$((j-1)*nin+k)}"
-					sstf*=" {$(eoms[i].output_names[j])/$(eoms[i].input_names[k])} $(results[1].ss_resp[j,k])\n"
+					sstf*=" {$(output_names[j])/$(input_names[k])} $(results[1].ss_resp[j,k])\n"
 				end
 			end
 		else
 			## Each row starts with vpoint, followed by first column, written as a row, then next column, as a row
-			sstf*="$(vpts[i])"
+			sstf*="$(the_system[i].vpt)"
 			for k in reshape(results[i].ss_resp[:,:],1,nin*nout)
 				sstf*=" $k"
 			end
@@ -116,7 +121,7 @@ if(nin*nout>0  && nin*nout<16)
 
 		for j=1:length(results[i].w) ## Loop over frequency range
 			## Each row starts with freq in Hz, then speed
-			bode*="$(results[i].w[j]/2/pi) $(vpts[i])"
+			bode*="$(results[i].w[j]/2/pi) $(the_system[i].vpt)"
 			## Followed by first mag column, written as a row, then next column, as a row
 			for k in reshape(20*log10.(abs.(results[i].freq_resp[:,:,j])),1,nin*nout)
 				bode*=" $k"
@@ -130,17 +135,19 @@ if(nin*nout>0  && nin*nout<16)
 # #		strs.zeros=[strs.zeros sprintf('%4.12e ',real(result{i}.math.zros),imag(result{i}.math.zros))];
 
   		for j=1:length(results[i].hsv)
-			hsv*="{$j} $(vpts[i]) $(results[i].hsv[j])\n"  ## Write the vpoint (e.g. speed), then the hankel_sv
+			hsv*="{$j} $(the_system[i].vpt) $(results[i].hsv[j])\n"  ## Write the vpoint (e.g. speed), then the hankel_sv
   		end
   		hsv*="\n"
 	end
 end
 
-preload,defln=load_defln(the_system)
-bodydata,pointdata,linedata,stiffnessdata=syst_props(the_system)
+preload,defln=load_defln(the_system[1])
+bodydata,pointdata,linedata,stiffnessdata=syst_props(the_system[1])
 
 data_out=[bodydata pointdata linedata stiffnessdata]
 file_name=["bodydata.out" "pointdata.out" "linedata.out" "stiffnessdata.out"]
+
+dir_output=setup()
 
 for i=1:length(data_out)
 	out=joinpath(dir_output,file_name[i])
@@ -170,10 +177,15 @@ writedlm(joinpath(pwd(),dir_output,dir_raw,"Bmin.out"),eoms[1].Bm)
 writedlm(joinpath(pwd(),dir_output,dir_raw,"Cmin.out"),eoms[1].Cm)
 writedlm(joinpath(pwd(),dir_output,dir_raw,"Dmin.out"),eoms[1].Dm)
 
+# mtx=eoms[1].stiffness+eoms[1].tangent_stiffness+eoms[1].load_stiffness
+# r,c,v=findnz(mtx)
+# writedlm(joinpath(pwd(),dir_output,dir_raw,"stiffness_matrix.out"),[r c v])
 
-mtx=eoms[1].stiffness+eoms[1].tangent_stiffness+eoms[1].load_stiffness
-r,c,v=findnz(mtx)
-writedlm(joinpath(pwd(),dir_output,dir_raw,"stiffness_matrix.out"),[r c v])
+dir_output
+
+end ## Leave
+
+
 
 
 #writedlm(joinpath(pwd(),dir_output,dir_raw,"M.out"),result[1].M)
@@ -188,6 +200,3 @@ writedlm(joinpath(pwd(),dir_output,dir_raw,"stiffness_matrix.out"),[r c v])
 # writedlm(joinpath(pwd(),dir_output,dir_raw,"lstiff.out"),result[1].load_stiffness)
 # writedlm(joinpath(pwd(),dir_output,dir_raw,"momentum.out"),result[1].momentum)
 # writedlm(joinpath(pwd(),dir_output,dir_raw,"constraint.out"),result[1].constraint)
-
-
-end ## Leave
