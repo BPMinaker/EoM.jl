@@ -42,14 +42,18 @@ for i=1:nvpts
 		#result[i].freq_resp[:,:,j]=ss_eqns[i].C*((ss_eqns[i].E*w[j]im-ss_eqns[i].A)\ss_eqns[i].B)+ss_eqns[i].D
 	end
 
-	result[i].ss_resp=-ss_eqns[i].Cm*(ss_eqns[i].Am\ss_eqns[i].Bm)+ss_eqns[i].Dm
-	#result[i].ss_resp=-ss_eqns[i].Ct*(ss_eqns[i].At\ss_eqns[i].Bt)+ss_eqns[i].Dt
+	if(abs(det(ss_eqns[i].Am))>(maximum(size(ss_eqns[i].Am))*eps(maximum(ss_eqns[i].Am))))
+		result[i].ss_resp=-ss_eqns[i].Cm*(ss_eqns[i].Am\ss_eqns[i].Bm)+ss_eqns[i].Dm
+	elseif(abs(det(ss_eqns[i].At))>(maximum(size(ss_eqns[i].At))*eps(maximum(ss_eqns[i].At))))
+		result[i].ss_resp=-ss_eqns[i].Ct*(ss_eqns[i].At\ss_eqns[i].Bt)+ss_eqns[i].Dt
+	else
+		println("Warning: error computing steady state response!")
+		result[i].ss_resp=zeros(ss_eqns[i].Dm)
+	end
 
 	# result[i].zero_val=eigvals([ss_eqns[i].A ss_eqns[i].B;ss_eqns[i].C ss_eqns[i].D],[ss_eqns[i].E zeros(ss_eqns[i].B);zeros(ss_eqns[i].C) zeros(ss_eqns[i].D)])
 
 	tmp=size(ss_eqns[i].Am,1)
-#	tmp=eigvals(ss_eqns[i].Am)
-#	if(sum(real(tmp).>0)==0 && length(tmp)>1)
 
 	try
 		WC=lyap(ss_eqns[i].Am,ss_eqns[i].Bm*ss_eqns[i].Bm')

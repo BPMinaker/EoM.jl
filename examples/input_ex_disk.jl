@@ -61,6 +61,15 @@ item.twist=1
 item.order=2
 push!(the_system.item,item)
 
+item=sensor("yaw rate sensor")
+item.body[1]="wheel"
+item.body[2]="ground";
+item.location[:,1]=[0,0,r]
+item.location[:,2]=[0,0,0]
+item.twist=1
+item.order=2
+push!(the_system.item,item)
+
 item=actuator("yaw servo")
 item.body[1]="wheel"
 item.body[2]="ground"
