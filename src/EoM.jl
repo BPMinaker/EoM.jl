@@ -8,6 +8,7 @@ export analyze
 export write_output
 
 export mbd_system
+export mirror!
 
 fldr=joinpath(Pkg.dir(),"EoM","src","types")
 types=readdir(fldr)
@@ -49,6 +50,8 @@ include("dss2ss.jl")
 include("write_output.jl")
 include("load_defln.jl")
 include("syst_props.jl")
+include("mirror.jl")
+include("thin_rod.jl")
 
 fldr=joinpath(Pkg.dir(),"EoM","examples")
 xmpls=readdir(fldr)

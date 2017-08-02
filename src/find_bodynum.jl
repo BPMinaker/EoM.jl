@@ -15,8 +15,7 @@ function find_bodynum!(items,names,verb) ## Takes the key, i.e. springs and retu
 ## Find the body numbers of each connecting item
 verb && println("Looking for connection info...")
 
-for i in items  ## For each item (for each individual spring in the Vector called 'springs' )
-
+for i in items
 	for j=1:length(names)
 		if(i.body[1]==names[j])
 			i.body_number[1]=j
@@ -24,17 +23,19 @@ for i in items  ## For each item (for each individual spring in the Vector calle
 			i.body_number[2]=j
 		end
 	end
+	if(i.body_number[1]*i.body_number[2]==0)
+		error("Item $(i.name) is not attached to a body!")
+	end
 end
 
 end
-####
+
 
 function find_bodyframenum!(items,names,verb)
 
 verb && println("Looking for connection info...")
 
-for i in items  ## For each item 
-
+for i in items
 	for j=1:length(names)
 		if(i.body==names[j])
 			i.body_number=j
@@ -47,7 +48,6 @@ end
 
 end
 
-####
 
 function find_actnum!(items,names,verb)
 

@@ -16,37 +16,36 @@ preload="###### Preload\nnum name type fx fy fz fxyz\n"
 defln="###### Deflection\nnum name type x y z\n"
 
 idx=1
-lim=1e-5
 
-for item in the_system.rigid_points
+for item in [the_system.rigid_points;the_system.flex_points]
 	pload=[item.b_mtx[1];item.b_mtx[2]]'*item.preload
 	frc=pload[1:3]
 	mmt=pload[4:6]
 	preload*="{$idx} {$(item.name)}"
-	if(~(norm(frc)<lim && norm(mmt)>lim))
+	if(~(norm(frc)==0 && norm(mmt)>0))
 		preload*=" force $(frc[1]) $(frc[2]) $(frc[3]) $(norm(frc))\n"
 	end
-	if(norm(mmt)>lim)
+	if(norm(mmt)>0)
 		preload*="{} {} moment $(mmt[1]) $(mmt[2]) $(mmt[3]) $(norm(mmt))\n"
 	end
 	idx+=1
 end
 
-for item in the_system.flex_points
-	pload=[item.b_mtx[1];item.b_mtx[2]]'*item.preload
-	frc=pload[1:3]
-	mmt=pload[4:6]
-	preload*="{$idx} {$(item.name)}"
-	if(~(norm(frc)<lim && norm(mmt)>lim))
-		preload*=" force $(frc[1]) $(frc[2]) $(frc[3]) $(norm(frc))\n"
-	end
-	if(norm(mmt)>lim)
-		preload*="{} {} moment $(mmt[1]) $(mmt[2]) $(mmt[3]) $(norm(mmt))\n"
-	end
-	idx+=1
-end
+# for item in the_system.flex_points
+# 	pload=[item.b_mtx[1];item.b_mtx[2]]'*item.preload
+# 	frc=pload[1:3]
+# 	mmt=pload[4:6]
+# 	preload*="{$idx} {$(item.name)}"
+# 	if(norm(frc)>0 || norm(mmt)>0)
+# 		preload*=" force $(frc[1]) $(frc[2]) $(frc[3]) $(norm(frc))\n"
+# 	end
+# 	if(norm(mmt)>0)
+# 		preload*="{} {} moment $(mmt[1]) $(mmt[2]) $(mmt[3]) $(norm(mmt))\n"
+# 	end
+# 	idx+=1
+# end
 
-for item in the_system.springs
+for item in [the_system.springs;the_system.links]
 	pload=[item.b_mtx[1];item.b_mtx[2]]'*item.preload
 	frc=pload[1:3]
 	mmt=pload[4:6]
@@ -59,18 +58,18 @@ for item in the_system.springs
 	idx+=1
 end
 
-for item in the_system.links
-	pload=[item.b_mtx[1];item.b_mtx[2]]'*item.preload
-	frc=pload[1:3]
-	mmt=pload[4:6]
-	preload*="{$idx} {$(item.name)}"
-	if(item.twist==0)
-		preload*=" force $(frc[1]) $(frc[2]) $(frc[3]) $(item.preload)\n"
-	else
-		preload*=" moment $(mmt[1]) $(mmt[2]) $(mmt[3]) $(item.preload)\n"
-	end
-	idx+=1
-end
+# for item in the_system.links
+# 	pload=[item.b_mtx[1];item.b_mtx[2]]'*item.preload
+# 	frc=pload[1:3]
+# 	mmt=pload[4:6]
+# 	preload*="{$idx} {$(item.name)}"
+# 	if(item.twist==0)
+# 		preload*=" force $(frc[1]) $(frc[2]) $(frc[3]) $(item.preload)\n"
+# 	else
+# 		preload*=" moment $(mmt[1]) $(mmt[2]) $(mmt[3]) $(item.preload)\n"
+# 	end
+# 	idx+=1
+# end
 
 for item in the_system.beams
 	l=item.length

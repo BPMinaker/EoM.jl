@@ -23,12 +23,17 @@ B2=Btilde[n+1:end,:]
 C1=Ctilde[:,1:n]
 C2=Ctilde[:,n+1:end]
 
-A22inv=inv(A22)
+# println("det ",det(A22))
+# println("rank ",rank(A22))
+# println("size ",size(A22))
 
-AA=Sinv*(A11-A12*A22inv*A21)
-BB=Sinv*(B1-A12*A22inv*B2)
-CC=C1-C2*A22inv*A21
-DD=ss_eqns.D-C2*A22inv*B2
+A22i=pinv(A22)
+#println(A22i)
+
+AA=Sinv*(A11-A12*A22i*A21)
+BB=Sinv*(B1-A12*A22i*B2)
+CC=C1-C2*A22i*A21
+DD=ss_eqns.D-C2*A22i*B2
 
 ss_eqns.At=AA;
 ss_eqns.Bt=BB;
@@ -38,6 +43,7 @@ ss_eqns.Dt=DD;
 verb && println("System is now of dimension $(size(AA)).")
 verb && println("Computing minimal realization...")
 
+
 n=size(AA,1)
 nin=size(BB,2)
 nout=size(CC,1)
@@ -45,35 +51,42 @@ nout=size(CC,1)
 CM=zeros(n,n*nin)
 OM=zeros(n*nout,n)
 
-tr=sum(diag(AA))
+#tr=sum(diag(AA))
+#println("det ",det(AA))
 #println(tr)
-if(abs(tr)<eps(Float64(n)))
-	tr=1
-end
-AAA=AA/tr
 
+
+
+# if(abs(tr)<eps(Float64(n)))
+# 	tr=1
+# end
+# AAA=AA
+#
 temp=eye(n)
+tr=1
 U=0
 S=0
 V=0
 p=0
 for i=1:n
+
 	CM[:,(i-1)*nin+1:i*nin]=temp*BB
 	OM[(i-1)*nout+1:i*nout,:]=CC*temp
-	temp*=AAA
+ 	temp*=AA
 
 	MR=OM*CM
 	U,S,V=svd(MR)
+# 	println(S)
 	S=S[S.>(maximum(size(MR))*eps(maximum(S)))]
 	p=length(S)
-	#println(p)
-	#println(i)
+	println("p ",p)
+	println("i ",i)
 	if(p<i && p>0)
 		break
-	end
+	 end
 end
 
-MR1=OM*AAA*CM
+MR1=OM*AA*CM
 Si=diagm(S.^-0.5)
 S=diagm(S.^0.5)
 
