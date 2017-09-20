@@ -51,9 +51,9 @@ for i=1:nvpts
 	end
 
 #	if(abs(det(ss_eqns[i].Am))>(maximum(size(ss_eqns[i].Am))*eps(maximum(ss_eqns[i].Am))))
-#		result[i].ss_resp=-ss_eqns[i].Cm*(ss_eqns[i].Am\ss_eqns[i].Bm)+ss_eqns[i].Dm
+		result[i].ss_resp=-ss_eqns[i].Cm*(ss_eqns[i].Am\ss_eqns[i].Bm)+ss_eqns[i].Dm
 #	elseif(abs(det(ss_eqns[i].At))>(maximum(size(ss_eqns[i].At))*eps(maximum(ss_eqns[i].At))))
-		result[i].ss_resp=-ss_eqns[i].Ct*(ss_eqns[i].At\ss_eqns[i].Bt)+ss_eqns[i].Dt
+#		result[i].ss_resp=-ss_eqns[i].Ct*(ss_eqns[i].At\ss_eqns[i].Bt)+ss_eqns[i].Dt
 #	else
 #		println("Warning: error computing steady state response!")
 #		result[i].ss_resp=zeros(ss_eqns[i].Dm)
