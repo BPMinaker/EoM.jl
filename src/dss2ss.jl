@@ -51,10 +51,10 @@ temp=sortrows(temp)
 val=temp[:,1]
 vec=transpose(temp[:,2:end])
 
-println(val)
-println(vec[:,3])
-println(vec[:,4])
-println(vec[:,5])
+# println(val)
+# println(vec[:,3])
+# println(vec[:,4])
+# println(vec[:,5])
 
 temp=[valt transpose(vect)]
 temp=sortrows(temp)
@@ -62,24 +62,24 @@ temp=sortrows(temp)
 valt=temp[:,1]
 vect=transpose(temp[:,2:end])
 
-println(valt)
-println(vect[3,:])
-println(vect[4,:])
-println(vect[5,:])
-
-println(transpose(vect)*vec)
+# println(valt)
+# println(vect[3,:])
+# println(vect[4,:])
+# println(vect[5,:])
+#
+# println(transpose(vect)*vec)
 
 err=diag(transpose(vect)*vec).^(-1)
-println(err)
+# println(err)
 
 n=length(err)
 for i=1:n
 	vect[:,i]*=err[i]
 end
 
-#println(vect)
-#println(diag(transpose(vect)*vec))
-#println("vec rank $(rank(vec))")
+# println(vect)
+# println(diag(transpose(vect)*vec))
+# println("vec rank $(rank(vec))")
 
 CCC=CC*vec
 println(CCC)
@@ -89,14 +89,14 @@ println(BBB)
 
 sens=(sum(abs.(CCC).^2,1).^0.5)'.*(sum(abs.(BBB).^2,2).^0.5)
 
-println(sens)
+# println(sens)
 
 flag=find(sens.>(n*eps(maximum(sens))))
 
 # println(maximum(size(sens))*eps(maximum(sens)))
 
-println(flag)
-println(val[flag])
+# println(flag)
+# println(val[flag])
 
 for i=1:length(flag)-1
 	if ((real(val[flag[i]]) == real(val[flag[i+1]])) && (imag(val[flag[i]]) == -imag(val[flag[i+1]])))
