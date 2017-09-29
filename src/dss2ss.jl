@@ -1,6 +1,6 @@
 function dss2ss!(ss_eqns,verb)
 
-verb && println("System is of dimension $(size(ss_eqns.A)).")
+verb && println("System is of dimension ",size(ss_eqns.A),".")
 verb && println("Converting from descriptor form to standard state space...")
 
 Q,S,P=svd(ss_eqns.E)  ##Q'*E*P should = S
@@ -40,83 +40,83 @@ ss_eqns.Bt=BB;
 ss_eqns.Ct=CC;
 ss_eqns.Dt=DD;
 
-verb && println("System is now of dimension $(size(AA)).")
+verb && println("System is now of dimension ",(size(AA)),".")
 verb && println("Computing minimal realization...")
 
 val,vec=eig(AA)
-valt,vect=eig(AA')
 
-temp=[val transpose(vec)]
-temp=sortrows(temp)
-val=temp[:,1]
-vec=transpose(temp[:,2:end])
+m=length(val)
+r=rank(vec)
+bb=0
 
-# println(val)
-# println(vec[:,3])
-# println(vec[:,4])
-# println(vec[:,5])
+if(r<m)
+	println("Vectors are not unique!")
+	println("Eigenvector rank is $r.")
 
-temp=[valt transpose(vect)]
-temp=sortrows(temp)
-
-valt=temp[:,1]
-vect=transpose(temp[:,2:end])
-
-# println(valt)
-# println(vect[3,:])
-# println(vect[4,:])
-# println(vect[5,:])
-#
-# println(transpose(vect)*vec)
-
-err=diag(transpose(vect)*vec).^(-1)
-# println(err)
-
-n=length(err)
-for i=1:n
-	vect[:,i]*=err[i]
-end
-
-# println(vect)
-# println(diag(transpose(vect)*vec))
-# println("vec rank $(rank(vec))")
-
-CCC=CC*vec
-println(CCC)
-
-BBB=transpose(vect)*BB
-println(BBB)
-
-sens=(sum(abs.(CCC).^2,1).^0.5)'.*(sum(abs.(BBB).^2,2).^0.5)
-
-# println(sens)
-
-flag=find(sens.>(n*eps(maximum(sens))))
-
-# println(maximum(size(sens))*eps(maximum(sens)))
-
-# println(flag)
-# println(val[flag])
-
-for i=1:length(flag)-1
-	if ((real(val[flag[i]]) == real(val[flag[i+1]])) && (imag(val[flag[i]]) == -imag(val[flag[i+1]])))
-		temp=vec[:,flag[i]]
-		vec[:,flag[i]]+=vec[:,flag[i+1]]
-		vec[:,flag[i+1]]-=temp
-		vec[:,flag[i+1]]*=1im
+	if(r==(m-1))
+		println("Trying to replace redundant vector...")
+		for i=1:m
+			temp=[vec[:,1:i-1] vec[:,i+1:end]]
+			t=rank(temp)
+			if(t==r)
+				bb=i
+			end
+		end
+		if(bb>0)
+			vec[:,bb]=pinv(AA-val[bb]*eye(m))*vec[:,bb]
+		end
 	end
 end
 
-#println(vec[:,flag])
+r=rank(vec)
+println("Eigenvector rank is $r.")
 
-U=pinv(vec[:,flag])
+CCC=CC*vec
+BBB=vec\BB
 
-ss_eqns.Am=U*AA*vec[:,flag]
-ss_eqns.Bm=U*BB
+sens=(sum(abs.(CCC).^2,1).^0.5)'.*(sum(abs.(BBB).^2,2).^0.5)
+flag=find(sens.>maximum(sens)*1e-5)
+#println(flag)
+
+s=length(flag)
+md=real(val[flag])
+ud=zeros(s-1)
+ld=zeros(s-1)
+
+#println(val)
+#println(vec')
+
+for i=1:m-1
+	if ((real(val[i]) == real(val[i+1])) && (imag(val[i]) == -imag(val[i+1])))
+		temp=vec[:,i]
+		vec[:,i]+=vec[:,i+1]
+		vec[:,i+1]-=temp
+		vec[:,i+1]*=1im
+	end
+end
+
+
+for i=1:s-1
+	if ((real(val[flag[i]]) == real(val[flag[i+1]])) && (imag(val[flag[i]]) == -imag(val[flag[i+1]])))
+		ud[i]=imag(val[flag[i]])
+		ld[i]=-imag(val[flag[i]])
+	else
+		ud[i]=0
+		ld[i]=0
+	end
+end
+
+#println(vec')
+
+#U=inv(vec)[flag,:]
+#ss_eqns.Am=U*AA*vec[:,flag]
+
+ss_eqns.Am=diagm(md)+diagm(ud,1)+diagm(ld,-1)
+ss_eqns.Bm=(vec\BB)[flag,:]
 ss_eqns.Cm=CC*vec[:,flag]
 ss_eqns.Dm=DD
 
-verb && println("System is now of dimension $(size(ss_eqns.Am)).")
+verb && println("System is now of dimension ",size(ss_eqns.Am),".")
 
 end
 
@@ -163,4 +163,80 @@ end
 # ss_eqns.Am=Si*Un'*MR1*Vn*Si*tr
 # ss_eqns.Bm=(S*Vn')[:,1:nin]
 # ss_eqns.Cm=(Un*S)[1:nout,:]
+# ss_eqns.Dm=DD
+
+
+
+
+# val,vec=eig(AA)
+# valt,vect=eig(AA')
+#
+# temp=[val transpose(vec)]
+# temp=sortrows(temp)
+# val=temp[:,1]
+# vec=transpose(temp[:,2:end])
+#
+# # println(val)
+# # println(vec[:,3])
+# # println(vec[:,4])
+# # println(vec[:,5])
+#
+# temp=[valt transpose(vect)]
+# temp=sortrows(temp)
+#
+# valt=temp[:,1]
+# vect=transpose(temp[:,2:end])
+#
+# # println(valt)
+# # println(vect[3,:])
+# # println(vect[4,:])
+# # println(vect[5,:])
+# #
+# # println(transpose(vect)*vec)
+#
+# err=diag(transpose(vect)*vec).^(-1)
+# # println(err)
+#
+# n=length(err)
+# for i=1:n
+# 	vect[:,i]*=err[i]
+# end
+#
+# # println(vect)
+# # println(diag(transpose(vect)*vec))
+# # println("vec rank $(rank(vec))")
+#
+# CCC=CC*vec
+# println(CCC)
+#
+# BBB=transpose(vect)*BB
+# println(BBB)
+#
+# sens=(sum(abs.(CCC).^2,1).^0.5)'.*(sum(abs.(BBB).^2,2).^0.5)
+#
+# # println(sens)
+#
+# flag=find(sens.>(n*eps(maximum(sens))))
+#
+# # println(maximum(size(sens))*eps(maximum(sens)))
+#
+# # println(flag)
+# # println(val[flag])
+#
+# for i=1:length(flag)-1
+# 	if ((real(val[flag[i]]) == real(val[flag[i+1]])) && (imag(val[flag[i]]) == -imag(val[flag[i+1]])))
+# 		temp=vec[:,flag[i]]
+# 		vec[:,flag[i]]+=vec[:,flag[i+1]]
+# 		vec[:,flag[i+1]]-=temp
+# 		vec[:,flag[i+1]]*=1im
+# 	end
+# end
+#
+# #println(vec[:,flag])
+#
+# U=pinv(vec[:,flag])
+#
+# ss_eqns.Am=U*AA*vec[:,flag]
+# ss_eqns.Bm=U*BB
+# ss_eqns.Cm=CC*vec[:,flag]
 # ss_eqns.Dm=DD

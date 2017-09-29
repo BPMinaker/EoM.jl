@@ -71,26 +71,7 @@ for i=1:nvpts
 		result[i].hsv=zeros(length(tmp))
 	end
 
-# 		if(vpts<10)
-#			r=rank(vec)
-# 			if(r<m)
-# 				println("Vectors are not unique!")
-# 				if(r==(m-1))
-# 					println("Trying to replace redundant vector...")
-#
-# 					for j=1:m
-# 						temp=vec
-# 						temp[:,j]=[]
-# 						t=rank(temp)
-# 						if(t==r)
-# 							bb=j
-# 						end
-# 					end
-# 					result[i].vect[:,bb]=pinv(result[i].A-result[i].val[bb]*result[i].E)*(result[i].E*result[i].vect[:,bb])
-# 				end
-# 			end
-#		end
-#
+
 # 		result[i].modes=result[i].phys*result[i].vect  ## Convert vector to physical coordinates
 #
 # 		for j=1:size(result[i].modes,2)  ## For each mode
@@ -100,7 +81,6 @@ for i=1:nvpts
 # 			end
 # 		end
 #
-
 
 end
 
