@@ -50,15 +50,15 @@ push!(the_system.item,item)
 item=actuator("actuator 1")
 item.body[1]="block"
 item.body[2]="ground"
-item.location[:,1]=[0.05,0,1]
-item.location[:,2]=[0.05,0,0]
+item.location[1]=[0.05,0,1]
+item.location[2]=[0.05,0,0]
 push!(the_system.item,item)
 
 item=sensor("sensor 1")
 item.body[1]="block"
 item.body[2]="ground"
-item.location[:,1]=[0,0.05,1]
-item.location[:,2]=[0,0.05,0]
+item.location[1]=[0,0.05,1]
+item.location[2]=[0,0.05,0]
 push!(the_system.item,item)
 
 the_system

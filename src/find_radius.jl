@@ -17,13 +17,13 @@ function find_radius!(items,locations,verb)  ## Takes the key, i.e. springs and 
 verb && println("Looking for location info...")
 
 for i in items
-	if(isa(i,link) | isa(i,spring) | isa(i,beam) | isa(i,sensor) | isa(i,actuator))
-		i.radius[:,1]=i.location[:,1]-locations[i.body_number[1]]
-		i.radius[:,2]=i.location[:,2]-locations[i.body_number[2]]
-	elseif(isa(i,rigid_point) | isa(i,flex_point) | isa(i,nh_point))
-		i.radius[:,1]=i.location-locations[i.body_number[1]]
-		i.radius[:,2]=i.location-locations[i.body_number[2]]
-	elseif(isa(i,load))
+	if isa(i,link) | isa(i,spring) | isa(i,beam) | isa(i,sensor) | isa(i,actuator)
+		i.radius[1]=i.location[1]-locations[i.body_number[1]]
+		i.radius[2]=i.location[2]-locations[i.body_number[2]]
+	elseif isa(i,rigid_point) | isa(i,flex_point) | isa(i,nh_point)
+		i.radius[1]=i.location-locations[i.body_number[1]]
+		i.radius[2]=i.location-locations[i.body_number[2]]
+	elseif isa(i,load)
 		i.radius=i.location-locations[i.body_number]
 	else
 		error("Unknown type.")

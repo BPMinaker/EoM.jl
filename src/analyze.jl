@@ -28,36 +28,29 @@ for i=1:nvpts
 	result[i]=analysis()
 	result[i].w=w
 
-	val,vec=eig(ss_eqns[i].A,ss_eqns[i].E)  ## Find the eigen for this speed
+	F=eigfact(ss_eqns[i].A,ss_eqns[i].E)  ## Find the eigen for this speed
+#	println(F.values)
 
-#	println(val)
-	result[i].e_val=val[isfinite.(val)]  ## Discard modes with Inf or Nan vals
-	result[i].e_vect=vec[:,isfinite.(val)]
-
-
-#	val,vec=eig(ss_eqns[i].At)  ## Find the eigen for this speed
-
-#	println(val)
-
+	result[i].e_val=F.values[isfinite.(F.values)]  ## Discard modes with Inf or Nan vals
+	result[i].e_vect=F.vectors[:,isfinite.(F.values)]
 
 	nin=size(ss_eqns[i].B,2)
 	nout=size(ss_eqns[i].C,1)
 
 	result[i].freq_resp=zeros(nout,nin,length(w))
-	for j=1:wpts
-		result[i].freq_resp[:,:,j]=ss_eqns[i].Cm*((I*w[j]im-ss_eqns[i].Am)\ss_eqns[i].Bm)+ss_eqns[i].Dm
-#		result[i].freq_resp[:,:,j]=ss_eqns[i].Ct*((I*w[j]im-ss_eqns[i].At)\ss_eqns[i].Bt)+ss_eqns[i].Dt
-		#result[i].freq_resp[:,:,j]=ss_eqns[i].C*((ss_eqns[i].E*w[j]im-ss_eqns[i].A)\ss_eqns[i].B)+ss_eqns[i].D
-	end
 
-#	if(abs(det(ss_eqns[i].Am))>(maximum(size(ss_eqns[i].Am))*eps(maximum(ss_eqns[i].Am))))
+	if size(ss_eqns[i].Am)==(0,0)
+		for j=1:wpts
+			result[i].freq_resp[:,:,j]=ss_eqns[i].Ct*((I*w[j]im-ss_eqns[i].At)\ss_eqns[i].Bt)+ss_eqns[i].Dt
+		end
+		result[i].ss_resp=-ss_eqns[i].Ct*(ss_eqns[i].At\ss_eqns[i].Bt)+ss_eqns[i].Dt
+	else
+		for j=1:wpts
+			result[i].freq_resp[:,:,j]=ss_eqns[i].Cm*((I*w[j]im-ss_eqns[i].Am)\ss_eqns[i].Bm)+ss_eqns[i].Dm
+	#		result[i].freq_resp[:,:,j]=ss_eqns[i].C*((ss_eqns[i].E*w[j]im-ss_eqns[i].A)\ss_eqns[i].B)+ss_eqns[i].D
+		end
 		result[i].ss_resp=-ss_eqns[i].Cm*(ss_eqns[i].Am\ss_eqns[i].Bm)+ss_eqns[i].Dm
-#	elseif(abs(det(ss_eqns[i].At))>(maximum(size(ss_eqns[i].At))*eps(maximum(ss_eqns[i].At))))
-#		result[i].ss_resp=-ss_eqns[i].Ct*(ss_eqns[i].At\ss_eqns[i].Bt)+ss_eqns[i].Dt
-#	else
-#		println("Warning: error computing steady state response!")
-#		result[i].ss_resp=zeros(ss_eqns[i].Dm)
-#	end
+	end
 
 	# result[i].zero_val=eigvals([ss_eqns[i].A ss_eqns[i].B;ss_eqns[i].C ss_eqns[i].D],[ss_eqns[i].E zeros(ss_eqns[i].B);zeros(ss_eqns[i].C) zeros(ss_eqns[i].D)])
 

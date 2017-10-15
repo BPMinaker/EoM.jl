@@ -51,21 +51,31 @@ item.moments=0
 item.axis=[0,1,0]
 push!(the_system.item,item)
 
-## Add some inputs and outputs
-item=sensor("roll rate sensor")
+## Add constant speed
+item=nh_point("constant speed")
 item.body[1]="wheel"
-item.body[2]="ground";
-item.location[:,1]=[0,0,r]
-item.location[:,2]=[0.1,0,r]
-item.twist=1
-item.order=2
+item.body[2]="ground"
+item.location=[0,0,r]
+item.forces=1
+item.moments=0
+item.axis=[1,0,0]
 push!(the_system.item,item)
+
+## Add some inputs and outputs
+# item=sensor("roll angle sensor")
+# item.body[1]="wheel"
+# item.body[2]="ground";
+# item.location[:,1]=[0,0,r]
+# item.location[:,2]=[0.1,0,r]
+# item.twist=1
+# item.order=1
+# push!(the_system.item,item)
 
 item=sensor("yaw rate sensor")
 item.body[1]="wheel"
 item.body[2]="ground";
-item.location[:,1]=[0,0,r]
-item.location[:,2]=[0,0,0]
+item.location[1]=[0,0,r]
+item.location[2]=[0,0,0]
 item.twist=1
 item.order=2
 push!(the_system.item,item)
@@ -73,8 +83,8 @@ push!(the_system.item,item)
 item=actuator("yaw servo")
 item.body[1]="wheel"
 item.body[2]="ground"
-item.location[:,1]=[0,0,r]
-item.location[:,2]=[0,0,0]
+item.location[1]=[0,0,r]
+item.location[2]=[0,0,0]
 item.twist=1
 push!(the_system.item,item)
 

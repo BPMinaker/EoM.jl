@@ -10,9 +10,10 @@ type flex_point
 	moments::Int
 	axis::Vector{Float64}
 	rolling_axis::Vector{Float64}
-	radius::Array{Float64,2}
+	radius::Vector{Vector{Float64}}
 	stiffness::Vector{Float64}
 	damping::Vector{Float64}
+	d_mtx::Array{Float64,2}
 	preload::Vector{Float64}
 	unit::Vector{Float64}
 	rolling_unit::Vector{Float64}
@@ -22,22 +23,23 @@ type flex_point
 	function flex_point(
 	name,
 	group="flex_point",
-	location=[0,0,0],
+	location=zeros(3),
 	body=["ground","ground"],
-	body_number=[0,0],
+	body_number=zeros(2),
 	forces=0,
 	moments=0,
-	axis=[0,0,0],
-	rolling_axis=[0,0,0],
-	radius=[[0,0,0] [0,0,0]],
-	stiffness=[0,0],
-	damping=[0,0],
+	axis=zeros(3),
+	rolling_axis=zeros(3),
+	radius=[zeros(3),zeros(3)],
+	stiffness=zeros(2),
+	damping=zeros(2),
+	d_mtx=zeros(0,0),
 	preload=Vector{Float64}(0),
-	unit=[0,0,0],
-	rolling_unit=[0,0,0],
-	nu=[[0,0,0] [0,0,0]],
-	b_mtx=[[0 0;0 0],[0 0;0 0]])
-		new(name,group,location,body,body_number,forces,moments,axis,rolling_axis,radius,stiffness,damping,preload,unit,rolling_unit,nu,b_mtx)
+	unit=zeros(3),
+	rolling_unit=zeros(3),
+	nu=zeros(3,2),
+	b_mtx=[zeros(2,2),zeros(2,2)])
+		new(name,group,location,body,body_number,forces,moments,axis,rolling_axis,radius,stiffness,damping,d_mtx,preload,unit,rolling_unit,nu,b_mtx)
 	end
 end
 

@@ -18,8 +18,8 @@ for i in items
 
 	temp=spzeros(3,6*num)
 	u=i.unit  ## Unit vector defining axis of action of directed item
-	rs=i.radius[:,1]  ## Radius from body1 cg to point of action of directed item on body1; 's'=start
-	re=i.radius[:,2]  ## Radius from body2 cg to point of action of directed item on body2; 'e'=end
+	rs=i.radius[1]  ## Radius from body1 cg to point of action of directed item on body1; 's'=start
+	re=i.radius[2]  ## Radius from body2 cg to point of action of directed item on body2; 'e'=end
 
 	pointer1=6*(i.body_number[1]-1)
 	pointer2=6*(i.body_number[2]-1)

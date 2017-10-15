@@ -13,17 +13,14 @@ function point_line_jacobian(items,num)
 ##--------------------------------------------------------------------
 ## Function 'point_line_jacobian' returns 'mtx' (constraint or deflection matrix of point items) as a function of 'in' (items in system) and 'num' (number of bodies)
 
-nr=0
-for i in items
-	nr+=(i.forces+i.moments)  ## Find total number of rows needed
-end
+nr=sum(broadcast(num_fm,items))  ## Find total number of rows needed
 
 mtx=spzeros(nr,6*num)  ## Initially define blank matrix
 
 idx=1
 for i in items
-	rs=i.radius[:,1]  ## Radius of the point item from the CG at 'start' body
-	re=i.radius[:,2]  ## Radius of the point item from the CG at 'end' body
+	rs=i.radius[1]  ## Radius of the point item from the CG at 'start' body
+	re=i.radius[2]  ## Radius of the point item from the CG at 'end' body
 	pointer1=6*(i.body_number[1]-1)  ## Column number of the start body
 	pointer2=6*(i.body_number[2]-1)  ## Column number of the end body
 	nrows=i.forces+i.moments

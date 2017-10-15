@@ -73,6 +73,7 @@ type mbd_system
 	loads::Vector{load}
 	sensors::Vector{sensor}
 	actuators::Vector{actuator}
+#	wings::Vector{wing}
 
 	function mbd_system(
 	name="Unnamed System",
@@ -88,6 +89,7 @@ type mbd_system
 	loads=Vector{load}(0),
 	sensors=Vector{sensor}(0),
 	actuators=Vector{actuator}(0))
+	#wings=Vector{wing}(0))
 		new(name,vpt,item,bodys,links,springs,rigid_points,flex_points,nh_points,beams,loads,sensors,actuators)
 	end
 end

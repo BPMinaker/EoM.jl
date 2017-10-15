@@ -31,20 +31,6 @@ for item in [the_system.rigid_points;the_system.flex_points]
 	idx+=1
 end
 
-# for item in the_system.flex_points
-# 	pload=[item.b_mtx[1];item.b_mtx[2]]'*item.preload
-# 	frc=pload[1:3]
-# 	mmt=pload[4:6]
-# 	preload*="{$idx} {$(item.name)}"
-# 	if(norm(frc)>0 || norm(mmt)>0)
-# 		preload*=" force $(frc[1]) $(frc[2]) $(frc[3]) $(norm(frc))\n"
-# 	end
-# 	if(norm(mmt)>0)
-# 		preload*="{} {} moment $(mmt[1]) $(mmt[2]) $(mmt[3]) $(norm(mmt))\n"
-# 	end
-# 	idx+=1
-# end
-
 for item in [the_system.springs;the_system.links]
 	pload=[item.b_mtx[1];item.b_mtx[2]]'*item.preload
 	frc=pload[1:3]
@@ -58,31 +44,18 @@ for item in [the_system.springs;the_system.links]
 	idx+=1
 end
 
-# for item in the_system.links
-# 	pload=[item.b_mtx[1];item.b_mtx[2]]'*item.preload
-# 	frc=pload[1:3]
-# 	mmt=pload[4:6]
-# 	preload*="{$idx} {$(item.name)}"
-# 	if(item.twist==0)
-# 		preload*=" force $(frc[1]) $(frc[2]) $(frc[3]) $(item.preload)\n"
-# 	else
-# 		preload*=" moment $(mmt[1]) $(mmt[2]) $(mmt[3]) $(item.preload)\n"
-# 	end
-# 	idx+=1
-# end
-
 for item in the_system.beams
 	l=item.length
 	D=[0 0 0 -1 0 0 0 1; 2/l 0 0 1 -2/l 0 0 1; 0 0 -1 0 0 0 1 0; 0 2/l -1 0 0 -2/l -1 0]  ## Relate the beam stiffness matrix to the deflection of the ends (diagonalize the typical beam stiffness matrix!)
-	temp=diag((D'*item.preload))*[item.b_mtx[1];item.b_mtx[2];item.b_mtx[1];item.b_mtx[2]]
+	temp=diagm((D'*item.preload))*[item.b_mtx[1];item.b_mtx[2];item.b_mtx[1];item.b_mtx[2]]
 	v1=temp[1,1:3]+temp[2,1:3]
 	m1=temp[3,4:6]+temp[4,4:6]
 	v2=temp[5,1:3]+temp[6,1:3]
 	m2=temp[7,4:6]+temp[8,4:6]
-	preload*="{$idx} {$(item.name)} shear $v1[1] $v[2] $v[3] $(norm(v1))\n"
-	preload*="{} {} moment $m1[1] $m1[2] $m1[3] $(norm(m1))\n"
-	preload*="{} {} shear $v2[1] $v2[2] $v2[3] $(norm(v2))\n"
-	preload*="{} {} moment $m2[1] $m2[2] $m2[3] $(norm(m2))\n"
+	preload*="{$idx} {$(item.name)} shear $(v1[1]) $(v1[2]) $(v1[3]) $(norm(v1))\n"
+	preload*="{} {} moment $(m1[1]) $(m1[2]) $(m1[3]) $(norm(m1))\n"
+	preload*="{} {} shear $(v2[1]) $(v2[2]) $(v2[3]) $(norm(v2))\n"
+	preload*="{} {} moment $(m2[1]) $(m2[2]) $(m2[3]) $(norm(m2))\n"
 	idx+=1
 end
 

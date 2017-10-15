@@ -137,8 +137,8 @@ push!(the_system.item,item)
 item=actuator("front bump")
 item.body[1]="front unsprung"
 item.body[2]="ground"
-item.location[:,1]=[a,0,0.25]
-item.location[:,2]=[a,0,0]
+item.location[1]=[a,0,0.25]
+item.location[2]=[a,0,0]
 item.gain=kt
 push!(the_system.item,item)
 
@@ -147,16 +147,16 @@ push!(the_system.item,item)
 item=sensor("\$z_\\text{G}\$")
 item.body[1]="chassis"
 item.body[2]="ground"
-item.location[:,1]=[0,0,0.25]
-item.location[:,2]=[0,0,0]
+item.location[1]=[0,0,0.25]
+item.location[2]=[0,0,0]
 push!(the_system.item,item)
 
 
 item=sensor("\$\\theta\$")
 item.body[1]="chassis"
 item.body[2]="ground"
-item.location[:,1]=[0,0,0.25]
-item.location[:,2]=[0,0.25,0.25]
+item.location[1]=[0,0,0.25]
+item.location[2]=[0,0.25,0.25]
 item.gain=180/pi;  ## deg/rad
 item.twist=1;
 push!(the_system.item,item)
@@ -166,8 +166,8 @@ push!(the_system.item,item)
 item=sensor("\$z_2-z_0\$")
 item.body[1]="front unsprung"
 item.actuator="front bump"
-item.location[:,1]=[0.1,0,0.3]
-item.location[:,2]=[0.1,0,0]
+item.location[1]=[0.1,0,0.3]
+item.location[2]=[0.1,0,0]
 item.twist=0
 item.gain=1
 push!(the_system.item,item)

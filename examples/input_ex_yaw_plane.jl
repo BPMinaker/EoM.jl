@@ -53,8 +53,8 @@ push!(the_system.item,item)
 item=actuator("\$\\delta_{\\text{f}}\$")
 item.body[1]="chassis"
 item.body[2]="ground"
-item.location[:,1]=[a,0,0]
-item.location[:,2]=[a,0.1,0]
+item.location[1]=[a,0,0]
+item.location[2]=[a,0.1,0]
 item.gain=cf
 push!(the_system.item,item)
 
@@ -62,8 +62,8 @@ push!(the_system.item,item)
 item=actuator("\$\\delta_{\\text{r}}\$")
 item.body[1]="chassis"
 item.body[2]="ground"
-item.location[:,1]=[-b,0,0]
-item.location[:,2]=[-b,-0.1,0]
+item.location[1]=[-b,0,0]
+item.location[2]=[-b,-0.1,0]
 item.gain=cr
 ##push!(the_system.item,item)
 
@@ -92,8 +92,8 @@ push!(the_system.item,item)
 item=sensor("\$r\$")
 item.body[1]="chassis"
 item.body[2]="ground"
-item.location[:,1]=[0,0,0]
-item.location[:,2]=[0,0,0.1]
+item.location[1]=[0,0,0]
+item.location[2]=[0,0,0.1]
 item.twist=1
 item.order=2
 push!(the_system.item,item)
@@ -102,8 +102,8 @@ push!(the_system.item,item)
 item=sensor("\$\\beta\$")
 item.body[1]="chassis"
 item.body[2]="ground"
-item.location[:,1]=[0,0,0]
-item.location[:,2]=[0,0.1,0]
+item.location[1]=[0,0,0]
+item.location[2]=[0,0.1,0]
 item.order=2
 item.frame=0
 item.gain=1/u
@@ -113,8 +113,8 @@ push!(the_system.item,item)
 item=sensor("\$a_{\\text{lat}}\$")
 item.body[1]="chassis"
 item.body[2]="ground"
-item.location[:,1]=[0,0,0]
-item.location[:,2]=[0,0.1,0]
+item.location[1]=[0,0,0]
+item.location[2]=[0,0.1,0]
 item.order=3
 item.gain=1/9.81
 push!(the_system.item,item)
@@ -126,8 +126,8 @@ push!(the_system.item,item)
 item=sensor("\$y\$")
 item.body[1]="chassis"
 item.body[2]="ground"
-item.location[:,1]=[0,0,0]
-item.location[:,2]=[0,0.1,0]
+item.location[1]=[0,0,0]
+item.location[2]=[0,0.1,0]
 #push!(the_system.item,item)
 
 the_system

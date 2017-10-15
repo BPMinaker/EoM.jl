@@ -48,8 +48,8 @@ for old in the_system.item
 			item.body[2]=replace(item.body[2],"LF","RF")
 			item.body[2]=replace(item.body[2],"LR","RR")
 
-			item.location[2,1]=-item.location[2,1]
-			item.location[2,2]=-item.location[2,2]
+			item.location[1][2]=-item.location[1][2]
+			item.location[2][2]=-item.location[2][2]
 			push!(the_system.item,item)
 
 		elseif(isa(item,load))

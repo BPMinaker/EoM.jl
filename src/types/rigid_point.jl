@@ -10,7 +10,7 @@ type rigid_point
 	moments::Int
 	axis::Vector{Float64}
 	rolling_axis::Vector{Float64}
-	radius::Array{Float64,2}
+	radius::Vector{Vector{Float64}}
 	preload::Vector{Float64}
 	unit::Vector{Float64}
 	rolling_unit::Vector{Float64}
@@ -20,19 +20,19 @@ type rigid_point
 	function rigid_point(
 	name,
 	group="rigid_point",
-	location=[0,0,0],
+	location=zeros(3),
 	body=["ground","ground"],
-	body_number=[0,0],
+	body_number=zeros(2),
 	forces=0,
 	moments=0,
-	axis=[0,0,0],
-	rolling_axis=[0,0,0],
-	radius=[[0,0,0] [0,0,0]],
+	axis=zeros(3),
+	rolling_axis=zeros(3),
+	radius=[zeros(3), zeros(3)],
 	preload=Vector{Float64}(0),
-	unit=[0,0,0],
-	rolling_unit=[0,0,0],
-	nu=[[0,0,0] [0,0,0]],
-	b_mtx=[[0 0;0 0],[0 0;0 0]])
+	unit=zeros(3),
+	rolling_unit=zeros(3),
+	nu=zeros(3,2),
+	b_mtx=[zeros(2,2),zeros(2,2)])
 		new(name,group,location,body,body_number,forces,moments,axis,rolling_axis,radius,preload,unit,rolling_unit,nu,b_mtx)
 	end
 end
@@ -40,5 +40,3 @@ end
 function num_fm(obj::rigid_point)
 	obj.forces+obj.moments
 end
-
-

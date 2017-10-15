@@ -60,7 +60,11 @@ for i=1:nvpts
 
 	## Reduce to standard form
 	dss2ss!(ss_eqns[i],(i<2)*verbose)
+
+	!verbose && print(".")
+
 end
+!verbose && println("")
 
 ss_eqns
 

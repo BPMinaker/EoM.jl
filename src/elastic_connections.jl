@@ -50,48 +50,48 @@ if(s>0)  ## If the deflection matrix has more than zero rows (i.e. there are ela
 	end
 	slct_mtx=slct_mtx[fnd,:]  ## Throw away zero rows
 
-
 	t=sum(broadcast(num_fm,the_system.flex_points))
-	flex_point_stiff=zeros(t)
-	flex_point_dmpng=zeros(t)
+	flex_point_stiff=spzeros(t,t)
+	flex_point_dmpng=spzeros(t,t)
 
 	idx=1
 	for i in the_system.flex_points  ## For each elastic point item
-		flex_point_stiff[idx:idx+i.forces-1]=i.stiffness[1]
-		flex_point_dmpng[idx:idx+i.forces-1]=i.damping[1]
+		flex_point_dmpng[idx:idx+i.forces+i.moments-1,idx:idx+i.forces+i.moments-1]=sparse(i.d_mtx)
+
+		flex_point_stiff[idx:idx+i.forces-1,idx:idx+i.forces-1]+=i.stiffness[1]*speye(i.forces)
+		flex_point_dmpng[idx:idx+i.forces-1,idx:idx+i.forces-1]+=i.damping[1]*speye(i.forces)
 		idx+=i.forces
 
-		flex_point_stiff[idx:idx+i.moments-1]=i.stiffness[2]
-		flex_point_dmpng[idx:idx+i.moments-1]=i.damping[2]
+		flex_point_stiff[idx:idx+i.moments-1,idx:idx+i.moments-1]+=i.stiffness[2]*speye(i.moments)
+		flex_point_dmpng[idx:idx+i.moments-1,idx:idx+i.moments-1]+=i.damping[2]*speye(i.moments)
 		idx+=i.moments
 	end
 
 	idx=1
 	beam_stiff=zeros(4*length(the_system.beams))  ## Creates empty vector for the beam stiffnesses
 	for i in the_system.beams
-		beam_stiff[4*idx-3:4*idx]=[i.stiffness 3*i.stiffness i.stiffness 3*i.stiffness]  ## Creates a row vector of the beam stiffnesses, necessary to rebuild beam stiffness matrix from diagonalization
+		beam_stiff[4*idx-3:4*idx]=i.stiffness/i.length*[1 3 1 3]  ## Creates a row vector of the beam stiffnesses, necessary to rebuild beam stiffness matrix from diagonalization
 		idx+=1
 	end
 
 	## Converts stiffness row vector into diagonal matrix -> a column for each elastic item
-	stiff=[spring_stiff;flex_point_stiff;beam_stiff]
+	stiff=blkdiag(spdiagm(spring_stiff),flex_point_stiff,spdiagm(beam_stiff))
 
 	## Convert damping row vector into diagonal matrix  -> a column for each elastic item
- 	dmpng=[spring_dmpng;flex_point_dmpng;zeros(beam_stiff)]
+ 	dmpng=blkdiag(spdiagm(spring_dmpng),flex_point_dmpng,spdiagm(zeros(beam_stiff)))
  	#zeros(1,3*the_system.ntriangle_3s) zeros(1,5*the_system.ntriangle_5s) ])
 
 	## Compute the diagonal inertia values, mostly zero except the inertance of the springs
-	inertia=zeros(stiff)
-	inertia[1:length(the_system.springs)]=spring_inertia
+	inertia=sparse(zeros(stiff))
+	inertia[1:length(the_system.springs),1:length(the_system.springs)]=spdiagm(spring_inertia)
 	#	zeros(1,3*the_system.ntriangle_3s) ...
 	#	zeros(1,5*the_system.ntriangle_5s)]), ...
-	#	wing_inertia);
 
+	## Use the deflection matrices to determine the stiffness matrix that results from the deflection of the elastic items -> Combines delfn_mtx (row for each elastic item, six columns for each body) with 'stiff' (row, column for each elastic constraint) to give proper stiffness matrix
+	stiff_mtx=defln_mtx'*stiff*defln_mtx
+	dmpng_mtx=defln_mtx'*dmpng*defln_mtx
+	inertia_mtx=defln_mtx'*inertia*defln_mtx
 
-	## Build stiffness matrix
-	stiff_mtx=defln_mtx'*spdiagm(stiff)*defln_mtx  ## Use the deflection matrices to determine the stiffness matrix that results from the deflection of the elastic items -> Combines delfn_mtx (row for each elastic item, six columns for each body) with 'stiff' (row, column for each elastic constraint) to give proper stiffness matrix
- 	dmpng_mtx=defln_mtx'*spdiagm(dmpng)*defln_mtx  ## ...likewise for damping
-	inertia_mtx=defln_mtx'*spdiagm(inertia)*defln_mtx
 else
 	verb && println("No flexible connectors.")  ## If there are no springs or flex point items, define empty matrices
 
@@ -101,7 +101,7 @@ else
 
 	slct_mtx=Array{Float64}(0,0)
 	preload_vec=Array{Float64}(0)
-	stiff=Vector{Float64}(0)
+	stiff=Array{Float64}(0,0)
 	subset_spring_stiff=Vector{Float64}(0)
 
 end
@@ -112,12 +112,10 @@ data.inertia=inertia_mtx
 data.deflection=defln_mtx
 data.selection=slct_mtx
 data.preload=preload_vec
-data.spring_stiffness=stiff
+data.spring_stiffness=diag(stiff)
 data.subset_spring_stiffness=subset_spring_stiff
 
 end  ## Leave
-
-
 
 
 # #	if(the_system.ntriangle_3s>0)
@@ -136,57 +134,4 @@ end  ## Leave
 # # 		end
 # # 		D=D/3;
 # # 		stiff=blkdiag(stiff,D);
-# # 	end
-
-# 	## Now deal with wings
-# # 	wing_inertia=[];
-# # 	for i=1:the_system.nwings
-# # 		stiff=blkdiag(stiff,zeros(6,6));  ## Wing has no stiffness, but many damping terms
-# # 		wing=the_system.wings(i);
-# # 		temp=zeros(6);
-# # 		temp(1,1)=wing.cxu;
-# # 		temp(1,3)=wing.cxw;
-# # 		temp(1,5)=wing.cxq*wing.chord/2;
-# # 		temp(2,2)=wing.cyv;
-# # 		temp(2,4)=wing.cyp*wing.span/2;
-# # 		temp(2,6)=wing.cyr*wing.span/2;
-# # 		temp(3,1)=wing.czu;
-# # 		temp(3,3)=wing.czw;
-# # 		temp(3,5)=wing.czq*wing.chord/2;
-# # 		temp(4,2)=wing.clv*wing.span;
-# # 		temp(4,4)=wing.clp*wing.span^2/2;
-# # 		temp(4,6)=wing.clr*wing.span^2/2;
-# # 		temp(5,1)=wing.cmu*wing.chord;
-# # 		temp(5,3)=wing.cmw*wing.chord;
-# # 		temp(5,5)=wing.cmq*wing.chord^2/2;
-# # 		temp(6,2)=wing.cnv*wing.span;
-# # 		temp(6,4)=wing.cnp*wing.span^2/2;
-# # 		temp(6,6)=wing.cnr*wing.span^2/2;
-# #
-# # 		dmpng=blkdiag(dmpng,-wing.qs/wing.airspeed*temp);
-# #
-# # 		temp=zeros(6);  ## Wing has effective inertia terms, actual mass and inertia included elsewhere
-# # 		temp(1,1)=wing.a_mass(1);
-# # 		temp(2,2)=wing.a_mass(2);
-# # 		temp(3,3)=wing.a_mass(3);
-# #
-# # 		temp(1,2)=wing.a_mass_products(1); % xy
-# # 		temp(2,1)=wing.a_mass_products(1);
-# # 		temp(2,3)=wing.a_mass_products(2); % yz
-# # 		temp(3,2)=wing.a_mass_products(2);
-# # 		temp(3,1)=wing.a_mass_products(3); % zx
-# # 		temp(1,3)=wing.a_mass_products(3);
-# #
-# # 		temp(4,4)=wing.a_momentsofinertia(1);
-# # 		temp(5,5)=wing.a_momentsofinertia(2);
-# # 		temp(6,6)=wing.a_momentsofinertia(3);
-# #
-# # 		temp(4,5)=wing.a_productsofinertia(1);
-# # 		temp(5,4)=wing.a_productsofinertia(1);
-# # 		temp(5,6)=wing.a_productsofinertia(2);
-# # 		temp(6,5)=wing.a_productsofinertia(2);
-# # 		temp(4,6)=wing.a_productsofinertia(3);
-# # 		temp(6,4)=wing.a_productsofinertia(3);
-# #
-# # 		wing_inertia=blkdiag(wing_inertia,temp);
 # # 	end

@@ -68,8 +68,8 @@ end
 idx=1
 for item in the_system.springs
 	linedata*="{$idx} {$(item.name)}"
-	linedata*=" $(item.location[1,1]) $(item.location[2,1]) $(item.location[3,1])"
-	linedata*=" $(item.location[1,2]) $(item.location[2,2]) $(item.location[3,2])\n"
+	linedata*=" $(item.location[1][1]) $(item.location[1][2]) $(item.location[1][3])"
+	linedata*=" $(item.location[2][1]) $(item.location[2][2]) $(item.location[2][3])\n"
 	stiffnessdata*="{$idx2} {$(item.name)} $(item.stiffness) $(item.damping) {} {}\n"
 	idx+=1
 	idx2+=1
@@ -77,15 +77,15 @@ end
 
 for item in the_system.links
 	linedata*="{$idx} {$(item.name)}"
-	linedata*=" $(item.location[1,1]) $(item.location[2,1]) $(item.location[3,1])"
-	linedata*=" $(item.location[1,2]) $(item.location[2,2]) $(item.location[3,2])\n"
+	linedata*=" $(item.location[1][1]) $(item.location[1][2]) $(item.location[1][3])"
+	linedata*=" $(item.location[2][1]) $(item.location[2][2]) $(item.location[2][3])\n"
 	idx+=1
 end
 
 for item in the_system.beams
 	linedata*="{$idx} {$(item.name)}"
-	linedata*=" $(item.location[1,1]) $(item.location[2,1]) $(item.location[3,1])"
-	linedata*=" $(item.location[1,2]) $(item.location[2,2]) $(item.location[3,2])\n"
+	linedata*=" $(item.location[1][1]) $(item.location[1][2]) $(item.location[1][3])"
+	linedata*=" $(item.location[2][1]) $(item.location[2][2]) $(item.location[2][3])\n"
 	stiffnessdata*="{$idx2} {$(item.name)} $(item.stiffness) {} {} {}\n"
 	idx+=1
 	idx2+=1

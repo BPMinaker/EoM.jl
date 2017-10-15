@@ -23,7 +23,7 @@ rgd=0  ## Number of rigid body modes
 nin=size(eoms[1].B,2)
 nout=size(eoms[1].C,1)
 
-nvpts=length(the_system)
+nvpts=length(results)
 
 ## Initialize output strings
 eigen="###### Eigenvalues\nnum speed real imag realhz imaghz\n"

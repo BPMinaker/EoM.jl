@@ -21,8 +21,6 @@ type load
 	force=[0,0,0],
 	moment=[0,0,0],
 	radius=[0,0,0],
-	unit=[0,0,0],
-	nu=[[0,0,0] [0,0,0]],
 	frame="ground",
 	frame_number=0)
 		new(name,group,location,body,body_number,force,moment,radius,frame,frame_number)

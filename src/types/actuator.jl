@@ -6,13 +6,13 @@ export rate_gain
 type actuator
 	name::String
 	group::String
-	location::Array{Float64,2}
+	location::Vector{Vector{Float64}}
 	body::Vector{String}
 	body_number::Vector{Int}
 	forces::Int
 	moments::Int
 	twist::Bool
-	radius::Array{Float64,2}
+	radius::Vector{Vector{Float64}}
 	gain::Float64
 	rate_gain::Float64
 	length::Float64
@@ -23,19 +23,19 @@ type actuator
 	function actuator(
 	name,
 	group="actuator",
-	location=[[0,0,0] [0,0,0]],
+	location=[zeros(3),zeros(3)],
 	body=["ground","ground"],
-	body_number=[0,0],
+	body_number=zeros(2),
 	forces=0,
 	moments=0,
 	twist=false,
-	radius=[[0,0,0] [0,0,0]],
+	radius=[zeros(3),zeros(3)],
 	gain=1,
 	rate_gain=0,
 	length=0,
-	unit=[0,0,0],
-	nu=[[0,0,0] [0,0,0]],
-	b_mtx=[[0 0;0 0],[0 0;0 0]])
+	unit=zeros(3),
+	nu=zeros(3,2),
+	b_mtx=[zeros(2,2),zeros(2,2)])
 		new(name,group,location,body,body_number,forces,moments,twist,radius,gain,rate_gain,length,unit,nu,b_mtx)
 	end
 end
@@ -50,4 +50,8 @@ end
 
 function rate_gain(obj::actuator)
 	obj.rate_gain
+end
+
+function num_fm(obj::actuator)
+	obj.forces+obj.moments
 end

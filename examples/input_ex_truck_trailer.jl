@@ -108,24 +108,24 @@ push!(the_system.item,item)
 item=actuator("\$\\delta\$")
 item.body[1]="truck"
 item.body[2]="ground"
-item.location[:,1]=[a,0,0]
-item.location[:,2]=[a,0.1,0]
+item.location[1]=[a,0,0]
+item.location[2]=[a,0.1,0]
 item.gain=cf
 push!(the_system.item,item)
 
 item=sensor("\$\\gamma\$")
 item.body[1]="truck"
 item.body[2]="trailer"
-item.location[:,1]=[-d,0,0]
-item.location[:,2]=[-d,0,0.1]
+item.location[1]=[-d,0,0]
+item.location[2]=[-d,0,0.1]
 item.twist=1
 push!(the_system.item,item)
 
 item=sensor("\$r\$")
 item.body[1]="truck"
 item.body[2]="ground"
-item.location[:,1]=[0,0,0]
-item.location[:,2]=[0,0,0.1]
+item.location[1]=[0,0,0]
+item.location[2]=[0,0,0.1]
 item.twist=1
 item.order=2
 push!(the_system.item,item)
@@ -133,8 +133,8 @@ push!(the_system.item,item)
 item=sensor("\$\\beta\$")
 item.body[1]="truck"
 item.body[2]="ground"
-item.location[:,1]=[0,0,0]
-item.location[:,2]=[0,0.1,0]
+item.location[1]=[0,0,0]
+item.location[2]=[0,0.1,0]
 item.twist=0
 item.order=2
 item.frame=0

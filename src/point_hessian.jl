@@ -18,8 +18,8 @@ mtx=spzeros(6*num,6*num) ## Initially define blank row vector
 n=6*(num-1) ## n excludes the ground body
 
 for i in items
-	rs=i.radius[:,1]  ## Radius of the point item from the CG at 'start' body
-	re=i.radius[:,2]  ## Radius of the point item from the CG at 'end' body
+	rs=i.radius[1]  ## Radius of the point item from the CG at 'start' body
+	re=i.radius[2]  ## Radius of the point item from the CG at 'end' body
 	pointer1=6*(i.body_number[1]-1)  ## Column number of the start body
 	pointer2=6*(i.body_number[2]-1)  ## Column number of the end body
 	forces=i.forces  ## Definition of type of point constraint (1,2, or 3 LINEAR motions constrained)

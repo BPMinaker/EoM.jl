@@ -79,24 +79,24 @@ item=actuator("\$z_0\$")
 item.body[1]="unsprung"
 item.body[2]="ground"
 item.gain=kt
-item.location[:,1]=[0.05,0,0.3]
-item.location[:,2]=[0.05,0,0]
+item.location[1]=[0.05,0,0.3]
+item.location[2]=[0.05,0,0]
 push!(the_system.item,item)
 
 ## Add measure between ground and sprung mass
 item=sensor("\$z_1\$")
 item.body[1]="sprung"
 item.body[2]="ground"
-item.location[:,1]=[0,0.05,0.6]
-item.location[:,2]=[0,0.05,0]
+item.location[1]=[0,0.05,0.6]
+item.location[2]=[0,0.05,0]
 push!(the_system.item,item)
 
 ## Add measure between sprung mass and unsprung mass
 item=sensor("\$z_1-z_2\$")
 item.body[1]="unsprung"
 item.body[2]="sprung"
-item.location[:,1]=[0.1,0,0.3]
-item.location[:,2]=[0.1,0,0.6]
+item.location[1]=[0.1,0,0.3]
+item.location[2]=[0.1,0,0.6]
 push!(the_system.item,item)
 
 ## Add measure between ground and unsprung mass
@@ -104,8 +104,8 @@ item=sensor("\$z_2-z_0\$")
 item.body[1]="unsprung"
 item.body[2]="ground"
 item.actuator="\$z_0\$"
-item.location[:,1]=[0.1,0,0.3]
-item.location[:,2]=[0.1,0,0]
+item.location[1]=[0.1,0,0.3]
+item.location[2]=[0.1,0,0]
 push!(the_system.item,item)
 
 the_system
