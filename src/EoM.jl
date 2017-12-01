@@ -8,6 +8,7 @@ export analyze
 export write_output
 
 export mbd_system
+export thin_rod
 export mirror!
 
 fldr=joinpath(Pkg.dir(),"EoM","src","types")

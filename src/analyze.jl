@@ -15,18 +15,15 @@ function analyze(ss_eqns;verbose=false)
 verbose && println("Running linear analysis...")
 
 nvpts=length(ss_eqns)  ## Number of points to plot
-wpts=500
-if(wpts*nvpts>4000)
-	wpts=Int(round(4000/nvpts))
-end
-w=2*pi*logspace(-1,2,wpts)
-
 result=Vector{analysis}(nvpts)
+lower=zeros(nvpts)
+upper=zeros(nvpts)
+
+wpts=500
+(wpts*nvpts>4000) && (wpts=Int(round(4000/nvpts)))
 
 for i=1:nvpts
-
 	result[i]=analysis()
-	result[i].w=w
 
 	F=eigfact(ss_eqns[i].A,ss_eqns[i].E)  ## Find the eigen for this speed
 #	println(F.values)
@@ -34,6 +31,17 @@ for i=1:nvpts
 	result[i].e_val=F.values[isfinite.(F.values)]  ## Discard modes with Inf or Nan vals
 	result[i].e_vect=F.vectors[:,isfinite.(F.values)]
 
+	lower[i]=minimum(abs.(result[i].e_val))
+	upper[i]=maximum(abs.(result[i].e_val))
+end
+
+low=floor(log10(minimum(lower)/2/pi))
+(low<-2) && (low=-2)
+high=ceil(log10(maximum(upper)/2/pi))
+w=2*pi*logspace(low,high,wpts)
+
+for i=1:nvpts
+	result[i].w=w
 	nin=size(ss_eqns[i].B,2)
 	nout=size(ss_eqns[i].C,1)
 
