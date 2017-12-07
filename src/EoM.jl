@@ -6,6 +6,7 @@ export run_eom
 export generate_eom
 export analyze
 export write_output
+export skew
 
 export mbd_system
 export thin_rod
