@@ -73,8 +73,8 @@ for i=1:nvpts
 	end
 
 
-# 		result[i].modes=result[i].phys*result[i].vect  ## Convert vector to physical coordinates
-#
+ 		result[i].modes=ss_eqns[i].phys*result[i].e_vect  ## Convert vector to physical coordinates
+
 # 		for j=1:size(result[i].modes,2)  ## For each mode
 # 			if(norm(result[i].modes[:,j])>0)  ## Check for non-zero displacement modes
 # #				[~,k]=max(abs(result{i}.eom.modes(:,j)));  ## Find max entry

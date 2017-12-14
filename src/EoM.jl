@@ -176,6 +176,7 @@ type ss_data
 	Bm::Array{Float64,2}
 	Cm::Array{Float64,2}
 	Dm::Array{Float64,2}
+	phys::Array{Float64,2}
 
 
 	function ss_data(
@@ -191,14 +192,16 @@ type ss_data
 		Am=Array{Float64}(0,0),
 		Bm=Array{Float64}(0,0),
 		Cm=Array{Float64}(0,0),
-		Dm=Array{Float64}(0,0))
-			new(A,B,C,D,E,At,Bt,Ct,Dt,Am,Bm,Cm,Dm)
+		Dm=Array{Float64}(0,0),
+		phys=Array{Float64}(0,0))
+			new(A,B,C,D,E,At,Bt,Ct,Dt,Am,Bm,Cm,Dm,phys)
 	end
 
 end
 
 type analysis
 	e_vect::Array{Complex{Float64},2}
+	modes::Array{Complex{Float64},2}
 	e_val::Vector{Complex{Float64}}
 	w::Vector{Float64}
 	freq_resp::Array{Complex{Float64},3}
@@ -208,13 +211,14 @@ type analysis
 
 	function analysis(
 	e_vect=Array{Float64}(0,0),
+	modes=Array{Float64}(0,0),
 	e_val=Vector{Float64}(0),
 	w=Vector{Float64}(0),
 	freq_resp=Array{Float64}(0,0,0),
 	ss_resp=Array{Float64}(0,0),
 	zero_val=Vector{Float64}(0),
 	hsv=Vector{Float64}(0))
-		new(e_vect,e_val,w,freq_resp,ss_resp,zero_val,hsv)
+		new(e_vect,modes,e_val,w,freq_resp,ss_resp,zero_val,hsv)
 	end
 end
 

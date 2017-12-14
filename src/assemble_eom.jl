@@ -71,7 +71,7 @@ end
 
 ss_eqns.C=C*r_orth
 ss_eqns.D=data.feedthrough  ## Add the user defined feed forward
-
+ss_eqns.phys=r_orth[1:dim,:]
 verb && println("Okay, built equations of motion.")
 
 ss_eqns
