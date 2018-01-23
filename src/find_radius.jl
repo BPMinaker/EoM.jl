@@ -1,4 +1,4 @@
-function find_radius!(items,locations,verb)  ## Takes the key, i.e. springs and returns the key with new entries telling the attachement radii
+function find_radius!(items,locations,verb=false)  ## Takes the key, i.e. springs and returns the key with new entries telling the attachement radii
 ## Copyright (C) 2017, Bruce Minaker
 ## find_radius.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by

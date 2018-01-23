@@ -1,4 +1,4 @@
-function find_bodynum!(items,names,verb) ## Takes the key, i.e. springs and returns the key with new entries telling the attached body numbers -> reads the bodys which the items are attached to, and inserts the corresponding body numbers
+function find_bodynum!(items,names,verb=false) ## Takes the key, i.e. springs and returns the key with new entries telling the attached body numbers -> reads the bodys which the items are attached to, and inserts the corresponding body numbers
 ## Copyright (C) 2017, Bruce Minaker
 ## find_bodynum.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ end
 end
 
 
-function find_bodyframenum!(items,names,verb)
+function find_bodyframenum!(items,names,verb=false)
 
 verb && println("Looking for connection info...")
 
@@ -49,7 +49,7 @@ end
 end
 
 
-function find_actnum!(items,names,verb)
+function find_actnum!(items,names,verb=false)
 
 verb && println("Looking for connection info...")
 

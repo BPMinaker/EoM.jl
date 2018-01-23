@@ -1,5 +1,5 @@
-function run_eom(sysin::Function,vpts=0;verbose=false)
-	##,param::Symbol=:dummy,vpts=0,extra...;verbose=false)
+function run_eom(sysin::Function;vpts=[],verbose=false)
+
 ## Copyright (C) 2017, Bruce Minaker
 ## run_eom.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -13,18 +13,31 @@ function run_eom(sysin::Function,vpts=0;verbose=false)
 ##
 ##--------------------------------------------------------------------
 
-the_system=Vector{mbd_system}(length(vpts))  ## create empty system holder
+
+n=1
+m=length(vpts)
+(m>1) && (n=m)
+
+the_system=Vector{mbd_system}(n)  ## create empty system holder
+
+the_eqns=Vector{ss_data}(n)
 
 verbose && println("Calling system function...")
 
-for i=1:length(vpts)
-	the_system[i]=sysin(vpts[i])
-	the_system[i].vpt=vpts[i]
+for i=1:n
+	if m>0
+		the_system[i]=sysin(vpts[i])
+		the_system[i].vpt=vpts[i]
+	else
+		the_system[i]=sysin()
+	end
 	verbose && (i<2) && println("Running analysis of $(the_system[1].name) ...")
 	verbose && (i<2) && println("Found $(length(the_system[1].item)) items...")
 	sort_system!(the_system[i],(i<2)*verbose)  ## Sort all the input structs
+	the_eqns[i]=generate_eom(the_system[i],(i<2)*verbose)
+
 end
 
-the_system
+the_system,the_eqns
 
 end

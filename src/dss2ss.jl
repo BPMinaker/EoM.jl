@@ -1,7 +1,7 @@
-function dss2ss!(ss_eqns,verb)
+function dss2ss!(ss_eqns,verbose=false)
 
-verb && println("System is of dimension ",size(ss_eqns.A),".")
-verb && println("Converting from descriptor form to standard state space...")
+verbose && println("System is of dimension ",size(ss_eqns.A),".")
+verbose && println("Converting from descriptor form to standard state space...")
 
 Q,S,P=svd(ss_eqns.E)  ##Q'*E*P should = S
 #println(S)
@@ -43,141 +43,181 @@ ss_eqns.Bt=BB
 ss_eqns.Ct=CC
 ss_eqns.Dt=DD
 
-verb && println("System is now of dimension ",(size(AA)),".")
-verb && println("Computing minimal realization...")
+verbose && println("System is now of dimension ",(size(AA)),".")
+verbose && println("Computing minimal realization...")
 
 val,vec=eig(AA)
 m=length(val)
 
-v=cond(vec)
-verb && v>1e6 && println("Poorly conditioned eigenvectors!...")
-r=rank(vec)
+# println(val)
+# println(vec)
 
-# ck=zeros(m,m)
+## convert to Jordan form
+
+# t=sortrows([val vec'])
 #
-# for i=1:m
-# 	for j=i+1:m
-# 		ck[i,j]=transpose(vec[:,i])*vec[:,j]
-# 	end
-# end
-# println(ck)
+# val=t[:,1]
+# jvec=t[:,2:end]'
+
+println(val)
+
+jvec=vec
+md=real(val)
+ud=zeros(m-1)
+ld=zeros(m-1)
 
 i=1
-while r<m && i<m+1
-#	println(val)
-#	println(vec[:,i])
+while i<m
+	if (val[i]==conj(val[i+1])) && !(val[i]==val[i+1])
+		verbose && println("Combining vectors $i and $(i+1)")
+		jvec[:,i+1]=imag(jvec[:,i])
+		jvec[:,i]=real(jvec[:,i])
+		ud[i]=imag(val[i])
+		ld[i]=-ud[i]
+		i+=1
+	end
+	i+=1
+end
 
-	#println("Vectors are not unique!")
-	#println("Eigenvector rank is $r.")
-	#println("Trying to replace redundant vector...")
-	t=rank([vec[:,1:i-1] vec[:,i+1:end]])
+#println(round.(jvec,5))
+
+Aj=Tridiagonal(ld,md,ud)
+
+if verbose
+	println("Checking factorization...")
+	chk=norm(AA-jvec*Aj*pinv(jvec))
+	if chk<1e-8
+	println("Checks ok.")
+	else
+		println("Problem with factorization!  Check=$(chk).")
+	end
+end
+
+r=rank(jvec)
+verbose && println("Jordan vector rank is $r, size $m.")
+
+dpl=Int[]
+i=1
+while r<m && i<m+1
+	verbose && println("Basis vectors are not independent.")
+	t=rank([jvec[:,1:i-1] jvec[:,i+1:end]])
+	println(t)
 	if t==r
-		verb && println("Replacing vector $i.")
-		vec[:,i]=pinv(AA-val[i]*eye(m))*vec[:,i]
-		if i<m
-			if (val[i] == conj(val[i+1])) && !(val[i] == val[i+1])
-				verb && println("Replacing vector $(i+1).")
-				vec[:,i+1]=conj(vec[:,i])
+		if abs(val[i]-val[i+1])<1e-8
+			verbose && println("Vectors $i, $(i+1) identified as redundant.")
+			tv=jvec[:,i+1]
+			jvec[:,i+1]=pinv(AA-val[i]*eye(m))*jvec[:,i]
+			if rank(jvec)<m
+				jvec[:,i+1]=tv
+				println("Doesn't help.  Undoing...")
+			else
+				Aj[i,i+1]=1
+				push!(dpl,i)
+				push!(dpl,i+1)
+				verbose && println("Vector $(i+1) replaced.")
 				i+=1
+			end
+		end
+
+		if verbose
+			println("Checking factorization...")
+			chk=norm(AA-jvec*Aj*inv(jvec))
+			if chk<1e-8
+				println("Checks ok.")
+			else
+				println("Problem with factorization!  Check=$(chk).")
 			end
 		end
 	end
 	i+=1
-	r=rank(vec)
-#	println("Eigenvector rank is $r.")
+	r=rank(jvec)
+	verbose && println("Basis vector rank is now $r.")
 end
+#println(dpl)
 
-CCC=CC*vec
-BBB=vec\BB
+####
+jvec=real.(jvec)
+#####
 
-sens=(sum(abs.(CCC).^2,1).^0.5)'.*(sum(abs.(BBB).^2,2).^0.5)
-#println(sens)
+ss_eqns.Aj=Aj
+ss_eqns.Bj=(jvec\BB)
+ss_eqns.Cj=(CC*jvec)
+ss_eqns.Dj=DD
 
+Ajm=ss_eqns.Aj
+Bjm=ss_eqns.Bj
+Cjm=ss_eqns.Cj
+
+match=Vector[]
+for i=1:m
+	t=find(abs.(val-val[i]).<1e-10)
+	t=setdiff(t,dpl)
+	push!(match,t)
+end
+match=unique(match)
+#println(match)
+
+dup=Int[]
+for i=1:length(match)
+	if length(match[i])==2
+		r1=Bjm[match[i][1],:]
+		r2=Bjm[match[i][2],:]
+		c1=Cjm[:,match[i][1]]
+		c2=Cjm[:,match[i][2]]
+		if (abs(dot(r1,r2))-norm(r1)*norm(r2))<1e-10 && (dot(c1,c2)-norm(c1)*norm(c2))<1e-10
+			Bjm[match[i][1],:]+=(sign(dot(r1,r2))*Bjm[match[i][2],:])
+			Cjm[:,match[i][1]]+=(sign(dot(c1,c2))*Cjm[:,match[i][2]])
+			push!(dup,match[i][2])
+		end
+	end
+end
+if verbose && length(dup)>0
+	print("Duplicate roots at ")
+	for i in dup
+		print("$i, ")
+	end
+	println("removing and renumbering...")
+end
+ind=1:m
+nind=setdiff(ind,dup)
+#println(nind)
+
+Ajm=Ajm[nind,nind]
+Bjm=Bjm[nind,:]
+Cjm=Cjm[:,nind]
+m=size(Ajm,1)
+ind=1:m
+
+u=sum(Bjm.^2,2).^0.5
+v=sum(Cjm.^2,1).^0.5
+sens=u.*(v')
+for i=1:m-1
+	if abs(Ajm[i,i+1])>1e-10
+		w=abs(v[i]*u[i+1])+abs(v[i+1]*u[i])
+		sens[i]+=w
+		sens[i+1]+=w
+	end
+end
 flag=find(sens.>maximum(sens)*1e-5)
 #println(flag)
-
-s=length(flag)
-
-if s>0
-	md=real(val[flag])
-	ud=zeros(s-1)
-	ld=zeros(s-1)
-
-	for i=1:s-1
-		if (val[flag[i]] == conj(val[flag[i+1]])) && !(val[flag[i]] == val[flag[i+1]])
-			ud[i]=imag(val[flag[i]])
-			ld[i]=-imag(val[flag[i]])
-		else
-			ud[i]=0
-			ld[i]=0
-		end
+t=setdiff(ind,flag)
+if verbose && length(t)>0
+	print("Removing non-contributing modes ")
+	for i in t
+		print("$i, ")
 	end
-
-	for i=1:m-1
-		if (val[i] == conj(val[i+1])) && !(val[i] == val[i+1])
-			temp=vec[:,i]
-			vec[:,i]+=vec[:,i+1]
-			vec[:,i+1]-=temp
-			vec[:,i+1]*=1im
-		end
-	end
-
-	#println(vec')
-
-	ss_eqns.Am=Tridiagonal(ld,md,ud)
-	ss_eqns.Bm=(vec\BB)[flag,:]
-	ss_eqns.Cm=CC*vec[:,flag]
-	ss_eqns.Dm=DD
-
-	verb && println("System is now of dimension ",size(ss_eqns.Am),".")
-
-else
-	println("No observable and controllable modes found.")
+	println("...")
 end
 
-end
+ss_eqns.Am=Ajm[flag,flag]
+ss_eqns.Bm=Bjm[flag,:]
+ss_eqns.Cm=Cjm[:,flag]
+ss_eqns.Dm=DD
 
-# ------------------- old code ------------------
+verbose && println("System is now of dimension ",size(ss_eqns.Am),".")
 
-# n=size(AA,1)
-# nin=size(BB,2)
-# nout=size(CC,1)
-#
-# CM=zeros(n,n*nin)
-# OM=zeros(n*nout,n)
-
-# temp=eye(n)
-# tr=1
-# U=0
-# S=0
-# V=0
-# p=0
-# for i=1:n
-#
-# 	CM[:,(i-1)*nin+1:i*nin]=temp*BB
-# 	OM[(i-1)*nout+1:i*nout,:]=CC*temp
-#  	temp*=AA
-#
-# 	MR=OM*CM
-# 	U,S,V=svd(MR)
-# # 	println(S)
-# 	S=S[S.>(maximum(size(MR))*eps(maximum(S)))]
-# 	p=length(S)
-# 	println("p ",p)
-# 	println("i ",i)
-# 	if(p<i && p>0)
-# 		break
-# 	 end
+# else
+# 	println("No observable and controllable modes found.")
 # end
-#
-# MR1=OM*AA*CM
-# Si=diagm(S.^-0.5)
-# S=diagm(S.^0.5)
-#
-# Un=U[:,1:p]
-# Vn=V[:,1:p]
-#
-# ss_eqns.Am=Si*Un'*MR1*Vn*Si*tr
-# ss_eqns.Bm=(S*Vn')[:,1:nin]
-# ss_eqns.Cm=(Un*S)[1:nout,:]
-# ss_eqns.Dm=DD
+
+end

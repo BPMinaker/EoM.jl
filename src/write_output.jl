@@ -59,31 +59,24 @@ for i=1:nvpts
 		realpt=real(results[i].e_val[j])
 		imagpt=imag(results[i].e_val[j])
 
-		tau=-1/realpt
+		omegan=abs(results[i].e_val[j])
+		zeta=-realpt/omegan
 		lambda=2*pi/abs(imagpt)
+		tau=-1/realpt
 
-		if(isreal(results[i].e_val[j]))
-			# counter=1
-			omegan=NaN
-			zeta=NaN
-			# if(realpt==0)
-			# 	rgd+=1
-			# end
-		else
-			# counter=1/2
-			# cmplx+=1/2
-			omegan=abs(results[i].e_val[j])
-			zeta=-realpt/omegan
+		if abs(realpt)<1e-10
+			tau=Inf
+			zeta=0
 		end
 
-		# if(realpt>0)
-		# 	nstbl+=counter
-		# elseif(realpt<0)
-		# 	dmpd+=counter
-		# end
+		if abs(imagpt)<1e-10
+			lambda=NaN
+			omegan=NaN
+			zeta=NaN
+		end
 
-		eigen*="{$j} $(the_system[i].vpt) $realpt $imagpt $(realpt/2/pi) $(imagpt/2/pi)\n"  ## Write the number, the speed, then the eigenvalue
-		freq*="{$j} $(the_system[i].vpt) $(omegan/2/pi) $zeta $tau $lambda\n"  ## Write nat freq, etc.
+		eigen*="{$j} $(the_system[i].vpt) $(round(realpt,11)) $(round(imagpt,11)) $(round(realpt/2/pi,11)) $(round(imagpt/2/pi,11))\n"  ## Write the number, the speed, then the eigenvalue
+		freq*="{$j} $(the_system[i].vpt) $(round(omegan/2/pi,11)) $zeta $tau $lambda\n"  ## Write nat freq, etc.
 	end
 	eigen*="\n"
 	freq*="\n"
@@ -107,7 +100,7 @@ if(nin*nout>0 && nin*nout<16)
 			## Each row starts with vpoint, followed by first column, written as a row, then next column, as a row
 			sstf*="$(the_system[i].vpt)"
 			for k in reshape(results[i].ss_resp[:,:],1,nin*nout)
-				sstf*=" $k"
+				sstf*=" $(round(k,10))"
 			end
 			sstf*="\n"
 		end
@@ -124,10 +117,10 @@ if(nin*nout>0 && nin*nout<16)
 			bode*="$(results[i].w[j]/2/pi) $(the_system[i].vpt)"
 			## Followed by first mag column, written as a row, then next column, as a row
 			for k in reshape(20*log10.(abs.(results[i].freq_resp[:,:,j])),1,nin*nout)
-				bode*=" $k"
+				bode*=" $(round(k,10))"
 			end
 			for k in reshape(180/pi*phs[:,:,j],1,nin*nout)
-				bode*=" $k"  ## Followed by first phase column, written as a row, then next column, as a row
+				bode*=" $(round(k,10))"  ## Followed by first phase column, written as a row, then next column, as a row
 			end
 			bode*="\n"
 		end
@@ -151,9 +144,9 @@ dir_output=setup()
 
 for i=1:length(data_out)
 	out=joinpath(dir_output,file_name[i])
-	file=open(out,"w")
-	write(file,data_out[i])
-	close(file)
+	open(out,"w") do file
+		write(file,data_out[i])
+	end
 end
 
 data_out=[eigen freq bode sstf hsv preload defln]
@@ -161,21 +154,32 @@ file_name=["eigen.out" "freq.out" "bode.out" "sstf.out" "hsv.out" "preload.out" 
 
 for i=1:length(data_out)
 	out=joinpath(dir_output,file_name[i])
-	file=open(out,"w")
-	write(file,data_out[i])
-	close(file)
+	open(out,"w") do file
+		write(file,data_out[i])
+	end
 end
 
-writedlm(joinpath(pwd(),dir_output,dir_raw,"A.out"),eoms[1].A)
-writedlm(joinpath(pwd(),dir_output,dir_raw,"B.out"),eoms[1].B)
-writedlm(joinpath(pwd(),dir_output,dir_raw,"C.out"),eoms[1].C)
-writedlm(joinpath(pwd(),dir_output,dir_raw,"D.out"),eoms[1].D)
-writedlm(joinpath(pwd(),dir_output,dir_raw,"E.out"),eoms[1].E)
+write_mtx(eoms[1].A,joinpath(dir_output,dir_raw,"A.out"))
+write_mtx(eoms[1].B,joinpath(dir_output,dir_raw,"B.out"))
+write_mtx(eoms[1].C,joinpath(dir_output,dir_raw,"C.out"))
+write_mtx(eoms[1].D,joinpath(dir_output,dir_raw,"D.out"))
+write_mtx(eoms[1].E,joinpath(dir_output,dir_raw,"E.out"))
 
-writedlm(joinpath(pwd(),dir_output,dir_raw,"Amin.out"),eoms[1].Am)
-writedlm(joinpath(pwd(),dir_output,dir_raw,"Bmin.out"),eoms[1].Bm)
-writedlm(joinpath(pwd(),dir_output,dir_raw,"Cmin.out"),eoms[1].Cm)
-writedlm(joinpath(pwd(),dir_output,dir_raw,"Dmin.out"),eoms[1].Dm)
+write_mtx(eoms[1].At,joinpath(dir_output,dir_raw,"At.out"))
+write_mtx(eoms[1].Bt,joinpath(dir_output,dir_raw,"Bt.out"))
+write_mtx(eoms[1].Ct,joinpath(dir_output,dir_raw,"Ct.out"))
+write_mtx(eoms[1].Dt,joinpath(dir_output,dir_raw,"Dt.out"))
+
+write_mtx(eoms[1].Aj,joinpath(dir_output,dir_raw,"Aj.out"))
+write_mtx(eoms[1].Bj,joinpath(dir_output,dir_raw,"Bj.out"))
+write_mtx(eoms[1].Cj,joinpath(dir_output,dir_raw,"Cj.out"))
+write_mtx(eoms[1].Dj,joinpath(dir_output,dir_raw,"Dj.out"))
+
+write_mtx(eoms[1].Am,joinpath(dir_output,dir_raw,"Am.out"))
+write_mtx(eoms[1].Bm,joinpath(dir_output,dir_raw,"Bm.out"))
+write_mtx(eoms[1].Cm,joinpath(dir_output,dir_raw,"Cm.out"))
+write_mtx(eoms[1].Dm,joinpath(dir_output,dir_raw,"Dm.out"))
+
 
 # mtx=eoms[1].stiffness+eoms[1].tangent_stiffness+eoms[1].load_stiffness
 # r,c,v=findnz(mtx)
@@ -185,8 +189,19 @@ dir_output
 
 end ## Leave
 
-
-
+function write_mtx(mtx,file_name)
+	str=""
+	for i=1:size(mtx,1)
+		for j=1:size(mtx,2)
+			str*= @sprintf "%.10f " mtx[i,j]
+		end
+		str*="\n"
+	end
+	str*="\n"
+	open(file_name,"w") do handle
+		write(handle,str)
+	end
+end
 
 #writedlm(joinpath(pwd(),dir_output,dir_raw,"M.out"),result[1].M)
 #writedlm(joinpath(pwd(),dir_output,dir_raw,"KC.out"),result[1].KC)

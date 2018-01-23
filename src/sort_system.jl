@@ -1,4 +1,4 @@
-function sort_system!(the_system,verb=false)
+function sort_system!(the_system,verbose=false)
 ## Copyright (C) 2017, Bruce Minaker
 ## sort_system.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@ function sort_system!(the_system,verb=false)
 
 ## Sort the system into a new structure
 
-verb && println("Sorting system...")
+verbose && println("Sorting system...")
 
 ## First, ground is added to the system, because it is not in the user-defined system
 ground=body("ground")
@@ -33,41 +33,41 @@ the_system.actuators=the_system.item[broadcast(typeof,the_system.item).==actuato
 
 names=broadcast(name,the_system.bodys)
 
-find_bodynum!(the_system.links,names,false)
-find_bodynum!(the_system.springs,names,false)
-find_bodynum!(the_system.rigid_points,names,false)
-find_bodynum!(the_system.flex_points,names,false)
-find_bodynum!(the_system.nh_points,names,false)
-find_bodynum!(the_system.beams,names,false)
-find_bodynum!(the_system.sensors,names,false)
-find_bodynum!(the_system.actuators,names,false)
+find_bodynum!(the_system.links,names)
+find_bodynum!(the_system.springs,names)
+find_bodynum!(the_system.rigid_points,names)
+find_bodynum!(the_system.flex_points,names)
+find_bodynum!(the_system.nh_points,names)
+find_bodynum!(the_system.beams,names)
+find_bodynum!(the_system.sensors,names)
+find_bodynum!(the_system.actuators,names)
 
-find_bodyframenum!(the_system.loads,names,false)
+find_bodyframenum!(the_system.loads,names)
 
 names=broadcast(name,the_system.actuators)
 
-find_actnum!(the_system.sensors,names,false)
+find_actnum!(the_system.sensors,names)
 
 locations=broadcast(location,the_system.bodys)
 
-find_radius!(the_system.links,locations,false)
-find_radius!(the_system.springs,locations,false)
-find_radius!(the_system.rigid_points,locations,false)
-find_radius!(the_system.flex_points,locations,false)
-find_radius!(the_system.nh_points,locations,false)
-find_radius!(the_system.beams,locations,false)
-find_radius!(the_system.loads,locations,false)
-find_radius!(the_system.sensors,locations,false)
-find_radius!(the_system.actuators,locations,false)
+find_radius!(the_system.links,locations)
+find_radius!(the_system.springs,locations)
+find_radius!(the_system.rigid_points,locations)
+find_radius!(the_system.flex_points,locations)
+find_radius!(the_system.nh_points,locations)
+find_radius!(the_system.beams,locations)
+find_radius!(the_system.loads,locations)
+find_radius!(the_system.sensors,locations)
+find_radius!(the_system.actuators,locations)
 
-item_init!(the_system.links,false)
-item_init!(the_system.springs,false)
-item_init!(the_system.rigid_points,false)
-item_init!(the_system.flex_points,false)
-item_init!(the_system.nh_points,false)
-item_init!(the_system.beams,false)
-item_init!(the_system.sensors,false)
-item_init!(the_system.actuators,false)
+item_init!(the_system.links)
+item_init!(the_system.springs)
+item_init!(the_system.rigid_points)
+item_init!(the_system.flex_points)
+item_init!(the_system.nh_points)
+item_init!(the_system.beams)
+item_init!(the_system.sensors)
+item_init!(the_system.actuators)
 
-verb && println("System sorted.")
+verbose && println("System sorted.")
 end  ## Leave

@@ -1,4 +1,4 @@
-function item_init!(items,verb)
+function item_init!(items,verb=false)
 ## Copyright (C) 2017, Bruce Minaker
 ## item_init.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by

@@ -31,13 +31,14 @@ for i=1:nvpts
 	result[i].e_val=F.values[isfinite.(F.values)]  ## Discard modes with Inf or Nan vals
 	result[i].e_vect=F.vectors[:,isfinite.(F.values)]
 
-	lower[i]=minimum(abs.(result[i].e_val))
-	upper[i]=maximum(abs.(result[i].e_val))
+	t=abs.(result[i].e_val)
+	lower[i]=minimum(t[t.>1e-6])
+	upper[i]=maximum(t)
 end
 
-low=floor(log10(minimum(lower)/2/pi))
+low=floor(log10(0.8*minimum(lower)/2/pi))
 (low<-2) && (low=-2)
-high=ceil(log10(maximum(upper)/2/pi))
+high=ceil(log10(1.25*maximum(upper)/2/pi))
 w=2*pi*logspace(low,high,wpts)
 
 for i=1:nvpts
@@ -47,17 +48,16 @@ for i=1:nvpts
 
 	result[i].freq_resp=zeros(nout,nin,length(w))
 
-	if size(ss_eqns[i].Am)==(0,0)
-		for j=1:wpts
-			result[i].freq_resp[:,:,j]=ss_eqns[i].Ct*((I*w[j]im-ss_eqns[i].At)\ss_eqns[i].Bt)+ss_eqns[i].Dt
-		end
-		result[i].ss_resp=-ss_eqns[i].Ct*(ss_eqns[i].At\ss_eqns[i].Bt)+ss_eqns[i].Dt
-	else
+	try
 		for j=1:wpts
 			result[i].freq_resp[:,:,j]=ss_eqns[i].Cm*((I*w[j]im-ss_eqns[i].Am)\ss_eqns[i].Bm)+ss_eqns[i].Dm
-	#		result[i].freq_resp[:,:,j]=ss_eqns[i].C*((ss_eqns[i].E*w[j]im-ss_eqns[i].A)\ss_eqns[i].B)+ss_eqns[i].D
 		end
 		result[i].ss_resp=-ss_eqns[i].Cm*(ss_eqns[i].Am\ss_eqns[i].Bm)+ss_eqns[i].Dm
+	catch
+		for j=1:wpts
+			result[i].freq_resp[:,:,j]=ss_eqns[i].Cm*pinv(I*w[j]im-ss_eqns[i].Am)*ss_eqns[i].Bm+ss_eqns[i].Dm
+		end
+		result[i].ss_resp=-ss_eqns[i].Cm*pinv(ss_eqns[i].Am)*ss_eqns[i].Bm +ss_eqns[i].Dm
 	end
 
 	# result[i].zero_val=eigvals([ss_eqns[i].A ss_eqns[i].B;ss_eqns[i].C ss_eqns[i].D],[ss_eqns[i].E zeros(ss_eqns[i].B);zeros(ss_eqns[i].C) zeros(ss_eqns[i].D)])

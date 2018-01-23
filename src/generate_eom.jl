@@ -1,4 +1,4 @@
-function generate_eom(the_system;verbose=false)
+function generate_eom(the_system,verbose=false)
 ## Copyright (C) 2017, Bruce Minaker
 ## generate_eom.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -17,54 +17,43 @@ function generate_eom(the_system;verbose=false)
 ## Begin construction of equations of motion
 verbose && println("Okay, got the system info, building equations of motion...")
 
-nvpts=length(the_system)
+data=eom_data()
+data.name=the_system.name
 
-## Build container
-data=Vector{eom_data}(nvpts)
-ss_eqns=Vector{ss_data}(nvpts)
+## Build the mass matrix
+data.mass=mass(the_system,verbose)
 
-for i=1:nvpts
+## Sum external forces and cast into vector
+## Determine stiffness matrix for angular motion resulting from applied forces
+force!(the_system,data,verbose)
 
-	data[i]=eom_data()
-	data[i].name=the_system[i].name
+## Build the stiffness matrix due to deflections of elastic elements
+elastic_connections!(the_system,data,verbose)
 
-	## Build the mass matrix
-	data[i].mass=mass(the_system[i],(i<2)*verbose)
+## Build the matrices describing the rigid constraints
+rigid_constraints!(the_system,data,verbose)
 
-	## Sum external forces and cast into vector
-	## Determine stiffness matrix for angular motion resulting from applied forces
-	force!(the_system[i],data[i],(i<2)*verbose)
+## Solve for the internal and reaction forces and distribute
+preload!(data,verbose)
+const_frc_deal!(the_system,data.lambda,verbose)
+defln_deal!(the_system,data.static,verbose)
 
-	## Build the stiffness matrix due to deflections of elastic elements
-	elastic_connections!(the_system[i],data[i],(i<2)*verbose)
+## Build the tangent stiffness matrix from the computed preloads
+tangent!(the_system,data,verbose)
 
-	## Build the matrices describing the rigid constraints
-	rigid_constraints!(the_system[i],data[i],(i<2)*verbose)
+## Build the input matrix
+inputs!(the_system,data,verbose)
 
-	## Solve for the internal and reaction forces and distribute
-	preload!(data[i],(i<2)*verbose)
-	const_frc_deal!(the_system[i],data[i].lambda,(i<2)*verbose)
-	defln_deal!(the_system[i],data[i].static,(i<2)*verbose)
+## Build the output matrix
+col=outputs!(the_system,data,verbose)
 
-	## Build the tangent stiffness matrix from the computed preloads
-	tangent!(the_system[i],data[i],(i<2)*verbose)
+## Assemble the system equations of motion
+ss_eqns=assemble_eom!(data,col,verbose)
 
-	## Build the input matrix
-	inputs!(the_system[i],data[i],(i<2)*verbose)
+## Reduce to standard form
+dss2ss!(ss_eqns,verbose)
 
-	## Build the output matrix
-	col=outputs!(the_system[i],data[i],(i<2)*verbose)
-
-	## Assemble the system equations of motion
-	ss_eqns[i]=assemble_eom!(data[i],col,(i<2)*verbose)
-
-	## Reduce to standard form
-	dss2ss!(ss_eqns[i],(i<2)*verbose)
-
-	!verbose && print(".")
-
-end
-!verbose && println("")
+!verbose && print(".")
 
 ss_eqns
 

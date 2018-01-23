@@ -3,7 +3,6 @@
 module EoM
 
 export run_eom
-export generate_eom
 export analyze
 export write_output
 export skew
@@ -172,6 +171,10 @@ type ss_data
 	Bt::Array{Float64,2}
 	Ct::Array{Float64,2}
 	Dt::Array{Float64,2}
+	Aj::Array{Float64,2}
+	Bj::Array{Float64,2}
+	Cj::Array{Float64,2}
+	Dj::Array{Float64,2}
 	Am::Array{Float64,2}
 	Bm::Array{Float64,2}
 	Cm::Array{Float64,2}
@@ -189,12 +192,16 @@ type ss_data
 		Bt=Array{Float64}(0,0),
 		Ct=Array{Float64}(0,0),
 		Dt=Array{Float64}(0,0),
+		Aj=Array{Float64}(0,0),
+		Bj=Array{Float64}(0,0),
+		Cj=Array{Float64}(0,0),
+		Dj=Array{Float64}(0,0),
 		Am=Array{Float64}(0,0),
 		Bm=Array{Float64}(0,0),
 		Cm=Array{Float64}(0,0),
 		Dm=Array{Float64}(0,0),
 		phys=Array{Float64}(0,0))
-			new(A,B,C,D,E,At,Bt,Ct,Dt,Am,Bm,Cm,Dm,phys)
+			new(A,B,C,D,E,At,Bt,Ct,Dt,Aj,Bj,Cj,Dj,Am,Bm,Cm,Dm,phys)
 	end
 
 end
