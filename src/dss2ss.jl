@@ -59,7 +59,7 @@ m=length(val)
 # val=t[:,1]
 # jvec=t[:,2:end]'
 
-println(val)
+#println(val)
 
 jvec=vec
 md=real(val)
@@ -101,7 +101,7 @@ i=1
 while r<m && i<m+1
 	verbose && println("Basis vectors are not independent.")
 	t=rank([jvec[:,1:i-1] jvec[:,i+1:end]])
-	println(t)
+	#println(t)
 	if t==r
 		if abs(val[i]-val[i+1])<1e-8
 			verbose && println("Vectors $i, $(i+1) identified as redundant.")
