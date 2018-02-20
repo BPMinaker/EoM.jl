@@ -180,6 +180,10 @@ write_mtx(eoms[1].Bm,joinpath(dir_output,dir_raw,"Bm.out"))
 write_mtx(eoms[1].Cm,joinpath(dir_output,dir_raw,"Cm.out"))
 write_mtx(eoms[1].Dm,joinpath(dir_output,dir_raw,"Dm.out"))
 
+write_mtx_ptrn(eoms[1].Am,joinpath(dir_output,dir_raw,"Amp.out"))
+write_mtx_ptrn(eoms[1].Bm,joinpath(dir_output,dir_raw,"Bmp.out"))
+write_mtx_ptrn(eoms[1].Cm,joinpath(dir_output,dir_raw,"Cmp.out"))
+write_mtx_ptrn(eoms[1].Dm,joinpath(dir_output,dir_raw,"Dmp.out"))
 
 # mtx=eoms[1].stiffness+eoms[1].tangent_stiffness+eoms[1].load_stiffness
 # r,c,v=findnz(mtx)
@@ -202,6 +206,40 @@ function write_mtx(mtx,file_name)
 		write(handle,str)
 	end
 end
+
+function write_mtx_ptrn(mtx,file_name)
+
+	str="\\begin{tikzpicture}[every left delimiter/.style={xshift=1.5ex},every right delimiter/.style={xshift=-1.5ex}]\n"
+
+
+	str*="\\matrix (pat)[row sep={1ex,between origins},column sep={1ex,between origins},matrix of math nodes,left delimiter={[},right delimiter={]}]\n"
+
+	str*="{\n"
+	for i=1:size(mtx,1)
+		for j=1:size(mtx,2)
+			if j==size(mtx,2)
+				cc="\\\\"
+			else
+				cc="&"
+			end
+			if abs(mtx[i,j])>1e-6
+				str*="."*cc
+			else
+				str*=" "*cc
+			end
+		end
+		str*="\n"
+	end
+	str*="};\n"
+
+	str*="\\node [left=0ex of pat] {\$\\mathbf{$(file_name[end-6])}=\$};\n"
+	str*="\\end{tikzpicture}\n"
+
+	open(file_name,"w") do handle
+		write(handle,str)
+	end
+end
+
 
 #writedlm(joinpath(pwd(),dir_output,dir_raw,"M.out"),result[1].M)
 #writedlm(joinpath(pwd(),dir_output,dir_raw,"KC.out"),result[1].KC)
