@@ -23,10 +23,10 @@ for item in [the_system.rigid_points;the_system.flex_points]
 	mmt=pload[4:6]
 	preload*="{$idx} {$(item.name)}"
 	if(~(norm(frc)==0 && norm(mmt)>0))
-		preload*=" force $(frc[1]) $(frc[2]) $(frc[3]) $(norm(frc))\n"
+		preload*=" force "*@sprintf("%.12e ",frc[1])*@sprintf("%.12e ",frc[2])*@sprintf("%.12e ",frc[3])*@sprintf("%.12e ",norm(frc))*"\n"
 	end
 	if(norm(mmt)>0)
-		preload*="{} {} moment $(mmt[1]) $(mmt[2]) $(mmt[3]) $(norm(mmt))\n"
+		preload*="{} {} moment "*@sprintf("%.12e ",mmt[1])*@sprintf("%.12e ",mmt[2])*@sprintf("%.12e ",mmt[3])*@sprintf("%.12e ",norm(mmt))*"\n"
 	end
 	idx+=1
 end
@@ -37,9 +37,9 @@ for item in [the_system.springs;the_system.links]
 	mmt=pload[4:6]
 	preload*="{$idx} {$(item.name)}"
 	if(item.twist==0)
-		preload*=" force $(frc[1]) $(frc[2]) $(frc[3]) $(item.preload)\n"
+		preload*=" force "*@sprintf("%.12e ",frc[1])*@sprintf("%.12e ",frc[2])*@sprintf("%.12e ",frc[3])*@sprintf("%.12e ",item.preload)*"\n"
 	else
-		preload*=" moment $(mmt[1]) $(mmt[2]) $(mmt[3]) $(item.preload)\n"
+		preload*=" moment "*@sprintf("%.12e ",mmt[1])*@sprintf("%.12e ",mmt[2])*@sprintf("%.12e ",mmt[3])*@sprintf("%.12e ",item.preload)*"\n"
 	end
 	idx+=1
 end
@@ -52,16 +52,16 @@ for item in the_system.beams
 	m1=temp[3,4:6]+temp[4,4:6]
 	v2=temp[5,1:3]+temp[6,1:3]
 	m2=temp[7,4:6]+temp[8,4:6]
-	preload*="{$idx} {$(item.name)} shear $(v1[1]) $(v1[2]) $(v1[3]) $(norm(v1))\n"
-	preload*="{} {} moment $(m1[1]) $(m1[2]) $(m1[3]) $(norm(m1))\n"
-	preload*="{} {} shear $(v2[1]) $(v2[2]) $(v2[3]) $(norm(v2))\n"
-	preload*="{} {} moment $(m2[1]) $(m2[2]) $(m2[3]) $(norm(m2))\n"
+	preload*="{$idx} {$(item.name)} shear "*@sprintf("%.12e ",v1[1])*@sprintf("%.12e ",v1[2])*@sprintf("%.12e ",v1[3])*@sprintf("%.12e ",norm(v1))*"\n"
+	preload*="{} {} moment "*@sprintf("%.12e ",m1[1])*@sprintf("%.12e ",m1[2])*@sprintf("%.12e ",m1[3])*@sprintf("%.12e ",norm(m1))*"\n"
+	preload*="{} {} shear "*@sprintf("%.12e ",v2[1])*@sprintf("%.12e ",v2[2])*@sprintf("%.12e ",v2[3])*@sprintf("%.12e ",norm(v2))*"\n"
+	preload*="{} {} moment "*@sprintf("%.12e ",m2[1])*@sprintf("%.12e ",m2[2])*@sprintf("%.12e ",m2[3])*@sprintf("%.12e ",norm(m2))*"\n"
 	idx+=1
 end
 
 idx=1
 for item in the_system.bodys[1:end-1]
-	defln*="{$idx} {$(item.name)} translation $(item.deflection[1]) $(item.deflection[2]) $(item.deflection[3])\n{ } { } rotation $(item.angular_deflection[1]) $(item.angular_deflection[2]) $(item.angular_deflection[3])\n"
+	defln*="{$idx} {$(item.name)} translation "*@sprintf("%.12e ",item.deflection[1])*@sprintf("%.12e ",item.deflection[2])*@sprintf("%.12e ",item.deflection[3])*"\n{ } { } rotation "*@sprintf("%.12e ",item.angular_deflection[1])*@sprintf("%.12e ",item.angular_deflection[2])*@sprintf("%.12e ",item.angular_deflection[3])*"\n"
 	idx+=1
 end
 

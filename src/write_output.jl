@@ -75,8 +75,8 @@ for i=1:nvpts
 			zeta=NaN
 		end
 
-		eigen*="{$j} $(the_system[i].vpt) $(round(realpt,11)) $(round(imagpt,11)) $(round(realpt/2/pi,11)) $(round(imagpt/2/pi,11))\n"  ## Write the number, the speed, then the eigenvalue
-		freq*="{$j} $(the_system[i].vpt) $(round(omegan/2/pi,11)) $zeta $tau $lambda\n"  ## Write nat freq, etc.
+		eigen*="{$j} $(the_system[i].vpt) "*@sprintf("%.12e ",realpt) *@sprintf("%.12e ",imagpt)*@sprintf("%.12e ",realpt/2/pi) *@sprintf("%.12e ",imagpt/2/pi)*"\n"  ## Write the number, the speed, then the eigenvalue
+		freq*="{$j} $(the_system[i].vpt) "*@sprintf("%.12e ",omegan/2/pi)*@sprintf("%.12e ",zeta)*@sprintf("%.12e ",tau)*@sprintf("%.12e ",lambda)*"\n"  ## Write nat freq, etc.
 	end
 	eigen*="\n"
 	freq*="\n"
@@ -93,14 +93,14 @@ if(nin*nout>0 && nin*nout<16)
 			for j=1:nout
 				for k=1:nin
 					sstf*="{$((j-1)*nin+k)}"
-					sstf*=" {$(output_names[j])/$(input_names[k])} $(results[1].ss_resp[j,k])\n"
+					sstf*=" {$(output_names[j])/$(input_names[k])} "*@sprintf("%.12e ",results[1].ss_resp[j,k])*"\n"
 				end
 			end
 		else
 			## Each row starts with vpoint, followed by first column, written as a row, then next column, as a row
-			sstf*="$(the_system[i].vpt)"
+			sstf*="$(the_system[i].vpt) "
 			for k in reshape(results[i].ss_resp[:,:],1,nin*nout)
-				sstf*=" $(round(k,10))"
+				sstf*=@sprintf("%.12e ",k)
 			end
 			sstf*="\n"
 		end
@@ -114,13 +114,13 @@ if(nin*nout>0 && nin*nout<16)
 
 		for j=1:length(results[i].w) ## Loop over frequency range
 			## Each row starts with freq in Hz, then speed
-			bode*="$(results[i].w[j]/2/pi) $(the_system[i].vpt)"
+			bode*=@sprintf("%.12e ",results[i].w[j]/2/pi)*"$(the_system[i].vpt) "
 			## Followed by first mag column, written as a row, then next column, as a row
 			for k in reshape(20*log10.(abs.(results[i].freq_resp[:,:,j])),1,nin*nout)
-				bode*=" $(round(k,10))"
+				bode*=@sprintf("%.12e ",k)
 			end
 			for k in reshape(180/pi*phs[:,:,j],1,nin*nout)
-				bode*=" $(round(k,10))"  ## Followed by first phase column, written as a row, then next column, as a row
+				bode*=@sprintf("%.12e ",k)  ## Followed by first phase column, written as a row, then next column, as a row
 			end
 			bode*="\n"
 		end
@@ -185,6 +185,8 @@ write_mtx_ptrn(eoms[1].Bm,joinpath(dir_output,dir_raw,"Bmp.out"))
 write_mtx_ptrn(eoms[1].Cm,joinpath(dir_output,dir_raw,"Cmp.out"))
 write_mtx_ptrn(eoms[1].Dm,joinpath(dir_output,dir_raw,"Dmp.out"))
 
+write_mtx_ptrn([eoms[1].Am eoms[1].Bm; eoms[1].Cm eoms[1].Dm],joinpath(dir_output,dir_raw,"ABCDmp.out"))
+
 # mtx=eoms[1].stiffness+eoms[1].tangent_stiffness+eoms[1].load_stiffness
 # r,c,v=findnz(mtx)
 # writedlm(joinpath(pwd(),dir_output,dir_raw,"stiffness_matrix.out"),[r c v])
@@ -197,7 +199,7 @@ function write_mtx(mtx,file_name)
 	str=""
 	for i=1:size(mtx,1)
 		for j=1:size(mtx,2)
-			str*= @sprintf "%.10f " mtx[i,j]
+			str*= @sprintf("%.12e ",mtx[i,j])
 		end
 		str*="\n"
 	end
