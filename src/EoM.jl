@@ -74,7 +74,6 @@ type mbd_system
 	loads::Vector{load}
 	sensors::Vector{sensor}
 	actuators::Vector{actuator}
-#	wings::Vector{wing}
 
 	function mbd_system(
 	name="Unnamed System",
@@ -90,7 +89,6 @@ type mbd_system
 	loads=Vector{load}(0),
 	sensors=Vector{sensor}(0),
 	actuators=Vector{actuator}(0))
-	#wings=Vector{wing}(0))
 		new(name,vpt,item,bodys,links,springs,rigid_points,flex_points,nh_points,beams,loads,sensors,actuators)
 	end
 end
@@ -160,53 +158,45 @@ type eom_data
 	end
 end
 
+type dss_data
+	A::Array{Float64,2}
+	B::Array{Float64,2}
+	C::Array{Float64,2}
+	D::Array{Float64,2}
+	E::Array{Float64,2}
+	phys::Array{Float64,2}
+
+
+	function dss_data(
+		A=Array{Float64}(0,0),
+		B=Array{Float64}(0,0),
+		C=Array{Float64}(0,0),
+		D=Array{Float64}(0,0),
+		E=Array{Float64}(0,0),
+		phys=Array{Float64}(0,0))
+			new(A,B,C,D,E,phys)
+	end
+
+end
 
 type ss_data
 	A::Array{Float64,2}
 	B::Array{Float64,2}
 	C::Array{Float64,2}
 	D::Array{Float64,2}
-	E::Array{Float64,2}
-	At::Array{Float64,2}
-	Bt::Array{Float64,2}
-	Ct::Array{Float64,2}
-	Dt::Array{Float64,2}
-	Aj::Array{Float64,2}
-	Bj::Array{Float64,2}
-	Cj::Array{Float64,2}
-	Dj::Array{Float64,2}
-	Am::Array{Float64,2}
-	Bm::Array{Float64,2}
-	Cm::Array{Float64,2}
-	Dm::Array{Float64,2}
-	phys::Array{Float64,2}
-
 
 	function ss_data(
 		A=Array{Float64}(0,0),
 		B=Array{Float64}(0,0),
 		C=Array{Float64}(0,0),
-		D=Array{Float64}(0,0),
-		E=Array{Float64}(0,0),
-		At=Array{Float64}(0,0),
-		Bt=Array{Float64}(0,0),
-		Ct=Array{Float64}(0,0),
-		Dt=Array{Float64}(0,0),
-		Aj=Array{Float64}(0,0),
-		Bj=Array{Float64}(0,0),
-		Cj=Array{Float64}(0,0),
-		Dj=Array{Float64}(0,0),
-		Am=Array{Float64}(0,0),
-		Bm=Array{Float64}(0,0),
-		Cm=Array{Float64}(0,0),
-		Dm=Array{Float64}(0,0),
-		phys=Array{Float64}(0,0))
-			new(A,B,C,D,E,At,Bt,Ct,Dt,Aj,Bj,Cj,Dj,Am,Bm,Cm,Dm,phys)
+		D=Array{Float64}(0,0))
+			new(A,B,C,D)
 	end
 
 end
 
 type analysis
+	ss_eqns::ss_data
 	e_vect::Array{Complex{Float64},2}
 	modes::Array{Complex{Float64},2}
 	e_val::Vector{Complex{Float64}}
@@ -217,6 +207,7 @@ type analysis
 	hsv::Vector{Float64}
 
 	function analysis(
+	ss_eqns=ss_data(),
 	e_vect=Array{Float64}(0,0),
 	modes=Array{Float64}(0,0),
 	e_val=Vector{Float64}(0),
@@ -225,7 +216,7 @@ type analysis
 	ss_resp=Array{Float64}(0,0),
 	zero_val=Vector{Float64}(0),
 	hsv=Vector{Float64}(0))
-		new(e_vect,modes,e_val,w,freq_resp,ss_resp,zero_val,hsv)
+		new(ss_eqns,e_vect,modes,e_val,w,freq_resp,ss_resp,zero_val,hsv)
 	end
 end
 

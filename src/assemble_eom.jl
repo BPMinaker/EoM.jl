@@ -39,7 +39,7 @@ else
 end
 
 
-ss_eqns=ss_data()  ## Create empty state space holder
+ss_eqns=dss_data()  ## Create empty state space holder
 
 ## Pre and post multiply by orthogonal complements, and then cast in standard form
 ss_eqns.E=l_orth'*data.M*r_orth

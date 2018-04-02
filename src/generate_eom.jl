@@ -48,14 +48,11 @@ inputs!(the_system,data,verbose)
 col=outputs!(the_system,data,verbose)
 
 ## Assemble the system equations of motion
-ss_eqns=assemble_eom!(data,col,verbose)
-
-## Reduce to standard form
-dss2ss!(ss_eqns,verbose)
+dss_eqns=assemble_eom!(data,col,verbose)
 
 !verbose && print(".")
 
-ss_eqns
+dss_eqns
 
 ## End of routine
 end

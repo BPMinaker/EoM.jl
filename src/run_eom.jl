@@ -20,7 +20,7 @@ m=length(vpts)
 
 the_system=Vector{mbd_system}(n)  ## create empty system holder
 
-the_eqns=Vector{ss_data}(n)
+the_eqns=Vector{dss_data}(n)
 
 verbose && println("Calling system function...")
 

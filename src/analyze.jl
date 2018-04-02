@@ -1,4 +1,4 @@
-function analyze(ss_eqns;verbose=false)
+function analyze(dss_eqns;verbose=false)
 ## Copyright (C) 2017, Bruce Minaker
 ## analyze.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@ function analyze(ss_eqns;verbose=false)
 
 verbose && println("Running linear analysis...")
 
-nvpts=length(ss_eqns)  ## Number of points to plot
+nvpts=length(dss_eqns)  ## Number of points to plot
 result=Vector{analysis}(nvpts)
 lower=zeros(nvpts)
 upper=zeros(nvpts)
@@ -25,7 +25,10 @@ wpts=500
 for i=1:nvpts
 	result[i]=analysis()
 
-	F=eigfact(ss_eqns[i].A,ss_eqns[i].E)  ## Find the eigen for this speed
+	## Reduce to standard form
+	result[i].ss_eqns=dss2ss(dss_eqns[i],verbose)
+
+	F=eigfact(dss_eqns[i].A,dss_eqns[i].E)  ## Find the eigen for this speed
 #	println(F.values)
 
 	result[i].e_val=F.values[isfinite.(F.values)]  ## Discard modes with Inf or Nan vals
@@ -43,37 +46,35 @@ w=2*pi*logspace(low,high,wpts)
 
 for i=1:nvpts
 	result[i].w=w
-	nin=size(ss_eqns[i].B,2)
-	nout=size(ss_eqns[i].C,1)
+	nin=size(result[i].ss_eqns.B,2)
+	nout=size(result[i].ss_eqns.C,1)
 
 	result[i].freq_resp=zeros(nout,nin,length(w))
 
-	try
+#	try
 		for j=1:wpts
-			result[i].freq_resp[:,:,j]=ss_eqns[i].Cm*((I*w[j]im-ss_eqns[i].Am)\ss_eqns[i].Bm)+ss_eqns[i].Dm
+			result[i].freq_resp[:,:,j]=result[i].ss_eqns.C*((I*w[j]im-result[i].ss_eqns.A)\result[i].ss_eqns.B)+result[i].ss_eqns.D
 		end
-		result[i].ss_resp=-ss_eqns[i].Cm*(ss_eqns[i].Am\ss_eqns[i].Bm)+ss_eqns[i].Dm
-	catch
-		for j=1:wpts
-			result[i].freq_resp[:,:,j]=ss_eqns[i].Cm*pinv(I*w[j]im-ss_eqns[i].Am)*ss_eqns[i].Bm+ss_eqns[i].Dm
-		end
-		result[i].ss_resp=-ss_eqns[i].Cm*pinv(ss_eqns[i].Am)*ss_eqns[i].Bm +ss_eqns[i].Dm
-	end
+		result[i].ss_resp=-result[i].ss_eqns.C*(result[i].ss_eqns.A\result[i].ss_eqns.B)+result[i].ss_eqns.D
+#	catch
+#		for j=1:wpts
+#			result[i].freq_resp[:,:,j]=ss_eqns.Cm*pinv(I*w[j]im-ss_eqns.Am)*ss_eqns.Bm+ss_eqns.Dm
+#		end
+#		result[i].ss_resp=-ss_eqns.Cm*pinv(ss_eqns.Am)*ss_eqns.Bm +ss_eqns.Dm
+#	end
 
-	# result[i].zero_val=eigvals([ss_eqns[i].A ss_eqns[i].B;ss_eqns[i].C ss_eqns[i].D],[ss_eqns[i].E zeros(ss_eqns[i].B);zeros(ss_eqns[i].C) zeros(ss_eqns[i].D)])
-
-	tmp=size(ss_eqns[i].At,1)
+	# result[i].zero_val=eigvals([ss_eqns.A ss_eqns.B;ss_eqns.C ss_eqns.D],[ss_eqns.E zeros(ss_eqns.B);zeros(ss_eqns.C) zeros(ss_eqns.D)])
 
 	try
-		WC=lyap(ss_eqns[i].At,ss_eqns[i].Bt*ss_eqns[i].Bt')
-		WO=lyap(ss_eqns[i].At',ss_eqns[i].Ct'*ss_eqns[i].Ct)
+		WC=lyap(result[i].ss_eqns.A,result[i].ss_eqns.B*result[i].ss_eqns.B')
+		WO=lyap(result[i].ss_eqns.A',result[i].ss_eqns.C'*result[i].ss_eqns.C)
 		result[i].hsv=sqrt.(eigvals(WC*WO))
 	catch
+		tmp=size(result[i].ss_eqns.A,1)
 		result[i].hsv=zeros(length(tmp))
 	end
 
-
- 		result[i].modes=ss_eqns[i].phys*result[i].e_vect  ## Convert vector to physical coordinates
+		result[i].modes=dss_eqns[i].phys*result[i].e_vect  ## Convert vector to physical coordinates
 
 # 		for j=1:size(result[i].modes,2)  ## For each mode
 # 			if(norm(result[i].modes[:,j])>0)  ## Check for non-zero displacement modes

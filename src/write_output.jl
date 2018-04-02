@@ -165,27 +165,27 @@ write_mtx(eoms[1].C,joinpath(dir_output,dir_raw,"C.out"))
 write_mtx(eoms[1].D,joinpath(dir_output,dir_raw,"D.out"))
 write_mtx(eoms[1].E,joinpath(dir_output,dir_raw,"E.out"))
 
-write_mtx(eoms[1].At,joinpath(dir_output,dir_raw,"At.out"))
-write_mtx(eoms[1].Bt,joinpath(dir_output,dir_raw,"Bt.out"))
-write_mtx(eoms[1].Ct,joinpath(dir_output,dir_raw,"Ct.out"))
-write_mtx(eoms[1].Dt,joinpath(dir_output,dir_raw,"Dt.out"))
-
-write_mtx(eoms[1].Aj,joinpath(dir_output,dir_raw,"Aj.out"))
-write_mtx(eoms[1].Bj,joinpath(dir_output,dir_raw,"Bj.out"))
-write_mtx(eoms[1].Cj,joinpath(dir_output,dir_raw,"Cj.out"))
-write_mtx(eoms[1].Dj,joinpath(dir_output,dir_raw,"Dj.out"))
-
-write_mtx(eoms[1].Am,joinpath(dir_output,dir_raw,"Am.out"))
-write_mtx(eoms[1].Bm,joinpath(dir_output,dir_raw,"Bm.out"))
-write_mtx(eoms[1].Cm,joinpath(dir_output,dir_raw,"Cm.out"))
-write_mtx(eoms[1].Dm,joinpath(dir_output,dir_raw,"Dm.out"))
-
-write_mtx_ptrn(eoms[1].Am,joinpath(dir_output,dir_raw,"Amp.out"))
-write_mtx_ptrn(eoms[1].Bm,joinpath(dir_output,dir_raw,"Bmp.out"))
-write_mtx_ptrn(eoms[1].Cm,joinpath(dir_output,dir_raw,"Cmp.out"))
-write_mtx_ptrn(eoms[1].Dm,joinpath(dir_output,dir_raw,"Dmp.out"))
-
-write_mtx_ptrn([eoms[1].Am eoms[1].Bm; eoms[1].Cm eoms[1].Dm],joinpath(dir_output,dir_raw,"ABCDmp.out"))
+# write_mtx(eoms[1].At,joinpath(dir_output,dir_raw,"At.out"))
+# write_mtx(eoms[1].Bt,joinpath(dir_output,dir_raw,"Bt.out"))
+# write_mtx(eoms[1].Ct,joinpath(dir_output,dir_raw,"Ct.out"))
+# write_mtx(eoms[1].Dt,joinpath(dir_output,dir_raw,"Dt.out"))
+#
+# write_mtx(eoms[1].Aj,joinpath(dir_output,dir_raw,"Aj.out"))
+# write_mtx(eoms[1].Bj,joinpath(dir_output,dir_raw,"Bj.out"))
+# write_mtx(eoms[1].Cj,joinpath(dir_output,dir_raw,"Cj.out"))
+# write_mtx(eoms[1].Dj,joinpath(dir_output,dir_raw,"Dj.out"))
+#
+# write_mtx(eoms[1].Am,joinpath(dir_output,dir_raw,"Am.out"))
+# write_mtx(eoms[1].Bm,joinpath(dir_output,dir_raw,"Bm.out"))
+# write_mtx(eoms[1].Cm,joinpath(dir_output,dir_raw,"Cm.out"))
+# write_mtx(eoms[1].Dm,joinpath(dir_output,dir_raw,"Dm.out"))
+#
+# write_mtx_ptrn(eoms[1].Am,joinpath(dir_output,dir_raw,"Amp.out"))
+# write_mtx_ptrn(eoms[1].Bm,joinpath(dir_output,dir_raw,"Bmp.out"))
+# write_mtx_ptrn(eoms[1].Cm,joinpath(dir_output,dir_raw,"Cmp.out"))
+# write_mtx_ptrn(eoms[1].Dm,joinpath(dir_output,dir_raw,"Dmp.out"))
+#
+# write_mtx_ptrn([eoms[1].Am eoms[1].Bm; eoms[1].Cm eoms[1].Dm],joinpath(dir_output,dir_raw,"ABCDmp.out"))
 
 # mtx=eoms[1].stiffness+eoms[1].tangent_stiffness+eoms[1].load_stiffness
 # r,c,v=findnz(mtx)
