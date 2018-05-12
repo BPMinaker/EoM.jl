@@ -22,12 +22,9 @@ for item in [the_system.rigid_points;the_system.flex_points]
 	frc=pload[1:3]
 	mmt=pload[4:6]
 	preload*="{$idx} {$(item.name)}"
-	if(~(norm(frc)==0 && norm(mmt)>0))
-		preload*=" force "*@sprintf("%.12e ",frc[1])*@sprintf("%.12e ",frc[2])*@sprintf("%.12e ",frc[3])*@sprintf("%.12e ",norm(frc))*"\n"
-	end
-	if(norm(mmt)>0)
-		preload*="{} {} moment "*@sprintf("%.12e ",mmt[1])*@sprintf("%.12e ",mmt[2])*@sprintf("%.12e ",mmt[3])*@sprintf("%.12e ",norm(mmt))*"\n"
-	end
+	preload*=" force "*@sprintf("%.12e ",frc[1])*@sprintf("%.12e ",frc[2])*@sprintf("%.12e ",frc[3])*@sprintf("%.12e ",norm(frc))*"\n"
+	preload*="{} {}"
+	preload*=" moment "*@sprintf("%.12e ",mmt[1])*@sprintf("%.12e ",mmt[2])*@sprintf("%.12e ",mmt[3])*@sprintf("%.12e ",norm(mmt))*"\n"
 	idx+=1
 end
 

@@ -135,12 +135,12 @@ if(nin*nout>0 && nin*nout<16)
 end
 
 preload,defln=load_defln(the_system[1])
-bodydata,pointdata,linedata,stiffnessdata=syst_props(the_system[1])
+bodydata,pointdata,stiffnessdata=syst_props(the_system[1])
 
-data_out=[bodydata pointdata linedata stiffnessdata]
-file_name=["bodydata.out" "pointdata.out" "linedata.out" "stiffnessdata.out"]
+data_out=[bodydata pointdata stiffnessdata]
+file_name=["bodydata.out" "pointdata.out" "stiffnessdata.out"]
 
-dir_output=setup()
+dir_output=setup(dir_raw)
 
 for i=1:length(data_out)
 	out=joinpath(dir_output,file_name[i])
@@ -159,27 +159,34 @@ for i=1:length(data_out)
 	end
 end
 
-write_mtx(eoms[1].A,joinpath(dir_output,dir_raw,"A.out"))
-write_mtx(eoms[1].B,joinpath(dir_output,dir_raw,"B.out"))
-write_mtx(eoms[1].C,joinpath(dir_output,dir_raw,"C.out"))
-write_mtx(eoms[1].D,joinpath(dir_output,dir_raw,"D.out"))
-write_mtx(eoms[1].E,joinpath(dir_output,dir_raw,"E.out"))
+dss_path=joinpath(dir_output,dir_raw,"dss")
+ss_path=joinpath(dir_output,dir_raw,"ss")
+jordan_path=joinpath(dir_output,dir_raw,"jordan")
 
-# write_mtx(eoms[1].At,joinpath(dir_output,dir_raw,"At.out"))
-# write_mtx(eoms[1].Bt,joinpath(dir_output,dir_raw,"Bt.out"))
-# write_mtx(eoms[1].Ct,joinpath(dir_output,dir_raw,"Ct.out"))
-# write_mtx(eoms[1].Dt,joinpath(dir_output,dir_raw,"Dt.out"))
-#
-# write_mtx(eoms[1].Aj,joinpath(dir_output,dir_raw,"Aj.out"))
-# write_mtx(eoms[1].Bj,joinpath(dir_output,dir_raw,"Bj.out"))
-# write_mtx(eoms[1].Cj,joinpath(dir_output,dir_raw,"Cj.out"))
-# write_mtx(eoms[1].Dj,joinpath(dir_output,dir_raw,"Dj.out"))
-#
-# write_mtx(eoms[1].Am,joinpath(dir_output,dir_raw,"Am.out"))
-# write_mtx(eoms[1].Bm,joinpath(dir_output,dir_raw,"Bm.out"))
-# write_mtx(eoms[1].Cm,joinpath(dir_output,dir_raw,"Cm.out"))
-# write_mtx(eoms[1].Dm,joinpath(dir_output,dir_raw,"Dm.out"))
-#
+write_mtx(eoms[1].A,joinpath(dss_path,"A.out"))
+write_mtx(eoms[1].B,joinpath(dss_path,"B.out"))
+write_mtx(eoms[1].C,joinpath(dss_path,"C.out"))
+write_mtx(eoms[1].D,joinpath(dss_path,"D.out"))
+write_mtx(eoms[1].E,joinpath(dss_path,"E.out"))
+
+write_mtx(results[1].ss_eqns.A,joinpath(ss_path,"A.out"))
+write_mtx(results[1].ss_eqns.B,joinpath(ss_path,"B.out"))
+write_mtx(results[1].ss_eqns.C,joinpath(ss_path,"C.out"))
+write_mtx(results[1].ss_eqns.D,joinpath(ss_path,"D.out"))
+
+sys=[results[1].ss_eqns.A results[1].ss_eqns.B; results[1].ss_eqns.C results[1].ss_eqns.D]
+sys=(abs.(sys).>=1e-9).*sys
+write_mtx(sys,joinpath(jordan_path,"ABCD.out"))
+
+write_mtx(results[1].jordan.A,joinpath(jordan_path,"A.out"))
+write_mtx(results[1].jordan.B,joinpath(jordan_path,"B.out"))
+write_mtx(results[1].jordan.C,joinpath(jordan_path,"C.out"))
+write_mtx(results[1].jordan.D,joinpath(jordan_path,"D.out"))
+
+sys=[results[1].jordan.A results[1].jordan.B; results[1].jordan.C results[1].jordan.D]
+sys=(abs.(sys).>=1e-9).*sys
+write_mtx(sys,joinpath(jordan_path,"ABCD.out"))
+
 # write_mtx_ptrn(eoms[1].Am,joinpath(dir_output,dir_raw,"Amp.out"))
 # write_mtx_ptrn(eoms[1].Bm,joinpath(dir_output,dir_raw,"Bmp.out"))
 # write_mtx_ptrn(eoms[1].Cm,joinpath(dir_output,dir_raw,"Cmp.out"))

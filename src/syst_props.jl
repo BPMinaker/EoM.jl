@@ -14,7 +14,7 @@ function syst_props(the_system)
 
 bodydata="###### Body Data\nnum name mass rx ry rz ixx iyy izz ixy iyz ixz\n"
 pointdata="###### Connection Data\nnum name rx ry rz ux uy uz\n"
-linedata="###### Connection Data\nnum name rx ry rz ux uy uz\n"
+#linedata="###### Connection Data\nnum name rx ry rz ux uy uz\n"
 stiffnessdata="###### Connection Data\nnum name stiffness damping t_stiffness t_damping\n"
 
 
@@ -65,32 +65,60 @@ for item in the_system.nh_points
 	idx+=1
 end
 
-idx=1
 for item in the_system.springs
-	linedata*="{$idx} {$(item.name)}"
-	linedata*=" $(item.location[1][1]) $(item.location[1][2]) $(item.location[1][3])"
-	linedata*=" $(item.location[2][1]) $(item.location[2][2]) $(item.location[2][3])\n"
+	pointdata*="{$idx} {$(item.name) } $(item.location[1][1]) $(item.location[1][2]) $(item.location[1][3]) {} {} {}\n"
+	pointdata*="{} {} $(item.location[2][1]) $(item.location[2][2]) $(item.location[2][3]) {} {} {}\n"
 	stiffnessdata*="{$idx2} {$(item.name)} $(item.stiffness) $(item.damping) {} {}\n"
 	idx+=1
 	idx2+=1
 end
 
 for item in the_system.links
-	linedata*="{$idx} {$(item.name)}"
-	linedata*=" $(item.location[1][1]) $(item.location[1][2]) $(item.location[1][3])"
-	linedata*=" $(item.location[2][1]) $(item.location[2][2]) $(item.location[2][3])\n"
+	pointdata*="{$idx} {$(item.name)} $(item.location[1][1]) $(item.location[1][2]) $(item.location[1][3]) {} {} {}\n"
+	pointdata*="{} {} $(item.location[2][1]) $(item.location[2][2]) $(item.location[2][3]) {} {} {}\n"
 	idx+=1
 end
 
 for item in the_system.beams
-	linedata*="{$idx} {$(item.name)}"
-	linedata*=" $(item.location[1][1]) $(item.location[1][2]) $(item.location[1][3])"
-	linedata*=" $(item.location[2][1]) $(item.location[2][2]) $(item.location[2][3])\n"
+	pointdata*="{$idx} {$(item.name)} $(item.location[1][1]) $(item.location[1][2]) $(item.location[1][3]) {} {} {}\n"
+	pointdata*="{} {} $(item.location[2][1]) $(item.location[2][2]) $(item.location[2][3]) {} {} {}\n"
 	stiffnessdata*="{$idx2} {$(item.name)} $(item.stiffness) {} {} {}\n"
 	idx+=1
 	idx2+=1
 end
 
-bodydata,pointdata,linedata,stiffnessdata
+bodydata,pointdata,stiffnessdata
 
 end  ## Leave
+
+
+
+
+
+
+
+
+# for item in the_system.springs
+# 	linedata*="{$idx} {$(item.name)}"
+# 	linedata*=" $(item.location[1][1]) $(item.location[1][2]) $(item.location[1][3])"
+# 	linedata*=" $(item.location[2][1]) $(item.location[2][2]) $(item.location[2][3])\n"
+# 	stiffnessdata*="{$idx2} {$(item.name)} $(item.stiffness) $(item.damping) {} {}\n"
+# 	idx+=1
+# 	idx2+=1
+# end
+#
+# for item in the_system.links
+# 	linedata*="{$idx} {$(item.name)}"
+# 	linedata*=" $(item.location[1][1]) $(item.location[1][2]) $(item.location[1][3])"
+# 	linedata*=" $(item.location[2][1]) $(item.location[2][2]) $(item.location[2][3])\n"
+# 	idx+=1
+# end
+#
+# for item in the_system.beams
+# 	linedata*="{$idx} {$(item.name)}"
+# 	linedata*=" $(item.location[1][1]) $(item.location[1][2]) $(item.location[1][3])"
+# 	linedata*=" $(item.location[2][1]) $(item.location[2][2]) $(item.location[2][3])\n"
+# 	stiffnessdata*="{$idx2} {$(item.name)} $(item.stiffness) {} {} {}\n"
+# 	idx+=1
+# 	idx2+=1
+# end

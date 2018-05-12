@@ -50,7 +50,7 @@ col=outputs!(the_system,data,verbose)
 ## Assemble the system equations of motion
 dss_eqns=assemble_eom!(data,col,verbose)
 
-!verbose && print(".")
+#!verbose && print(".")
 
 dss_eqns
 

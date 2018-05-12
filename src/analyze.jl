@@ -25,10 +25,10 @@ wpts=500
 for i=1:nvpts
 	result[i]=analysis()
 
-	## Reduce to standard form
-	result[i].ss_eqns=dss2ss(dss_eqns[i],verbose)
+	result[i].ss_eqns=dss2ss(dss_eqns[i],verbose)  ## Reduce to standard form
+	result[i].jordan=minreal_jordan(result[i].ss_eqns,verbose)  ## Reduce to minimal Jordan form
 
-	F=eigfact(dss_eqns[i].A,dss_eqns[i].E)  ## Find the eigen for this speed
+	F=eigfact(dss_eqns[i].A,dss_eqns[i].E)  ## Find the eigen
 #	println(F.values)
 
 	result[i].e_val=F.values[isfinite.(F.values)]  ## Discard modes with Inf or Nan vals
@@ -51,17 +51,16 @@ for i=1:nvpts
 
 	result[i].freq_resp=zeros(nout,nin,length(w))
 
-#	try
-		for j=1:wpts
-			result[i].freq_resp[:,:,j]=result[i].ss_eqns.C*((I*w[j]im-result[i].ss_eqns.A)\result[i].ss_eqns.B)+result[i].ss_eqns.D
-		end
+
+	for j=1:wpts
+		result[i].freq_resp[:,:,j]=result[i].ss_eqns.C*((I*w[j]im-result[i].ss_eqns.A)\result[i].ss_eqns.B)+result[i].ss_eqns.D
+	end
+
+	try
 		result[i].ss_resp=-result[i].ss_eqns.C*(result[i].ss_eqns.A\result[i].ss_eqns.B)+result[i].ss_eqns.D
-#	catch
-#		for j=1:wpts
-#			result[i].freq_resp[:,:,j]=ss_eqns.Cm*pinv(I*w[j]im-ss_eqns.Am)*ss_eqns.Bm+ss_eqns.Dm
-#		end
-#		result[i].ss_resp=-ss_eqns.Cm*pinv(ss_eqns.Am)*ss_eqns.Bm +ss_eqns.Dm
-#	end
+	catch
+		result[i].ss_resp=-result[i].ss_eqns.C*pinv(result[i].ss_eqns.A)*result[i].ss_eqns.B+result[i].ss_eqns.D
+	end
 
 	# result[i].zero_val=eigvals([ss_eqns.A ss_eqns.B;ss_eqns.C ss_eqns.D],[ss_eqns.E zeros(ss_eqns.B);zeros(ss_eqns.C) zeros(ss_eqns.D)])
 

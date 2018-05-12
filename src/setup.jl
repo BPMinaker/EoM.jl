@@ -1,4 +1,4 @@
-function setup(dir_raw="unformatted")
+function setup(dir_raw)
 
 ## Copyright (C) 2017, Bruce Minaker
 ## setup.jl is free software; you can redistribute it and/or modify it
@@ -29,6 +29,21 @@ mkdir(dir)  ## Create new empty timed output folder
 dir=joinpath(pwd(),dir_output,dir_raw)
 if(~isdir(dir))  ## If no timed output folder exists
 	mkdir(dir)  ## Create new empty timed output folder
+end
+
+dir=joinpath(pwd(),dir_output,dir_raw,"dss")
+if(~isdir(dir))
+	mkdir(dir)
+end
+
+dir=joinpath(pwd(),dir_output,dir_raw,"ss")
+if(~isdir(dir))
+	mkdir(dir)
+end
+
+dir=joinpath(pwd(),dir_output,dir_raw,"jordan")
+if(~isdir(dir))
+	mkdir(dir)
 end
 
 dir_output

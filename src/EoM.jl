@@ -48,6 +48,7 @@ include("point_hessian.jl")
 include("assemble_eom.jl")
 include("analyze.jl")
 include("dss2ss.jl")
+include("minreal_jordan.jl")
 include("write_output.jl")
 include("load_defln.jl")
 include("syst_props.jl")
@@ -197,6 +198,7 @@ end
 
 type analysis
 	ss_eqns::ss_data
+	jordan::ss_data
 	e_vect::Array{Complex{Float64},2}
 	modes::Array{Complex{Float64},2}
 	e_val::Vector{Complex{Float64}}
@@ -208,6 +210,7 @@ type analysis
 
 	function analysis(
 	ss_eqns=ss_data(),
+	jordan=ss_data(),
 	e_vect=Array{Float64}(0,0),
 	modes=Array{Float64}(0,0),
 	e_val=Vector{Float64}(0),
@@ -216,7 +219,7 @@ type analysis
 	ss_resp=Array{Float64}(0,0),
 	zero_val=Vector{Float64}(0),
 	hsv=Vector{Float64}(0))
-		new(ss_eqns,e_vect,modes,e_val,w,freq_resp,ss_resp,zero_val,hsv)
+		new(ss_eqns,jordan,e_vect,modes,e_val,w,freq_resp,ss_resp,zero_val,hsv)
 	end
 end
 
