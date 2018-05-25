@@ -117,12 +117,17 @@ function minreal_jordan(sys_in,verbose=false)
 	end
 	match=unique(match)  ## find the unique entries
 	#println(match)
+	#readline(STDIN)
 
 	dup=Int[]
 	i=1
 	while i<length(match)
+		#println(length(match[i]))
+		#readline(STDIN)
+
 		if length(match[i])==2
-			if(val[match[i][1]]==conj(val[match[i+1][1]]) && val[match[i][1]] != 0)  ## matching pair of roots
+
+			if (val[match[i][1]]==conj(val[match[i+1][1]]) && val[match[i][1]] != 0)  ## matching pair of roots
 
 				B1=Bjm[match[i][1]:match[i+1][1],:]
 				C1=Cjm[:,match[i][1]:match[i+1][1]]
@@ -178,7 +183,6 @@ function minreal_jordan(sys_in,verbose=false)
 					println("Something weird happened")
 				end
 
-
 				#H2=[y z]'*[w x]
 				#println(norm(H-H2))
 
@@ -192,19 +196,14 @@ function minreal_jordan(sys_in,verbose=false)
 				push!(dup,match[i+1][2])
 				i+=2
 			else ## matching single root
-				println("Matching single root")
+				println("Matching single root, not implemented yet...")
+				i+=1
 			end
-		# 	r1=Bjm[match[i][1],:]
-		# 	r2=Bjm[match[i][2],:]
-		# 	c1=Cjm[:,match[i][1]]
-		# 	c2=Cjm[:,match[i][2]]
-		# 	if (abs(dot(r1,r2))-norm(r1)*norm(r2))<1e-10 && (dot(c1,c2)-norm(c1)*norm(c2))<1e-10
-		# 		Bjm[match[i][1],:]+=(sign(dot(r1,r2))*Bjm[match[i][2],:])
-		# 		Cjm[:,match[i][1]]+=(sign(dot(c1,c2))*Cjm[:,match[i][2]])
-		# 		push!(dup,match[i][2])
-		# 	end
+		elseif length(match[i])>2
+			println("Multpile matching roots, not implemented yet...")
+			i+=1
 		else
-			println("Something weird happened, multiple matching roots")
+			i+=1
 		end
 	end
 	if verbose && length(dup)>0
@@ -258,3 +257,14 @@ function minreal_jordan(sys_in,verbose=false)
 	jordan
 
 end
+
+
+# 	r1=Bjm[match[i][1],:]
+# 	r2=Bjm[match[i][2],:]
+# 	c1=Cjm[:,match[i][1]]
+# 	c2=Cjm[:,match[i][2]]
+# 	if (abs(dot(r1,r2))-norm(r1)*norm(r2))<1e-10 && (dot(c1,c2)-norm(c1)*norm(c2))<1e-10
+# 		Bjm[match[i][1],:]+=(sign(dot(r1,r2))*Bjm[match[i][2],:])
+# 		Cjm[:,match[i][1]]+=(sign(dot(c1,c2))*Cjm[:,match[i][2]])
+# 		push!(dup,match[i][2])
+# 	end
