@@ -66,7 +66,7 @@ for i=1:nout
 		error("Matrix size error")
 	end
 
-	C[i,:]=data.output[i,:]'*mask  ## Note transpose here -- behaviour different than Matlab/Octave
+	C[i,:]=data.output[i:i,:]*mask  ## Note transpose here -- behaviour different than Matlab/Octave
 end
 
 ss_eqns.C=C*r_orth
