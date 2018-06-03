@@ -65,8 +65,7 @@ function minreal_jordan(sys_in,verbose=false)
 			if abs(val[i]-val[i+1])<1e-8
 				verbose && println("Vectors $i, $(i+1) identified as redundant.")
 				tv=jvec[:,i+1]
-				jvec[:,i+1]=pinv([AA-val[i]*eye(m);[jvec[:,1:i-1] jvec[:,i+1:end]]'])*[jvec[:,i];zeros(m-1,1)]
-
+				jvec[:,i+1]=pinv([AA-val[i]*eye(m);jvec[:,i]'])*[jvec[:,i];0]
 				#println((AA-val[i]*eye(m))*jvec[:,i+1]-jvec[:,i])
 				if rank(jvec)<m
 					jvec[:,i+1]=tv
