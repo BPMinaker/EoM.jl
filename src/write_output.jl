@@ -1,3 +1,6 @@
+
+using Gaston
+
 function write_output(the_system,eoms,results;verbose=false,dir_raw="unformatted")
 ## Copyright (C) 2017, Bruce Minaker
 ## write_output.jl is free software; you can redistribute it and/or modify it
@@ -157,6 +160,27 @@ for i=1:length(data_out)
 	open(out,"w") do file
 		write(file,data_out[i])
 	end
+end
+
+tmp=joinpath(dir_output,"bode.out")
+
+if nvpts==1
+	for i=1:nin*nout
+		Gaston.gnuplot_send("set term qt persist $i")
+		Gaston.gnuplot_send("set logscale x")
+		Gaston.gnuplot_send("plot '$tmp' using 1:2+$i every ::2 with lines")
+	end
+else
+	for i=1:nin*nout
+		Gaston.gnuplot_send("set term qt persist $i")
+		Gaston.gnuplot_send("set logscale x")
+		Gaston.gnuplot_send("splot '$tmp' using 1:2:2+$i every ::2 with lines")
+	end
+
+	tmp=joinpath(dir_output,"eigen.out")
+	Gaston.gnuplot_send("unset logscale x")
+	Gaston.gnuplot_send("set term qt persist $(nin*nout+1)")
+	Gaston.gnuplot_send("plot '$tmp' using 2:(\$3==0?NaN:\$3) every ::2 with points pt 7 lw 2, '$tmp' using 2:(\$4==0?NaN:\$4) with points pt 6 lw 2")
 end
 
 dss_path=joinpath(dir_output,dir_raw,"dss")

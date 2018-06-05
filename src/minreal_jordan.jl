@@ -42,15 +42,15 @@ function minreal_jordan(sys_in,verbose=false)
 
 	Aj=Tridiagonal(ld,md,ud)
 
-	if verbose
-		println("Checking factorization...")
-		chk=norm(AA-jvec*Aj*pinv(jvec))
-		if chk<1e-8
-		println("Checks ok.")
-		else
-			println("Problem with factorization!  Check=$(chk).")
-		end
-	end
+	# if verbose
+	# 	println("Checking factorization...")
+	# 	chk=norm(AA-jvec*Aj*pinv(jvec))
+	# 	if chk<1e-8
+	# 	println("Checks ok.")
+	# 	else
+	# 		println("Problem with factorization!  Check=$(chk).")
+	# 	end
+	# end
 
 	r=rank(jvec)
 	verbose && println("Jordan vector rank is $r, size $m.")
