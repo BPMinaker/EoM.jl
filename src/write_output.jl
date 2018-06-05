@@ -168,19 +168,28 @@ if nvpts==1
 	for i=1:nin*nout
 		Gaston.gnuplot_send("set term qt persist $i")
 		Gaston.gnuplot_send("set logscale x")
-		Gaston.gnuplot_send("plot '$tmp' using 1:2+$i every ::2 with lines")
+		Gaston.gnuplot_send("set xlabel 'Frequency [Hz]'")
+		Gaston.gnuplot_send("set ylabel 'Gain [dB]'")
+		Gaston.gnuplot_send("plot '$tmp' using 1:2+$i with lines title '' ")
 	end
 else
 	for i=1:nin*nout
 		Gaston.gnuplot_send("set term qt persist $i")
 		Gaston.gnuplot_send("set logscale x")
-		Gaston.gnuplot_send("splot '$tmp' using 1:2:2+$i every ::2 with lines")
+		Gaston.gnuplot_send("set xlabel 'Frequency [Hz]'")
+		Gaston.gnuplot_send("set ylabel 'vpoint'")
+		Gaston.gnuplot_send("set zlabel 'Gain [dB]'")
+		Gaston.gnuplot_send("splot '$tmp' using 1:2:2+$i with lines title '' ")
 	end
 
 	tmp=joinpath(dir_output,"eigen.out")
 	Gaston.gnuplot_send("unset logscale x")
+	Gaston.gnuplot_send("set yrange [-60<*:]")
+	Gaston.gnuplot_send("set xzeroaxis")
+	Gaston.gnuplot_send("set xlabel 'vpoint'")
+	Gaston.gnuplot_send("set ylabel 'Eigenvalue [rad/s]'")
 	Gaston.gnuplot_send("set term qt persist $(nin*nout+1)")
-	Gaston.gnuplot_send("plot '$tmp' using 2:(\$3==0?NaN:\$3) every ::2 with points pt 7 lw 2, '$tmp' using 2:(\$4==0?NaN:\$4) with points pt 6 lw 2")
+	Gaston.gnuplot_send("plot '$tmp' using 2:(abs(\$3)<1e-4?NaN:\$3) with points pt 7 lw 2 title 'Real', '$tmp' using 2:(abs(\$4)<1e-4?NaN:\$4) with points pt 6 lw 2 title 'Imaginary'")
 end
 
 dss_path=joinpath(dir_output,dir_raw,"dss")
