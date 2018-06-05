@@ -104,7 +104,7 @@ function minreal_jordan(sys_in,verbose=false)
 
 	Ajm=Aj
 
-# println(Ajm)
+println(Ajm)
 # println(Bjm)
 # println(Cjm)
 
@@ -115,7 +115,7 @@ function minreal_jordan(sys_in,verbose=false)
 		push!(match,t)  ## record the rest
 	end
 	match=unique(match)  ## find the unique entries
-	#println(match)
+	println(match)
 	#readline(STDIN)
 
 	dup=Int[]
