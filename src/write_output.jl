@@ -178,7 +178,7 @@ else
 		Gaston.gnuplot_send("set logscale x")
 		Gaston.gnuplot_send("set xlabel 'Frequency [Hz]'")
 		Gaston.gnuplot_send("set ylabel 'vpoint'")
-		Gaston.gnuplot_send("set zlabel 'Gain [dB]'")
+		Gaston.gnuplot_send("set zlabel 'Gain [dB]' rotate by 90")
 		Gaston.gnuplot_send("splot '$tmp' using 1:2:2+$i with lines title '' ")
 	end
 
