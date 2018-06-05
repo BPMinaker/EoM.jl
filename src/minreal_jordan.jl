@@ -9,7 +9,7 @@ function minreal_jordan(sys_in,verbose=false)
 	val,vec=eig(AA)
 	m=length(val)
 
-	# println(val)
+	#println(val)
 
 	jvec=vec
 	md=real(val)
@@ -104,7 +104,7 @@ function minreal_jordan(sys_in,verbose=false)
 
 	Ajm=Aj
 
-println(Ajm)
+# println(Ajm)
 # println(Bjm)
 # println(Cjm)
 
@@ -115,7 +115,7 @@ println(Ajm)
 		push!(match,t)  ## record the rest
 	end
 	match=unique(match)  ## find the unique entries
-	println(match)
+	#println(match)
 	#readline(STDIN)
 
 	dup=Int[]
@@ -182,18 +182,22 @@ println(Ajm)
 					println("Something weird happened")
 				end
 
-				#H2=[y z]'*[w x]
-				#println(norm(H-H2))
+				H2=[y z]'*[w x]
+				err=norm(H-H2)
 
-				Bjm[match[i][1],:]=y
-				Bjm[match[i+1][1],:]=z
-				Cjm[:,match[i][1]]=w
-				Cjm[:,match[i+1][1]]=x
-
-
-				push!(dup,match[i][2])
-				push!(dup,match[i+1][2])
-				i+=2
+				if err>1e-7
+					Bjm[match[i][2]:match[i+1][2],:]=[0 1;-1 0]*Bjm[match[i][2]:match[i+1][2],:]
+					Cjm[:,match[i][2]:match[i+1][2]]=Cjm[:,match[i][2]:match[i+1][2]]*[0 -1;1 0]
+					verbose && println("No solution found, attempting rotation of input and outout matrices...")
+				else
+					Bjm[match[i][1],:]=y
+					Bjm[match[i+1][1],:]=z
+					Cjm[:,match[i][1]]=w
+					Cjm[:,match[i+1][1]]=x
+					push!(dup,match[i][2])
+					push!(dup,match[i+1][2])
+					i+=2
+				end
 			else ## matching single root
 				println("Matching single root, not implemented yet...")
 				i+=1
