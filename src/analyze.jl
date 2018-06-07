@@ -44,13 +44,37 @@ low=floor(log10(0.8*minimum(lower)/2/pi))
 high=ceil(log10(1.25*maximum(upper)/2/pi))
 w=2*pi*logspace(low,high,wpts)
 
+
 for i=1:nvpts
+
 	result[i].w=w
 	nin=size(result[i].ss_eqns.B,2)
 	nout=size(result[i].ss_eqns.C,1)
+#	nj=size(result[i].jordan.A,1)
 
 	result[i].freq_resp=zeros(nout,nin,length(w))
 
+# tic()
+# 	for j=1:wpts
+#
+# 		k=1
+# 		kern=zeros(nj,nj)+1im*zeros(nj,nj)
+# 		while k<=nj
+# 			if k<nj && result[i].jordan.A[k,k]==result[i].jordan.A[k+1,k+1]  ## two by two block
+# 				inc=2
+# 			else  ## scalar inverse
+# 				inc=1
+# 			end
+# 			l=k+inc-1
+# 			kern[k:l,k:l]=inv(eye(inc)*w[j]im-result[i].jordan.A[k:l,k:l])
+# 			k+=inc
+# 		end
+#
+# 		result[i].freq_resp[:,:,j]=result[i].jordan.C*kern*result[i].jordan.B+result[i].jordan.D
+#
+# 	end
+#
+# 	toc()
 
 	for j=1:wpts
 		result[i].freq_resp[:,:,j]=result[i].ss_eqns.C*((I*w[j]im-result[i].ss_eqns.A)\result[i].ss_eqns.B)+result[i].ss_eqns.D
