@@ -164,20 +164,23 @@ end
 
 tmp=joinpath(dir_output,"bode.out")
 
-@gp verb=0  ## turn off gnuplot messages
+if verbose
+	@gp verb=0  ## turn off gnuplot messages
 
-if nvpts==1
-	for i=1:nin*nout
-		@gp("set term qt persist $i","set logscale x","set xzeroaxis","set xlabel 'Frequency [Hz]'","set ylabel 'Gain [dB]'","plot '$tmp' using 1:2+$i with lines title '' ")
-	end
-else
-	for i=1:nin*nout
-		@gp("set term qt persist $i","set logscale x","set xlabel 'Frequency [Hz]'","set ylabel 'vpoint'","set zlabel 'Gain [dB]' rotate by 90","splot '$tmp' using 1:2:2+$i with lines title '' ")
-	end
+	if nvpts==1
+		for i=1:nin*nout
+			@gp("set term qt persist $i","set logscale x","set xzeroaxis","set xlabel 'Frequency [Hz]'","set ylabel 'Gain [dB]'","plot '$tmp' using 1:2+$i with lines title '' ")
+		end
+	else
+		for i=1:nin*nout
+			@gp("set term qt persist $i","set logscale x","set xlabel 'Frequency [Hz]'","set ylabel 'vpoint'","set zlabel 'Gain [dB]' rotate by 90","splot '$tmp' using 1:2:2+$i with lines title '' ")
+		end
 
-	tmp=joinpath(dir_output,"eigen.out")
-	@gp("unset logscale x","set yrange [-60<*:]","set xzeroaxis","set xlabel 'vpoint'","set ylabel 'Eigenvalue [rad/s]'","set term qt persist $(nin*nout+1)","plot '$tmp' using 2:(abs(\$3)<1e-4?NaN:\$3) with points pt 7 lw 2 title 'Real', '$tmp' using 2:(abs(\$4)<1e-4?NaN:\$4) with points pt 6 lw 2 title 'Imaginary'")
+		tmp=joinpath(dir_output,"eigen.out")
+		@gp("unset logscale x","set yrange [-60<*:]","set xzeroaxis","set xlabel 'vpoint'","set ylabel 'Eigenvalue [rad/s]'","set term qt persist $(nin*nout+1)","plot '$tmp' using 2:(abs(\$3)<1e-4?NaN:\$3) with points pt 7 lw 2 title 'Real', '$tmp' using 2:(abs(\$4)<1e-4?NaN:\$4) with points pt 6 lw 2 title 'Imaginary'")
+	end
 end
+
 
 dss_path=joinpath(dir_output,dir_raw,"dss")
 ss_path=joinpath(dir_output,dir_raw,"ss")
