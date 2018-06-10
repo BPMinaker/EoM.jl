@@ -67,26 +67,22 @@ function minreal_jordan(sys_in,verbose=false)
 				tv=jvec[:,i+1]
 				jvec[:,i+1]=pinv([AA-val[i]*eye(m);jvec[:,i]'])*[jvec[:,i];0]
 				#println((AA-val[i]*eye(m))*jvec[:,i+1]-jvec[:,i])
-				if rank(jvec)<m
-					jvec[:,i+1]=tv
-					println("Doesn't help.  Undoing...")
-				else
+				#if rank(jvec)<m
+				#	jvec[:,i+1]=tv
+				#	println("Doesn't help.  Undoing...")
+				#else
 					Aj[i,i+1]=1
 					push!(dpl,i)
 					push!(dpl,i+1)
-					verbose && println("Vector $(i+1) replaced.")
+					verbose && println("Vector $(i+1) replaced.  Rank now $(rank(jvec))...")
 					i+=1
-				end
+				#end
 			end
 
 			if verbose
 				println("Checking factorization...")
 				chk=norm(AA-jvec*Aj*inv(jvec))
-				if chk<1e-8
-					println("Checks ok.")
-				else
-					println("Problem with factorization!  Check=$(chk).")
-				end
+				println("Factorization check=$(chk)...")
 			end
 		end
 		i+=1
