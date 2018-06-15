@@ -168,8 +168,8 @@ if verbose
 	@gp verb=0  ## turn off gnuplot messages
 
 	if nvpts==1
-		for i=1:nin*nout
-			@gp("set term qt persist $i","set logscale x","set xzeroaxis","set xlabel 'Frequency [Hz]'","set ylabel 'Gain [dB]'","plot '$tmp' using 1:2+$i with lines title '' ")
+		for i=1:nin
+			@gp("set term qt persist $i","set logscale x","set xzeroaxis","set xlabel 'Frequency [Hz]'","set ylabel 'Gain [dB]'","plot for [z=$(3+(i-1)*nout):$(2+i*nout)] '$tmp' using 1:z with lines title '' ")
 		end
 	else
 		for i=1:nin*nout
