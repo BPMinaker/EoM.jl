@@ -25,8 +25,8 @@ wpts=500
 for i=1:nvpts
 	result[i]=analysis()
 
-	result[i].ss_eqns=dss2ss(dss_eqns[i],verbose)  ## Reduce to standard form
-	result[i].jordan=minreal_jordan(result[i].ss_eqns,verbose)  ## Reduce to minimal Jordan form
+	result[i].ss_eqns=dss2ss(dss_eqns[i],verbose && i<2)  ## Reduce to standard form
+	result[i].jordan=minreal_jordan(result[i].ss_eqns,verbose && i<2)  ## Reduce to minimal Jordan form
 
 	F=eigfact(dss_eqns[i].A,dss_eqns[i].E)  ## Find the eigen
 #	println(F.values)

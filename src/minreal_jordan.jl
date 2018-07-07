@@ -79,11 +79,9 @@ function minreal_jordan(sys_in,verbose=false)
 				#end
 			end
 
-			if verbose
-				println("Checking factorization...")
-				chk=norm(AA-jvec*Aj*inv(jvec))
-				println("Factorization check=$(chk)...")
-			end
+			chk=norm(AA-jvec*Aj*inv(jvec))
+			chk>1e-8 && println("Factorization check=$(chk)...")
+
 		end
 		i+=1
 		r=rank(jvec)
