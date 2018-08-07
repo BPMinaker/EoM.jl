@@ -87,6 +87,22 @@ for item in the_system.beams
 	idx2+=1
 end
 
+for item in the_system.actuators
+	pointdata*="{$idx} {$(item.name) } $(item.location[1][1]) $(item.location[1][2]) $(item.location[1][3]) {} {} {}\n"
+	pointdata*="{} {} $(item.location[2][1]) $(item.location[2][2]) $(item.location[2][3]) {} {} {}\n"
+	stiffnessdata*="{$idx2} {$(item.name)} $(item.gain) {} {} {}\n"
+	idx+=1
+	idx2+=1
+end
+
+for item in the_system.sensors
+	pointdata*="{$idx} {$(item.name) } $(item.location[1][1]) $(item.location[1][2]) $(item.location[1][3]) {} {} {}\n"
+	pointdata*="{} {} $(item.location[2][1]) $(item.location[2][2]) $(item.location[2][3]) {} {} {}\n"
+	stiffnessdata*="{$idx2} {$(item.name)} $(item.gain) {} {} {}\n"
+	idx+=1
+	idx2+=1
+end
+
 bodydata,pointdata,stiffnessdata
 
 end  ## Leave
