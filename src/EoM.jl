@@ -2,8 +2,6 @@
 
 module EoM
 
-using Gnuplot
-
 export run_eom
 export analyze
 export write_output
