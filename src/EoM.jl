@@ -3,6 +3,7 @@
 module EoM
 
 using Printf
+using SparseArrays
 
 export run_eom
 export analyze
