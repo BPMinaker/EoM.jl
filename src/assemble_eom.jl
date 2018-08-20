@@ -31,8 +31,8 @@ data.KC=[data.velocity sparse(-1.0I,dim,dim) spzeros(dim,nin); stiff_mtx damp_mt
 s=size(data.right_jacobian,1)  ## Compute size of J matrices
 
 if(s>0)
-	r_orth=nullspace(full([data.right_jacobian zeros(s,nin)]))
-	l_orth=nullspace(full([data.left_jacobian zeros(s,nin)]))
+	r_orth=nullspace(Matrix([data.right_jacobian zeros(s,nin)]))
+	l_orth=nullspace(Matrix([data.left_jacobian zeros(s,nin)]))
 else
 	r_orth=speye(2*dim+nin)
 	l_orth=r_orth
@@ -58,10 +58,10 @@ for i=1:nout
 		mask=-data.KC[1:dim,:]
 
 	elseif(column[i]==4)  ## w dot
-		mask=-pinv(full(data.M[dim+1:2*dim,dim+1:2*dim]))*data.KC(dim+1:2*dim,:)
+		mask=-pinv(Matrix(data.M[dim+1:2*dim,dim+1:2*dim]))*data.KC(dim+1:2*dim,:)
 
 	elseif(column[i]==5) ## p dot dot
-			mask=[data.velocity^2 -data.velocity  zeros(dim,nin)] - pinv(full(data.M[dim+1:2*dim,dim+1:2*dim]))*data.KC[dim+1:2*dim,:]
+			mask=[data.velocity^2 -data.velocity  zeros(dim,nin)] - pinv(Matrix(data.M[dim+1:2*dim,dim+1:2*dim]))*data.KC[dim+1:2*dim,:]
 	else
 		error("Matrix size error")
 	end
