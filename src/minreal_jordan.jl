@@ -129,9 +129,11 @@ function minreal_jordan(sys_in,verbose=false)
 	match=Vector[]
 	for i=1:m
 		t=findall(abs.(val.-val[i]).<1e-6)  ## find all matching eigenvalues
-		if contains(==,dpl,i)  ## if this root has a duplicate
+		#if contains(==,dpl,i)  ## if this root has a duplicate
+		if any((y->begin ==(y,dpl) end),i)
 			t=setdiff(t,dplb)  ## remove all duplcate roots
-		elseif contains(==,dplb,i)  ## or if this root is a duplcate
+		elseif any((y->begin ==(y,dplb) end),i)
+			#contains(==,dplb,i)  ## or if this root is a duplcate
 			t=setdiff(t,dpl)  ## remove all the originals
 		end
 		push!(match,t)  ## record the rest
@@ -275,7 +277,7 @@ function minreal_jordan(sys_in,verbose=false)
 	end
 
 	# println(sens)
-	flag=find(sens.>maximum(sens)*1e-5)  ## find roots where sensitivity is more than 1e-5 times maximum
+	flag=findall(sens.>maximum(sens)*1e-5)  ## find roots where sensitivity is more than 1e-5 times maximum
 	# println(flag)
 
 	t=setdiff(ind,flag)
