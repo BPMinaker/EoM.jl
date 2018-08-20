@@ -96,17 +96,17 @@ mutable struct mbd_system
 	function mbd_system(
 	name="Unnamed System",
 	vpt=0,
-	item=Vector{Any}(0),
-	bodys=Vector{body}(0),
-	links=Vector{link}(0),
-	springs=Vector{spring}(0),
-	rigid_points=Vector{rigid_point}(0),
-	flex_points=Vector{flex_point}(0),
-	nh_points=Vector{nh_point}(0),
-	beams=Vector{beam}(0),
-	loads=Vector{load}(0),
-	sensors=Vector{sensor}(0),
-	actuators=Vector{actuator}(0))
+	item=Vector{Any}(undef,0),
+	bodys=Vector{body}(undef,0),
+	links=Vector{link}(undef,0),
+	springs=Vector{spring}(undef,0),
+	rigid_points=Vector{rigid_point}(undef,0),
+	flex_points=Vector{flex_point}(undef,0),
+	nh_points=Vector{nh_point}(undef,0),
+	beams=Vector{beam}(undef,0),
+	loads=Vector{load}(undef,0),
+	sensors=Vector{sensor}(undef,0),
+	actuators=Vector{actuator}(undef,0))
 		new(name,vpt,item,bodys,links,springs,rigid_points,flex_points,nh_points,beams,loads,sensors,actuators)
 	end
 end
@@ -157,15 +157,15 @@ mutable struct eom_data
 	constraint=sparse(1.0I,0,0),
 	nh_constraint=sparse(1.0I,0,0),
 	deflection=sparse(1.0I,0,0),
-	lambda=Vector{Float64}(0),
-	static=Vector{Float64}(0),
+	lambda=Vector{Float64}(undef,0),
+	static=Vector{Float64}(undef,0),
 	selection=sparse(1.0I,0,0),
-	spring_stiffness=Vector{Float64}(0),
-	subset_spring_stiffness=Vector{Float64}(0),
+	spring_stiffness=Vector{Float64}(undef,0),
+	subset_spring_stiffness=Vector{Float64}(undef,0),
 	left_jacobian=sparse(1.0I,0,0),
 	right_jacobian=sparse(1.0I,0,0),
-	force=Vector{Float64}(0),
-	preload=Vector{Float64}(0),
+	force=Vector{Float64}(undef,0),
+	preload=Vector{Float64}(undef,0),
 	input=sparse(1.0I,0,0),
 	input_rate=sparse(1.0I,0,0),
 	output=sparse(1.0I,0,0),
@@ -186,12 +186,12 @@ mutable struct dss_data
 
 
 	function dss_data(
-		A=Array{Float64}(0,0),
-		B=Array{Float64}(0,0),
-		C=Array{Float64}(0,0),
-		D=Array{Float64}(0,0),
-		E=Array{Float64}(0,0),
-		phys=Array{Float64}(0,0))
+		A=Array{Float64}(undef,0,0),
+		B=Array{Float64}(undef,0,0),
+		C=Array{Float64}(undef,0,0),
+		D=Array{Float64}(undef,0,0),
+		E=Array{Float64}(undef,0,0),
+		phys=Array{Float64}(undef,0,0))
 			new(A,B,C,D,E,phys)
 	end
 
@@ -204,10 +204,10 @@ mutable struct ss_data
 	D::Array{Float64,2}
 
 	function ss_data(
-		A=Array{Float64}(0,0),
-		B=Array{Float64}(0,0),
-		C=Array{Float64}(0,0),
-		D=Array{Float64}(0,0))
+		A=Array{Float64}(undef,0,0),
+		B=Array{Float64}(undef,0,0),
+		C=Array{Float64}(undef,0,0),
+		D=Array{Float64}(undef,0,0))
 			new(A,B,C,D)
 	end
 
@@ -228,14 +228,14 @@ mutable struct analysis
 	function analysis(
 	ss_eqns=ss_data(),
 	jordan=ss_data(),
-	e_vect=Array{Float64}(0,0),
-	modes=Array{Float64}(0,0),
-	e_val=Vector{Float64}(0),
-	w=Vector{Float64}(0),
-	freq_resp=Array{Float64}(0,0,0),
-	ss_resp=Array{Float64}(0,0),
-	zero_val=Vector{Float64}(0),
-	hsv=Vector{Float64}(0))
+	e_vect=Array{Float64}(undef,0,0),
+	modes=Array{Float64}(undef,0,0),
+	e_val=Vector{Float64}(undef,0),
+	w=Vector{Float64}(undef,0),
+	freq_resp=Array{Float64}(undef,0,0,0),
+	ss_resp=Array{Float64}(undef,0,0),
+	zero_val=Vector{Float64}(undef,0),
+	hsv=Vector{Float64}(undef,0))
 		new(ss_eqns,jordan,e_vect,modes,e_val,w,freq_resp,ss_resp,zero_val,hsv)
 	end
 end
