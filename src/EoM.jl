@@ -4,6 +4,7 @@ module EoM
 
 using Printf
 using SparseArrays
+using LinearAlgebra
 
 export run_eom
 export analyze
