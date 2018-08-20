@@ -28,7 +28,7 @@ s=size(test_mtx,2)
 # [ J'   K  H'S'P]{x} ={-f}   forces sum to zero
 # [ 0   PSH    P ]{d} {fp}   some of the elastic preloads are known
 
-ind_test_mtx=[spzeros(q,q) data.constraint spzeros(q,p); data.constraint' data.stiffness data.deflection'*data.selection'*sparse(Diagonal(data.subset_spring_stiffness)); spzeros(p,q) sparse(Diagonal(data.subset_spring_stiffness))*data.selection*data.deflection sparse(Diagonal(data.subset_spring_stiffness))]
+ind_test_mtx=[spzeros(q,q) data.constraint spzeros(q,p); data.constraint' data.stiffness data.deflection'*data.selection'*sparse(diagm(0=>data.subset_spring_stiffness)); spzeros(p,q) sparse(diagm(0=>data.subset_spring_stiffness))*data.selection*data.deflection sparse(diagm(0=>data.subset_spring_stiffness))]
 t=size(ind_test_mtx,1)
 
 sumf=0
@@ -58,18 +58,18 @@ else
 		println("Trying to use item stiffness to determine preloads...")
 	end
 
-	if(rank(full(ind_test_mtx))==t)
+	if(rank(Matrix(ind_test_mtx))==t)
 		verb && println("Finding all forces of constraint, flexible item preloads, and deflections...")
-		temp=full(ind_test_mtx)\[zeros(q);-data.force;data.preload]
+		temp=Matrix(ind_test_mtx)\[zeros(q);-data.force;data.preload]
 	else
 		if(verb)
 			println("Warning: some preloads cannot be found uniquely!")
 			println("Attempting a trial solution anyway...")
 		end
-		temp=pinv(full(ind_test_mtx))*[zeros(q);-data.force;data.preload]
+		temp=pinv(Matrix(ind_test_mtx))*[zeros(q);-data.force;data.preload]
 	end
 	static=-temp[q+1:q+r]
-	lambda=[temp[1:q];[diagm(data.spring_stiffness)*data.deflection data.selection'*diagm(data.subset_spring_stiffness)]*temp[q+1:end]]
+	lambda=[temp[1:q];[diagm(0=>data.spring_stiffness)*data.deflection data.selection'*diagm(0=>data.subset_spring_stiffness)]*temp[q+1:end]]
 	sumf=test_mtx[1:r,:]*lambda+data.force
 end
 
