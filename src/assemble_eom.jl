@@ -24,9 +24,9 @@ dim=size(data.constraint,2)
 nin=size(data.input,2)
 nout=size(data.output,1)
 
-data.M=[speye(dim) spzeros(dim,dim+nin); spzeros(dim,dim) mass_mtx -data.input_rate; spzeros(nin,2*dim+nin)]
+data.M=[sparse(1.0I,dim,dim) spzeros(dim,dim+nin); spzeros(dim,dim) mass_mtx -data.input_rate; spzeros(nin,2*dim+nin)]
 
-data.KC=[data.velocity -speye(dim) spzeros(dim,nin); stiff_mtx damp_mtx  -data.input; spzeros(nin,2*dim) speye(nin)];
+data.KC=[data.velocity sparse(-1.0I,dim,dim) spzeros(dim,nin); stiff_mtx damp_mtx  -data.input; spzeros(nin,2*dim) sparse(1.0I,nin,nin)];
 
 s=size(data.right_jacobian,1)  ## Compute size of J matrices
 

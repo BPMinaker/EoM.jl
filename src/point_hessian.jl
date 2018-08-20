@@ -44,45 +44,45 @@ for i in items
 	ff2=skew(re)*skew(frc)
 
 	## Force terms
-	row=pointer1+(1:3)
-	col=pointer1+(4:6)
+	row=pointer1.+(1:3)
+	col=pointer1.+(4:6)
 	mtx[row,col]-=ff  ## Body1 motion
-	col=pointer3+(4:6)
+	col=pointer3.+(4:6)
 	mtx[row,col]+=ff  ## Reference motion
 
-	row=pointer2+(1:3)
-	col=pointer2+(4:6)
+	row=pointer2.+(1:3)
+	col=pointer2.+(4:6)
 	mtx[row,col]+=ff  ## Body2 motion
-	col=pointer3+(4:6)
+	col=pointer3.+(4:6)
 	mtx[row,col]-=ff  ## Reference motion
 
 	## Moment terms
-	row=pointer1+(4:6)
-	col=pointer1+(4:6)
+	row=pointer1.+(4:6)
+	col=pointer1.+(4:6)
 	mtx[row,col]-=ff1
-	col=pointer3+(4:6)
+	col=pointer3.+(4:6)
 	mtx[row,col]+=ff1
 
-	row=pointer2+(4:6)
-	col=pointer2+(4:6)
+	row=pointer2.+(4:6)
+	col=pointer2.+(4:6)
 	mtx[row,col]+=ff2
-	col=pointer3+(4:6)
+	col=pointer3.+(4:6)
 	mtx[row,col]-=ff2
 
 	## If relative motion can occur, assume re varies, so add change in moment to body2
 	## Note that for force==0 or forces==3, this should have no effect, as either force=0 or deflection=0
 	## Translation terms
-	row=pointer2+(4:6)
-	col=pointer1+(1:3)
+	row=pointer2.+(4:6)
+	col=pointer1.+(1:3)
 	mtx[row,col]-=ff
-	col=pointer2+(1:3)
+	col=pointer2.+(1:3)
 	mtx[row,col]+=ff
 
 	## Rotation terms
 	## Note transpose here: skew(f)skew(r) = transpose(skew(r)skew(f))
-	col=pointer1+(4:6)
+	col=pointer1.+(4:6)
 	mtx[row,col]+=ff1'
-	col=pointer2+(4:6)
+	col=pointer2.+(4:6)
 	mtx[row,col]-=ff2'
 
 	## Capture change in direction of moment also
@@ -91,42 +91,42 @@ for i in items
 	if(norm(ra)==1) ## Rolling contact -- ignore effect of constraint moments on tangent stiffness -- correct???
 		ff=-ff1'*(ra*ra')
 
-		row=pointer1+(4:6)
-		col=pointer1+(4:6)
+		row=pointer1.+(4:6)
+		col=pointer1.+(4:6)
 		mtx[row,col]-=ff  ## Body1 motion
-		col=pointer2+(4:6)
+		col=pointer2.+(4:6)
 		mtx[row,col]+=ff  ## Reference motion
 
-		row=pointer2+(4:6)
-		col=pointer2+(4:6)
+		row=pointer2.+(4:6)
+		col=pointer2.+(4:6)
 		mtx[row,col]-=ff  ## Body2 motion
-		col=pointer1+(4:6)
+		col=pointer1.+(4:6)
 		mtx[row,col]+=ff  ## Reference motion
 
 	elseif(moments==2) ## If hinge or revolute joint
 		ff=skew(mmt)*(a*a')  ## Note (aa')(theta) is the component of theta in the a dir'n
 
-		row=pointer1+(4:6)
-		col=pointer1+(4:6)
+		row=pointer1.+(4:6)
+		col=pointer1.+(4:6)
 		mtx[row,col]-=ff  ## Body1 motion
 
-		row=pointer2+(4:6)
-		col=pointer2+(4:6)
+		row=pointer2.+(4:6)
+		col=pointer2.+(4:6)
 		mtx[row,col]+=ff  ## Body2 motion
 
 	elseif(moments==1 )  ## If CV joint
 		ff=skew(mmt)/2  ## Assume intermediate frame
 
-		row=pointer1+(4:6)
-		col=pointer1+(4:6)
+		row=pointer1.+(4:6)
+		col=pointer1.+(4:6)
 		mtx[row,col]-=ff  ## Body1 motion
-		col=pointer2+(4:6)
+		col=pointer2.+(4:6)
 		mtx[row,col]+=ff  ## Reference motion
 
-		row=pointer2+(4:6)
-		col=pointer2+(4:6)
+		row=pointer2.+(4:6)
+		col=pointer2.+(4:6)
 		mtx[row,col]+=ff  ## Body2 motion
-		col=pointer1+(4:6)
+		col=pointer1.+(4:6)
 		mtx[row,col]-=ff  ## Reference motion
 
 	end

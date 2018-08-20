@@ -25,12 +25,12 @@ for i in items
 	pointer2=6*(i.body_number[2]-1)  ## Column number of the end body
 	nrows=i.forces+i.moments
 
-	B1=[i.b_mtx[1];i.b_mtx[2]]*[eye(3) -skew(rs); zeros(3,3) eye(3)]; ## The skew rs makes 'theta'x'r'...
-	B2=[i.b_mtx[1];i.b_mtx[2]]*[eye(3) -skew(re); zeros(3,3) eye(3)]; ## rotation of the body that creates a translation at the joint, i.e, x1-theta*r = 0
+	B1=[i.b_mtx[1];i.b_mtx[2]]*[Matrix(1.0I,3,3) -skew(rs); zeros(3,3) Matrix(1.0I,3,3)]; ## The skew rs makes 'theta'x'r'...
+	B2=[i.b_mtx[1];i.b_mtx[2]]*[Matrix(1.0I,3,3) -skew(re); zeros(3,3) Matrix(1.0I,3,3)]; ## rotation of the body that creates a translation at the joint, i.e, x1-theta*r = 0
 
 	B=spzeros(nrows,6*num)
-	B[:,pointer1+(1:6)]=B1 ## Positive
-	B[:,pointer2+(1:6)]=-B2 ## Negative, so the equations sum to zero, i.e x1 - x3 = 0
+	B[:,pointer1.+(1:6)]=B1 ## Positive
+	B[:,pointer2.+(1:6)]=-B2 ## Negative, so the equations sum to zero, i.e x1 - x3 = 0
 
 	mtx[idx:idx+nrows-1,:]=B ## Stack up the matrix for each flex point or rigid point
 	idx=idx+nrows
