@@ -28,7 +28,7 @@ mutable struct rigid_point
 	axis=zeros(3),
 	rolling_axis=zeros(3),
 	radius=[zeros(3), zeros(3)],
-	preload=Vector{Float64}(0),
+	preload=Vector{Float64}(undef,0),
 	unit=zeros(3),
 	rolling_unit=zeros(3),
 	nu=zeros(3,2),

@@ -34,7 +34,7 @@ mutable struct flex_point
 	stiffness=zeros(2),
 	damping=zeros(2),
 	d_mtx=zeros(0,0),
-	preload=Vector{Float64}(0),
+	preload=Vector{Float64}(undef,0),
 	unit=zeros(3),
 	rolling_unit=zeros(3),
 	nu=zeros(3,2),
