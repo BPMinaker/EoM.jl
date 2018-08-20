@@ -24,7 +24,7 @@ line_bend_jacobian(the_system.beams,n)]
 
 s=size(defln_mtx,1)  ## s=the number of rows in the deflection matrix
 if(s>0)  ## If the deflection matrix has more than zero rows (i.e. there are elastic items in the system)
-	rk=rank(full(defln_mtx)) ## rk=the rank (the number of linearly independent rows or columns) of the deflection matrix
+	rk=rank(Matrix(defln_mtx)) ## rk=the rank (the number of linearly independent rows or columns) of the deflection matrix
 	if(rk==s) ## If the rank equals the number of rows, the flexible connectors are statically determinate
 		verb && println("Flexible connectors are statically determinate. Good.")  ## Give success message
 	else
@@ -78,11 +78,11 @@ if(s>0)  ## If the deflection matrix has more than zero rows (i.e. there are ela
 	stiff=blockdiag(sparse(Diagonal(spring_stiff)),flex_point_stiff,sparse(Diagonal(beam_stiff)))
 
 	## Convert damping row vector into diagonal matrix  -> a column for each elastic item
- 	dmpng=blockdiag(sparse(Diagonal(spring_dmpng)),flex_point_dmpng,sparse(Diagonal(zeros(beam_stiff))))
+ 	dmpng=blockdiag(sparse(Diagonal(spring_dmpng)),flex_point_dmpng,sparse(Diagonal(zero(beam_stiff))))
  	#zeros(1,3*the_system.ntriangle_3s) zeros(1,5*the_system.ntriangle_5s) ])
 
 	## Compute the diagonal inertia values, mostly zero except the inertance of the springs
-	inertia=sparse(zeros(stiff))
+	inertia=sparse(zero(stiff))
 	inertia[1:length(the_system.springs),1:length(the_system.springs)]=sparse(Diagonal(spring_inertia))
 	#	zeros(1,3*the_system.ntriangle_3s) ...
 	#	zeros(1,5*the_system.ntriangle_5s)]), ...
