@@ -2,8 +2,6 @@
 
 module EoM
 
-using Pkg
-
 export run_eom
 export analyze
 export write_output
@@ -13,11 +11,11 @@ export mbd_system
 export thin_rod
 export mirror!
 
-fldr=joinpath(Pkg.dir(),"EoM","src","types")
-types=readdir(fldr)
-for i in types
-	include(joinpath(fldr,i))
-end
+# fldr=joinpath(Pkg.dir(),"EoM","src","types")
+# types=readdir(fldr)
+# for i in types
+# 	include(joinpath(fldr,i))
+# end
 
 #export run_eom_nl
 #include("rotate.jl")
@@ -57,11 +55,24 @@ include("syst_props.jl")
 include("mirror.jl")
 include("thin_rod.jl")
 
-fldr=joinpath(Pkg.dir(),"EoM","examples")
-xmpls=readdir(fldr)
-for i in xmpls
-	include(joinpath(fldr,i))
-end
+
+include(joinpath("types","actuator.jl"))
+include(joinpath("types","beam.jl"))
+include(joinpath("types","body.jl"))
+include(joinpath("types","flex_point.jl"))
+include(joinpath("types","link.jl"))
+include(joinpath("types","load.jl"))
+include(joinpath("types","nh_point.jl"))
+include(joinpath("types","rigid_point.jl"))
+include(joinpath("types","sensor.jl"))
+include(joinpath("types","spring.jl"))
+
+
+# fldr=joinpath(Pkg.dir(),"EoM","examples")
+# xmpls=readdir(fldr)
+# for i in xmpls
+# 	include(joinpath(fldr,i))
+# end
 
 mutable struct mbd_system
 	name::String
