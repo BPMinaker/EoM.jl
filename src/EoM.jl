@@ -2,6 +2,8 @@
 
 module EoM
 
+using Pkg
+
 export run_eom
 export analyze
 export write_output

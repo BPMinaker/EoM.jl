@@ -3,7 +3,7 @@ export name
 export gain
 export rate_gain
 
-type actuator
+mutable struct actuator
 	name::String
 	group::String
 	location::Vector{Vector{Float64}}

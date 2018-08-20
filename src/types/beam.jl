@@ -1,6 +1,6 @@
 export beam
 
-type beam
+mutable struct beam
 	name::String
 	group::String
 	location::Vector{Vector{Float64}}

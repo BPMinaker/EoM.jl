@@ -1,6 +1,6 @@
 export spring
 
-type spring
+mutable struct spring
 	name::String
 	group::String
 	location::Vector{Vector{Float64}}

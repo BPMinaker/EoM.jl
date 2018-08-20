@@ -1,6 +1,6 @@
 export flex_point
 
-type flex_point
+mutable struct flex_point
 	name::String
 	group::String
 	location::Vector{Float64}

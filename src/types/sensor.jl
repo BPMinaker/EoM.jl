@@ -2,7 +2,7 @@ export sensor
 export name
 export gain
 
-type sensor
+mutable struct sensor
 	name::String
 	group::String
 	location::Vector{Vector{Float64}}

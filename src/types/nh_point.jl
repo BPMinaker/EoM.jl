@@ -1,6 +1,6 @@
 export nh_point
 
-type nh_point
+mutable struct nh_point
 	name::String
 	group::String
 	location::Vector{Float64}

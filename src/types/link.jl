@@ -1,6 +1,6 @@
 export link
 
-type link
+mutable struct link
 	name::String
 	group::String
 	location::Vector{Vector{Float64}}

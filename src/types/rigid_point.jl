@@ -1,6 +1,6 @@
 export rigid_point
 
-type rigid_point
+mutable struct rigid_point
 	name::String
 	group::String
 	location::Vector{Float64}

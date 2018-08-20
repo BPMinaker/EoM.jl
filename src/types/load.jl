@@ -1,6 +1,6 @@
 export load
 
-type load
+mutable struct load
 	name::String
 	group::String
 	location::Vector{Float64}

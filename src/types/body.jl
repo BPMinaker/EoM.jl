@@ -7,8 +7,7 @@ export weight
 #export lcn_orn
 #export welocity
 
-
-type body
+mutable struct body
 	name::String
 	group::String
 	location::Vector{Float64}
