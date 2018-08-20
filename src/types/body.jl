@@ -43,7 +43,7 @@ function welocity(obj::body)
 end
 
 function inertia_mtx(obj::body)
-	diagm(obj.moments_of_inertia)-diagm(obj.products_of_inertia[1:2],1)-diagm(obj.products_of_inertia[1:2],-1)-diagm([obj.products_of_inertia[3]],2)-diagm([obj.products_of_inertia[3]],-2)
+	diagm(0=>obj.moments_of_inertia)-diagm(1=>obj.products_of_inertia[1:2])-diagm(-1=>obj.products_of_inertia[1:2])-diagm(2=>[obj.products_of_inertia[3]])-diagm(-2=>[obj.products_of_inertia[3]])
 end
 
 function mass_mtx(obj::body)

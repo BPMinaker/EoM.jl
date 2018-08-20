@@ -21,7 +21,7 @@ d_mtx=zeros(nout,nin)
 
 n=length(the_system.bodys)
 
-sensor_mtx=-Matrix(Diagonal(broadcast(gain,the_system.sensors))*point_line_jacobian(the_system.sensors,n))
+sensor_mtx=-diagm(0=>broadcast(gain,the_system.sensors))*point_line_jacobian(the_system.sensors,n)
 
 order_vec=broadcast(order,the_system.sensors)
 frame_vec=broadcast(frame,the_system.sensors)
