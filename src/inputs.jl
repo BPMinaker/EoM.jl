@@ -20,8 +20,8 @@ n=length(the_system.bodys)
 
 ## Build input matrix
 temp=point_line_jacobian(the_system.actuators,n)
-f_mtx=-diagm(broadcast(gain,the_system.actuators))*temp
-g_mtx=-diagm(broadcast(rate_gain,the_system.actuators))*temp
+f_mtx=-diagm(0=>broadcast(gain,the_system.actuators))*temp
+g_mtx=-diagm(0=>broadcast(rate_gain,the_system.actuators))*temp
 
 data.input=f_mtx'
 data.input_rate=g_mtx'  ## Transpose

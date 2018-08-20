@@ -15,7 +15,7 @@ function analyze(dss_eqns;verbose=false)
 verbose && println("Running linear analysis...")
 
 nvpts=length(dss_eqns)  ## Number of points to plot
-result=Vector{analysis}(nvpts)
+result=Vector{analysis}(undef,nvpts)
 lower=zeros(nvpts)
 upper=zeros(nvpts)
 
