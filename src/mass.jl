@@ -18,7 +18,7 @@ temp=broadcast(mass_mtx,the_system.bodys[1:end-1])
 mtx=spzeros(0,0)
 
 for i in temp
-	mtx=blkdiag(mtx,i)
+	mtx=blockdiag(mtx,i)
 end
 
 mtx

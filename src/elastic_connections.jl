@@ -38,7 +38,7 @@ if(s>0)  ## If the deflection matrix has more than zero rows (i.e. there are ela
 	preload_vec=broadcast(preload,the_system.springs)
 
 	## Find the springs where the preload is given
-	fnd=find(.~broadcast(isnan,preload_vec))
+	fnd=findall(.~broadcast(isnan,preload_vec))
 
 	## Record their stiffnesses
 	subset_spring_stiff=spring_stiff[fnd]
@@ -75,10 +75,10 @@ if(s>0)  ## If the deflection matrix has more than zero rows (i.e. there are ela
 	end
 
 	## Converts stiffness row vector into diagonal matrix -> a column for each elastic item
-	stiff=blkdiag(spdiagm(spring_stiff),flex_point_stiff,spdiagm(beam_stiff))
+	stiff=blockdiag(spdiagm(spring_stiff),flex_point_stiff,spdiagm(beam_stiff))
 
 	## Convert damping row vector into diagonal matrix  -> a column for each elastic item
- 	dmpng=blkdiag(spdiagm(spring_dmpng),flex_point_dmpng,spdiagm(zeros(beam_stiff)))
+ 	dmpng=blockdiag(spdiagm(spring_dmpng),flex_point_dmpng,spdiagm(zeros(beam_stiff)))
  	#zeros(1,3*the_system.ntriangle_3s) zeros(1,5*the_system.ntriangle_5s) ])
 
 	## Compute the diagonal inertia values, mostly zero except the inertance of the springs
