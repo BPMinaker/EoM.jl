@@ -21,12 +21,12 @@ d_mtx=zeros(nout,nin)
 
 n=length(the_system.bodys)
 
-sensor_mtx=-diagm(broadcast(gain,the_system.sensors))*point_line_jacobian(the_system.sensors,n)
+sensor_mtx=-Matrix(Diagonal(broadcast(gain,the_system.sensors))*point_line_jacobian(the_system.sensors,n))
 
 order_vec=broadcast(order,the_system.sensors)
 frame_vec=broadcast(frame,the_system.sensors)
 
-column=2*order_vec+frame_vec-2  ## Global psn,vel,acc=1,3,5, local vel,acc=2,4
+column=2*order_vec+frame_vec.-2  ## Global psn,vel,acc=1,3,5, local vel,acc=2,4
 
 idx=1
 for i in the_system.sensors
