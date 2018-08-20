@@ -7,7 +7,7 @@ Q,S,P=svd(dss_eqns.E)  ##Q'*E*P should = S
 #println(S)
 S=S[S.>(maximum(size(dss_eqns.E))*eps(maximum(S)))]
 n=length(S)
-Sinv=diagm(1.0 ./S)
+Sinv=Matrix(Diagonal(1.0 ./S))
 
 Atilde=Q'*dss_eqns.A*P
 Btilde=Q'*dss_eqns.B

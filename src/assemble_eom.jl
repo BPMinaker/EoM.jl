@@ -44,15 +44,15 @@ ss_eqns=dss_data()  ## Create empty state space holder
 ## Pre and post multiply by orthogonal complements, and then cast in standard form
 ss_eqns.E=l_orth'*data.M*r_orth
 ss_eqns.A=-l_orth'*data.KC*r_orth
-ss_eqns.B=l_orth'*[zeros(2*dim,nin); eye(nin)]
+ss_eqns.B=l_orth'*[zeros(2*dim,nin); Matrix(1.0I,nin,nin)]
 C=zeros(nout,2*dim+nin)
 
 for i=1:nout
 	if(column[i]==1) ## p
- 			mask=[speye(dim) spzeros(dim,dim+nin)]
+ 			mask=[sparse(1.0I,dim,dim) spzeros(dim,dim+nin)]
 
 	elseif(column[i]==2)  ## w
-		mask=[spzeros(dim,dim) speye(dim) spzeros(dim,nin)]
+		mask=[spzeros(dim,dim) sparse(1.0I,dim,dim) spzeros(dim,nin)]
 
 	elseif(column[i]==3)  ## p dot
 		mask=-data.KC[1:dim,:]

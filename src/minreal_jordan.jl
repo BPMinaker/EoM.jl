@@ -6,7 +6,7 @@ function minreal_jordan(sys_in,verbose=false)
 
 	verbose && println("Computing Jordan minimal realization...")
 
-	val,vec=eig(AA)
+	val,vec=eigen(AA)
 	m=length(val)
 
 	# println(val)
