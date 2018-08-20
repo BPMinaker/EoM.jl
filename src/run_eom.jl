@@ -18,9 +18,9 @@ n=1
 m=length(vpts)
 (m>1) && (n=m)
 
-the_system=Vector{mbd_system}(n)  ## create empty system holder
+the_system=Vector{mbd_system}(undef,n)  ## create empty system holder
 
-the_eqns=Vector{dss_data}(n)
+the_eqns=Vector{dss_data}(undef,n)
 
 verbose && println("Calling system function...")
 
