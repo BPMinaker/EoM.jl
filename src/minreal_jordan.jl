@@ -56,7 +56,7 @@ function minreal_jordan(sys_in,verbose=false)
 	match_val=Vector[]
 	for i=1:m
 		if abs(imag(val[i]))<1e-6
-			t=find(abs.(val-val[i]).<1e-6)  ## find all matching real eigenvalues
+			t=findall(abs.(val.-val[i]).<1e-6)  ## find all matching real eigenvalues
 			push!(match_val,t)  ## record them
 		end
 	end
@@ -68,7 +68,7 @@ function minreal_jordan(sys_in,verbose=false)
 		j=length(i)
 		t=abs.(jvec[:,i]'*jvec[:,i])-ones(j,j)  ## dot product of colinear vectors = +/-1
 		for k=1:j
-			u=find(abs.(t[:,k]).<1e-6)  ## find the colinear vectors
+			u=findall(abs.(t[:,k]).<1e-6)  ## find the colinear vectors
 			push!(match_vec,u)
 		end
 		match_vec=unique(match_vec)  ## remove the duplicate entries
@@ -128,7 +128,7 @@ function minreal_jordan(sys_in,verbose=false)
 
 	match=Vector[]
 	for i=1:m
-		t=find(abs.(val-val[i]).<1e-6)  ## find all matching eigenvalues
+		t=findall(abs.(val.-val[i]).<1e-6)  ## find all matching eigenvalues
 		if contains(==,dpl,i)  ## if this root has a duplicate
 			t=setdiff(t,dplb)  ## remove all duplcate roots
 		elseif contains(==,dplb,i)  ## or if this root is a duplcate
