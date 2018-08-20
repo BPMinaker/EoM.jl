@@ -58,12 +58,12 @@ if(s>0)  ## If the deflection matrix has more than zero rows (i.e. there are ela
 	for i in the_system.flex_points  ## For each elastic point item
 		flex_point_dmpng[idx:idx+i.forces+i.moments-1,idx:idx+i.forces+i.moments-1]=sparse(i.d_mtx)
 
-		flex_point_stiff[idx:idx+i.forces-1,idx:idx+i.forces-1]+=i.stiffness[1]*speye(i.forces)
-		flex_point_dmpng[idx:idx+i.forces-1,idx:idx+i.forces-1]+=i.damping[1]*speye(i.forces)
+		flex_point_stiff[idx:idx+i.forces-1,idx:idx+i.forces-1]+=i.stiffness[1]*sparse(1.0I,i.forces,i.forces)
+		flex_point_dmpng[idx:idx+i.forces-1,idx:idx+i.forces-1]+=i.damping[1]*sparse(1.0I,i.forces,i.forces)
 		idx+=i.forces
 
-		flex_point_stiff[idx:idx+i.moments-1,idx:idx+i.moments-1]+=i.stiffness[2]*speye(i.moments)
-		flex_point_dmpng[idx:idx+i.moments-1,idx:idx+i.moments-1]+=i.damping[2]*speye(i.moments)
+		flex_point_stiff[idx:idx+i.moments-1,idx:idx+i.moments-1]+=i.stiffness[2]*sparse(1.0I,i.moments,i.moments)
+		flex_point_dmpng[idx:idx+i.moments-1,idx:idx+i.moments-1]+=i.damping[2]*sparse(1.0I,i.moments,i.moments)
 		idx+=i.moments
 	end
 
@@ -75,15 +75,15 @@ if(s>0)  ## If the deflection matrix has more than zero rows (i.e. there are ela
 	end
 
 	## Converts stiffness row vector into diagonal matrix -> a column for each elastic item
-	stiff=blockdiag(spdiagm(spring_stiff),flex_point_stiff,spdiagm(beam_stiff))
+	stiff=blockdiag(sparse(Diagonal(spring_stiff)),flex_point_stiff,sparse(Diagonal(beam_stiff)))
 
 	## Convert damping row vector into diagonal matrix  -> a column for each elastic item
- 	dmpng=blockdiag(spdiagm(spring_dmpng),flex_point_dmpng,spdiagm(zeros(beam_stiff)))
+ 	dmpng=blockdiag(sparse(Diagonal(spring_dmpng)),flex_point_dmpng,sparse(Diagonal(zeros(beam_stiff))))
  	#zeros(1,3*the_system.ntriangle_3s) zeros(1,5*the_system.ntriangle_5s) ])
 
 	## Compute the diagonal inertia values, mostly zero except the inertance of the springs
 	inertia=sparse(zeros(stiff))
-	inertia[1:length(the_system.springs),1:length(the_system.springs)]=spdiagm(spring_inertia)
+	inertia[1:length(the_system.springs),1:length(the_system.springs)]=sparse(Diagonal(spring_inertia))
 	#	zeros(1,3*the_system.ntriangle_3s) ...
 	#	zeros(1,5*the_system.ntriangle_5s)]), ...
 
