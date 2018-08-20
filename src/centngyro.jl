@@ -24,9 +24,9 @@ for i in items[1:end-1]
 				error("Body $i.name is not rotating about axis of symmetry.")
 	end
 
-	mv_mtx[6*idx+(-2:0),6*idx.+(-2:0)]=-skew(h)
-	mv_mtx[6*idx+(-5:-3),6*idx.+(-2:0)]=-skew(i.velocity*i.mass)
-	v_mtx[6*idx+(-5:-3),6*idx.+(-2:0)]=skew(i.velocity)
+	mv_mtx[6*idx.+(-2:0),6*idx.+(-2:0)]=-skew(h)
+	mv_mtx[6*idx.+(-5:-3),6*idx.+(-2:0)]=-skew(i.velocity*i.mass)
+	v_mtx[6*idx.+(-5:-3),6*idx.+(-2:0)]=skew(i.velocity)
 	idx+=1
 end
 

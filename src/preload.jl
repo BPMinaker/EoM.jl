@@ -28,14 +28,14 @@ s=size(test_mtx,2)
 # [ J'   K  H'S'P]{x} ={-f}   forces sum to zero
 # [ 0   PSH    P ]{d} {fp}   some of the elastic preloads are known
 
-ind_test_mtx=[spzeros(q,q) data.constraint spzeros(q,p); data.constraint' data.stiffness data.deflection'*data.selection'*spdiagm(data.subset_spring_stiffness); spzeros(p,q) spdiagm(data.subset_spring_stiffness)*data.selection*data.deflection spdiagm(data.subset_spring_stiffness)]
+ind_test_mtx=[spzeros(q,q) data.constraint spzeros(q,p); data.constraint' data.stiffness data.deflection'*data.selection'*sparse(Diagonal(data.subset_spring_stiffness)); spzeros(p,q) sparse(Diagonal(data.subset_spring_stiffness))*data.selection*data.deflection sparse(Diagonal(data.subset_spring_stiffness))]
 t=size(ind_test_mtx,1)
 
 sumf=0
 lambda=zeros(0)
 static=zeros(0)
 
-if(rank(full(test_mtx))==s)
+if(rank(Matrix(test_mtx))==s)
 	if(verb)
 		println("Statically determinate system.  Good.")
 		println("Finding all forces of constraint and flexible item preloads...")

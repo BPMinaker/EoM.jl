@@ -34,7 +34,7 @@ negjv_mtx=-cnsrt_mtx*v_mtx;  ## Build transformation - constraint matrix
 verb && println("Checking constraint items...")
 d=6*(n-1)
 if(q+t>0) ## If the jacobian matrix has more than zero rows (i.e. there are rigid constraint items in the system)
-	rkr=rank(full([cnsrt_mtx;nhcnsrt_mtx]))  ## rk = the rank (the maximum number of linearly independent rows or columns) of the constraint matrix
+	rkr=rank(Matrix([cnsrt_mtx;nhcnsrt_mtx]))  ## rk = the rank (the maximum number of linearly independent rows or columns) of the constraint matrix
 	if (rkr==(q+t))  ## If the rank = the number of rows, then there are no redundant constraints (the constraints are all linearly independent)
 		verb && println("No redundant constraints in the system. Good.")
 	else
