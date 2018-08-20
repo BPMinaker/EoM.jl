@@ -82,7 +82,7 @@ function minreal_jordan(sys_in,verbose=false)
 		jvec[:,i]=jvec[:,sorted]  ## put all colinear vectors with same value next to each other
 	end
 
-	r=rank(round.(jvec,6))  ## round the eigenvectors and find the rank (all vectors same magnitude)
+	r=rank(round.(jvec,digits=6))  ## round the eigenvectors and find the rank (all vectors same magnitude)
 	verbose && println("Jordan vector rank is $r, size $m.")
 
 	dpl=Int64[]
@@ -260,7 +260,7 @@ function minreal_jordan(sys_in,verbose=false)
 	i=1
 	while i<m+1
 		if i<m && abs(Ajm[i,i]-Ajm[i+1,i+1])<1e-6  ## if the roots are repeated
-			sens[i]=norm(Cjm[:,i:i+1]*(Int64.((abs.(Ajm[i:i+1,i:i+1])+eye(2)).>1e-6))*Bjm[i:i+1,:])
+			sens[i]=norm(Cjm[:,i:i+1]*(Int64.((abs.(Ajm[i:i+1,i:i+1])+Matrix(1.0I,2,2)).>1e-6))*Bjm[i:i+1,:])
 			sens[i+1]=sens[i]
 			#Q,S,P=svd([Cjm[:,i:i+1]; Cjm[:,i:i+1]*Ajm[i:i+1,i:i+1]]*[Bjm[i:i+1,:] Ajm[i:i+1,i:i+1]*Bjm[i:i+1,:]])
 			#sens[i]=S[1]
