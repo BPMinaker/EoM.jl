@@ -63,7 +63,7 @@ for i in xmpls
 	include(joinpath(fldr,i))
 end
 
-type mbd_system
+mutable struct mbd_system
 	name::String
 	vpt::Float64
 	item::Vector{Any}
@@ -96,7 +96,7 @@ type mbd_system
 	end
 end
 
-type eom_data
+mutable struct eom_data
 	name::String
 	input_names::Vector{String}
 	output_names::Vector{String}
@@ -161,7 +161,7 @@ type eom_data
 	end
 end
 
-type dss_data
+mutable struct dss_data
 	A::Array{Float64,2}
 	B::Array{Float64,2}
 	C::Array{Float64,2}
@@ -182,7 +182,7 @@ type dss_data
 
 end
 
-type ss_data
+mutable struct ss_data
 	A::Array{Float64,2}
 	B::Array{Float64,2}
 	C::Array{Float64,2}
@@ -198,7 +198,7 @@ type ss_data
 
 end
 
-type analysis
+mutable struct analysis
 	ss_eqns::ss_data
 	jordan::ss_data
 	e_vect::Array{Complex{Float64},2}
