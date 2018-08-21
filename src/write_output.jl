@@ -111,7 +111,7 @@ if(nin*nout>0 && nin*nout<16)
 		phs=angle.(results[i].freq_resp)  ## Search for where angle changes by almost 1 rotation
 		for u=1:nout
 			for v=1:nin
-				phs[u,v,find(abs.(diff(phs[u,v,:])).>6)]=Inf  ## Replace with Inf to trigger plot skip
+				phs[u,v,findall(abs.(diff(phs[u,v,:])).>6)]=Inf  ## Replace with Inf to trigger plot skip
 			end
 		end
 
