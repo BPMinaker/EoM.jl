@@ -172,7 +172,7 @@ function minreal_jordan(sys_in,verbose=false)
 				y=0
 				z=0
 
-				if ind==1
+				if ind.I==(1,1)
 					y=(nn/((H[2,1]/H[1,1])^2+1))^0.5
 					z=(y^2*(H[2,1]/H[1,1])^2)^0.5
 					if H[1,1]*H[2,1]<0
@@ -182,7 +182,7 @@ function minreal_jordan(sys_in,verbose=false)
 					x=H[1,2]/y
 
 
-				elseif ind==2
+				elseif ind.I==(2,1)
 					z=(nn/((H[1,1]/H[2,1])^2+1))^0.5
 					y=(z^2*(H[1,1]/H[2,1])^2)^0.5
 					if H[1,1]*H[2,1]<0
@@ -191,7 +191,7 @@ function minreal_jordan(sys_in,verbose=false)
 					w=H[2,1]/z
 					x=H[2,2]/z
 
-				elseif ind==3
+				elseif ind.I==(1,2)
 					y=(nn/((H[2,2]/H[1,2])^2+1))^0.5
 					z=(y^2*(H[2,2]/H[1,2])^2)^0.5
 					if H[1,2]*H[2,2]<0
@@ -200,7 +200,7 @@ function minreal_jordan(sys_in,verbose=false)
 					w=H[1,1]/y
 					x=H[1,2]/y
 
-				elseif ind==4
+				elseif ind.I=(2,2)
 					z=(nn/((H[1,2]/H[2,2])^2+1))^0.5
 					y=(z^2*(H[1,2]/H[2,2])^2)^0.5
 					if H[1,2]*H[2,2]<0
