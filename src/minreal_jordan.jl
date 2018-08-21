@@ -92,7 +92,7 @@ function minreal_jordan(sys_in,verbose=false)
 	for i in match_val
 		j=1
 		while j<length(i)+1
-			t=rank(round.([jvec[:,1:i[j]-1] jvec[:,i[j]+1:end]],6))  ## find rank with vector removed
+			t=rank(round.([jvec[:,1:i[j]-1] jvec[:,i[j]+1:end]],digits=6))  ## find rank with vector removed
 			if t==r  ## if removing this vector had no effect on the rank
 				verbose && println("Replacing vector $(i[j]+1) with pseudovector...")
 				jvec[:,i[j]+1]=pinv([AA-val[i[j]]*eye(m);jvec[:,i[j]]'])*[jvec[:,i[j]];0]  ## add one row to allow unique solution, pvector must be orthogonal
@@ -105,7 +105,7 @@ function minreal_jordan(sys_in,verbose=false)
 			chk=norm(AA-jvec*Aj*inv(jvec))  ## confirm factorization is correct
 			chk>1e-8 && println("Factorization check=$(chk)...")
 			j+=1
-			r=rank(round.(jvec,6))  ## recompute rank
+			r=rank(round.(jvec,digits=6))  ## recompute rank
 			verbose && println("Basis vector rank is now $r.")
 		end
 	end
