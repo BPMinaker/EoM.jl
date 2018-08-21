@@ -129,8 +129,11 @@ function minreal_jordan(sys_in,verbose=false)
 	match=Vector[]
 	for i=1:m
 		t=findall(abs.(val.-val[i]).<1e-6)  ## find all matching eigenvalues
-		#if contains(==,dpl,i)  ## if this root has a duplicate
+		if contains(==,dpl,i)  ## if this root has a duplicate
+			println("test")
+		end
 		if any((y->begin ==(y,dpl) end),i)
+			println("test2")
 			t=setdiff(t,dplb)  ## remove all duplcate roots
 		elseif any((y->begin ==(y,dplb) end),i)
 			#contains(==,dplb,i)  ## or if this root is a duplcate
