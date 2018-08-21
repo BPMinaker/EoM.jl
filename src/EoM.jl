@@ -5,6 +5,7 @@ module EoM
 using Printf
 using SparseArrays
 using LinearAlgebra
+using Dates
 
 export run_eom
 export analyze

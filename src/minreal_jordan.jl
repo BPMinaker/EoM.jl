@@ -161,11 +161,8 @@ function minreal_jordan(sys_in,verbose=false)
 				H=B1*C1+B2*C2
 				nn=B1[1]^2+B1[2]^2+B2[1]^2+B2[2]^2
 
-				println(H)
 
 				mx,ind=findmax(abs.(H))
-
-				println(mx," ",ind)
 
 				w=0
 				x=0
@@ -180,7 +177,6 @@ function minreal_jordan(sys_in,verbose=false)
 					end
 					w=H[1,1]/y
 					x=H[1,2]/y
-
 
 				elseif ind.I==(2,1)
 					z=(nn/((H[1,1]/H[2,1])^2+1))^0.5
