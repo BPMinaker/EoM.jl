@@ -32,8 +32,8 @@ for i in items
 
 	mtx+=(temp'*temp*(i.preload/i.length))
 
-	mtx[pointer1.+(1:6),pointer1+(4:6)]-=i.preload*t1'
-	mtx[pointer2.+(1:6),pointer2+(4:6)]-=i.preload*t2'
+	mtx[pointer1.+(1:6),pointer1.+(4:6)]-=i.preload*t1'
+	mtx[pointer2.+(1:6),pointer2.+(4:6)]-=i.preload*t2'
 
 end
 

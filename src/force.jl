@@ -23,14 +23,14 @@ for i in the_system.loads ## for each external loads
 	pointer2=6*(i.frame_number-1)
 
 	## Total moment = applied moment + (r cross f) <-using skew symmetric matrix
-	vec[pointer1+(1:3)]+=i.force ## Adds force vector to rows 1,2,3 (for mass 1) of column vector
-	vec[pointer1+(4:6)]+=i.moment+(skew(i.radius)*i.force) ## Adds moment vector to rows 4,5,6 (for mass 1) of column vector
+	vec[pointer1.+(1:3)]+=i.force ## Adds force vector to rows 1,2,3 (for mass 1) of column vector
+	vec[pointer1.+(4:6)]+=i.moment+(skew(i.radius)*i.force) ## Adds moment vector to rows 4,5,6 (for mass 1) of column vector
 
-	mtx[pointer1+(1:3),pointer1+(4:6)]-=skew(i.force);
-	mtx[pointer1+(1:3),pointer2+(4:6)]+=skew(i.force);  ## Note same row, different column
+	mtx[pointer1.+(1:3),pointer1.+(4:6)]-=skew(i.force);
+	mtx[pointer1.+(1:3),pointer2.+(4:6)]+=skew(i.force);  ## Note same row, different column
 
-	mtx[pointer1+(4:6),pointer1+(4:6)]-=skew(i.radius)*skew(i.force)+skew(i.moment)
-	mtx[pointer1+(4:6),pointer2+(4:6)]+=skew(i.radius)*skew(i.force)+skew(i.moment)  ## If 'body' = 'axes', then matrix terms will cancel
+	mtx[pointer1.+(4:6),pointer1.+(4:6)]-=skew(i.radius)*skew(i.force)+skew(i.moment)
+	mtx[pointer1.+(4:6),pointer2.+(4:6)]+=skew(i.radius)*skew(i.force)+skew(i.moment)  ## If 'body' = 'axes', then matrix terms will cancel
 
 end
 
