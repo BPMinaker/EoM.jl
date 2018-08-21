@@ -126,9 +126,6 @@ function minreal_jordan(sys_in,verbose=false)
 # println(Bjm)
 # println(Cjm)
 
-
-	println(dpl)
-
 	match=Vector[]
 	for i=1:m
 		t=findall(abs.(val.-val[i]).<1e-6)  ## find all matching eigenvalues
@@ -164,7 +161,12 @@ function minreal_jordan(sys_in,verbose=false)
 				H=B1*C1+B2*C2
 				nn=B1[1]^2+B1[2]^2+B2[1]^2+B2[2]^2
 
+				println(H)
+
 				mx,ind=findmax(abs.(H))
+
+				println(mx," ",ind)
+
 				w=0
 				x=0
 				y=0
