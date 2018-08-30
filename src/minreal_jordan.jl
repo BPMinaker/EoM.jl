@@ -52,14 +52,14 @@ function minreal_jordan(sys_in,verbose=false)
 	# 	end
 	# end
 
-
 	match_val=Vector[]
 	for i=1:m
 		if abs(imag(val[i]))<1e-6
 			t=findall(abs.(val.-val[i]).<1e-6)  ## find all matching real eigenvalues
-			push!(match_val,t)  ## record them
+			length(t)>1 && push!(match_val,t)  ## record them
 		end
 	end
+
 	match_val=unique(match_val)  ## remove the duplicate entries, if 1 matches 2, then 2 matches 1
 
 	match_vec=Vector[]
@@ -95,7 +95,7 @@ function minreal_jordan(sys_in,verbose=false)
 			t=rank(round.([jvec[:,1:i[j]-1] jvec[:,i[j]+1:end]],digits=6))  ## find rank with vector removed
 			if t==r  ## if removing this vector had no effect on the rank
 				verbose && println("Replacing vector $(i[j]+1) with pseudovector...")
-				jvec[:,i[j]+1]=pinv([AA-val[i[j]]*eye(m);jvec[:,i[j]]'])*[jvec[:,i[j]];0]  ## add one row to allow unique solution, pvector must be orthogonal
+				jvec[:,i[j]+1]=pinv([AA-val[i[j]]*Matrix(1.0I,m,m);jvec[:,i[j]]'])*[jvec[:,i[j]];0]  ## add one row to allow unique solution, pvector must be orthogonal
 				Aj[i[j],i[j]+1]=1  ## set entry in A matrix where pvector is located
 				push!(dpl,i[j])  ## record that this root has a duplicate
 				push!(dplb,i[j]+1)  ## record that next root is a duplicate
@@ -211,10 +211,10 @@ function minreal_jordan(sys_in,verbose=false)
 #				H2=[y z]'*[w x]
 #				err=norm(H-H2)
 
-				Bjm[match[i][1],:]=y  ## compute combined B, C, overwrite first B matrix
-				Bjm[match[i+1][1],:]=z
-				Cjm[:,match[i][1]]=w ## overwrite first C matrix
-				Cjm[:,match[i+1][1]]=x
+				Bjm[match[i][1],:].=y  ## compute combined B, C, overwrite first B matrix
+				Bjm[match[i+1][1],:].=z
+				Cjm[:,match[i][1]].=w ## overwrite first C matrix
+				Cjm[:,match[i+1][1]].=x
 
 				push!(dup,match[i][2])  ## record which row can be removed
 				push!(dup,match[i+1][2])  ## record which row can be removed
