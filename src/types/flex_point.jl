@@ -12,6 +12,7 @@ mutable struct flex_point
 	rolling_axis::Vector{Float64}
 	radius::Vector{Vector{Float64}}
 	stiffness::Vector{Float64}
+	s_mtx::Array{Float64,2}
 	damping::Vector{Float64}
 	d_mtx::Array{Float64,2}
 	preload::Vector{Float64}
@@ -32,6 +33,7 @@ mutable struct flex_point
 	rolling_axis=zeros(3),
 	radius=[zeros(3),zeros(3)],
 	stiffness=zeros(2),
+	s_mtx=zeros(0,0),
 	damping=zeros(2),
 	d_mtx=zeros(0,0),
 	preload=Vector{Float64}(undef,0),
@@ -39,7 +41,7 @@ mutable struct flex_point
 	rolling_unit=zeros(3),
 	nu=zeros(3,2),
 	b_mtx=[zeros(2,2),zeros(2,2)])
-		new(name,group,location,body,body_number,forces,moments,axis,rolling_axis,radius,stiffness,damping,d_mtx,preload,unit,rolling_unit,nu,b_mtx)
+		new(name,group,location,body,body_number,forces,moments,axis,rolling_axis,radius,stiffness,s_mtx,damping,d_mtx,preload,unit,rolling_unit,nu,b_mtx)
 	end
 end
 

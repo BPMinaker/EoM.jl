@@ -56,34 +56,34 @@ if(s>0)  ## If the deflection matrix has more than zero rows (i.e. there are ela
 
 	idx=1
 	for i in the_system.flex_points  ## For each elastic point item
-		flex_point_dmpng[idx:idx+i.forces+i.moments-1,idx:idx+i.forces+i.moments-1]=sparse(i.d_mtx)
+		idxe=idx+i.forces+i.moments-1
 
-		flex_point_stiff[idx:idx+i.forces-1,idx:idx+i.forces-1]+=i.stiffness[1]*sparse(1.0I,i.forces,i.forces)
-		flex_point_dmpng[idx:idx+i.forces-1,idx:idx+i.forces-1]+=i.damping[1]*sparse(1.0I,i.forces,i.forces)
-		idx+=i.forces
+		flex_point_stiff[idx:idxe,idx:idxe]=sparse(i.s_mtx)
+		flex_point_dmpng[idx:idxe,idx:idxe]=sparse(i.d_mtx)
 
-		flex_point_stiff[idx:idx+i.moments-1,idx:idx+i.moments-1]+=i.stiffness[2]*sparse(1.0I,i.moments,i.moments)
-		flex_point_dmpng[idx:idx+i.moments-1,idx:idx+i.moments-1]+=i.damping[2]*sparse(1.0I,i.moments,i.moments)
-		idx+=i.moments
+		flex_point_stiff[idx:idxe,idx:idxe]+=spdiag(0=>[i.stiffness[1]*[1;1;1];i.stiffness[2]*[1;1;1]])
+		flex_point_dmpng[idx:idxe,idx:idxe]+=spdiag(0=>[i.damping[1]*[1;1;1];i.damping[2]*[1;1;1]])
+
+		idx=idxe+1
 	end
 
 	idx=1
 	beam_stiff=zeros(4*length(the_system.beams))  ## Creates empty vector for the beam stiffnesses
 	for i in the_system.beams
-		beam_stiff[4*idx-3:4*idx]=i.stiffness/i.length*[1 3 1 3]  ## Creates a row vector of the beam stiffnesses, necessary to rebuild beam stiffness matrix from diagonalization
+		beam_stiff[4*idx-3:4*idx]=i.stiffness/i.length*[1.0 3.0 1.0 3.0]  ## Creates a row vector of the beam stiffnesses, necessary to rebuild beam stiffness matrix from diagonalization
 		idx+=1
 	end
 
 	## Converts stiffness row vector into diagonal matrix -> a column for each elastic item
-	stiff=blockdiag(sparse(Diagonal(spring_stiff)),flex_point_stiff,sparse(Diagonal(beam_stiff)))
+	stiff=blockdiag(spdiagm(0=>spring_stiff),flex_point_stiff,spdiagm(0=>beam_stiff))
 
 	## Convert damping row vector into diagonal matrix  -> a column for each elastic item
- 	dmpng=blockdiag(sparse(Diagonal(spring_dmpng)),flex_point_dmpng,sparse(Diagonal(zero(beam_stiff))))
+ 	dmpng=blockdiag(spdiagm(0=>spring_dmpng),flex_point_dmpng,spdiagm(0=>zero(beam_stiff)))
  	#zeros(1,3*the_system.ntriangle_3s) zeros(1,5*the_system.ntriangle_5s) ])
 
 	## Compute the diagonal inertia values, mostly zero except the inertance of the springs
-	inertia=sparse(zero(stiff))
-	inertia[1:length(the_system.springs),1:length(the_system.springs)]=sparse(Diagonal(spring_inertia))
+	inertia=zero(stiff)
+	inertia[1:length(the_system.springs),1:length(the_system.springs)]=spdiagm(0=>spring_inertia)
 	#	zeros(1,3*the_system.ntriangle_3s) ...
 	#	zeros(1,5*the_system.ntriangle_5s)]), ...
 
@@ -135,3 +135,11 @@ end  ## Leave
 # # 		D=D/3;
 # # 		stiff=blkdiag(stiff,D);
 # # 	end
+
+#		flex_point_stiff[idx:idx+i.forces-1,idx:idx+i.forces-1]+=i.stiffness[1]*sparse(1.0I,i.moments,i.moments)
+#		flex_point_dmpng[idx:idx+i.forces-1,idx:idx+i.forces-1]+=i.damping[1]*sparse(1.0I,i.forces,i.forces)
+#		idx+=i.forces
+
+#		flex_point_stiff[idx:idx+i.moments-1,idx:idx+i.moments-1]+=i.stiffness[2]*sparse(1.0I,i.moments,i.moments)
+#		flex_point_dmpng[idx:idx+i.moments-1,idx:idx+i.moments-1]+=i.damping[2]*sparse(1.0I,i.moments,i.moments)
+#		idx+=i.moments
