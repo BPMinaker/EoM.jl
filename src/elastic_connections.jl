@@ -44,8 +44,6 @@ if s>0  ## If the deflection matrix has more than zero rows (i.e. there are elas
 	subset_spring_stiff=spring_stiff[fnd]
 	preload_vec=preload_vec[fnd]  ## Throw away NaNs
 
-	println(preload_vec)
-
 	slct_mtx=zeros(length(the_system.springs),s)
 	for i in fnd
 		slct_mtx[i,i]=1
@@ -56,8 +54,12 @@ if s>0  ## If the deflection matrix has more than zero rows (i.e. there are elas
 	flex_point_stiff=spzeros(t,t)
 	flex_point_dmpng=spzeros(t,t)
 
+	println(flex_point_stiff)
+
 	idx=1
 	for i in the_system.flex_points  ## For each elastic point item
+
+		println(i)
 		idxe=idx+i.forces+i.moments-1
 
 		flex_point_stiff[idx:idxe,idx:idxe]=sparse(i.s_mtx)
