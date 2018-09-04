@@ -21,7 +21,6 @@ n=length(the_system.bodys)
 defln_mtx=[point_line_jacobian(the_system.springs,n);
 point_line_jacobian(the_system.flex_points,n);
 line_bend_jacobian(the_system.beams,n)]
-println("0")
 
 s=size(defln_mtx,1)  ## s=the number of rows in the deflection matrix
 if s>0  ## If the deflection matrix has more than zero rows (i.e. there are elastic items in the system)
@@ -31,17 +30,11 @@ if s>0  ## If the deflection matrix has more than zero rows (i.e. there are elas
 	else
 		verb && println("Warning: the flexible connectors are indeterminate.")  ## Give warning
 	end
-println("1")
+
 	## Gather all stiffness and damping coefficients into a vector
 	spring_stiff=broadcast(stiffness,the_system.springs)
-println(spring_stiff)
-
 	spring_dmpng=broadcast(damping,the_system.springs)
-println(spring_dmpng)
-
 	spring_inertia=broadcast(inertance,the_system.springs)
-println(spring_inertia)
-
 	preload_vec=broadcast(preload,the_system.springs)
 
 	## Find the springs where the preload is given
@@ -50,6 +43,8 @@ println(spring_inertia)
 	## Record their stiffnesses
 	subset_spring_stiff=spring_stiff[fnd]
 	preload_vec=preload_vec[fnd]  ## Throw away NaNs
+
+	println(preload_vec)
 
 	slct_mtx=zeros(length(the_system.springs),s)
 	for i in fnd
