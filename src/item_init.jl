@@ -30,6 +30,9 @@ for i in items
 			if size(i.d_mtx)==(0,0)
 				i.d_mtx=zeros(i.forces+i.moments,i.forces+i.moments)
 			end
+			if size(i.s_mtx)==(0,0)
+				i.s_mtx=zeros(i.forces+i.moments,i.forces+i.moments)
+			end
 		end
 
 	## If the item has two nodes
