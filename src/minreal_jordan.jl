@@ -9,7 +9,7 @@ function minreal_jordan(sys_in,verbose=false)
 	val,vec=eigen(AA)
 	m=length(val)
 
-	# println(val)
+	println(val)
 
 	jvec=vec
 	md=real(val)
