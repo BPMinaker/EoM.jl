@@ -69,6 +69,7 @@ function minreal_jordan(sys_in,verbose=false)
 		verbose && println("Found repeated roots at ",i)
 		j=length(i)
 		t=abs.(jvec[:,i]'*jvec[:,i])-ones(j,j)  ## dot product of colinear vectors = +/-1
+		println(t)
 		for k=1:j
 			u=findall(abs.(t[:,k]).<1e-6)  ## find the colinear vectors
 			push!(match_vec,u)
