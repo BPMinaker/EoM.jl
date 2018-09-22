@@ -100,10 +100,10 @@ else
 	dmpng_mtx=zeros(6*(n-1),6*(n-1))
 	inertia_mtx=zeros(6*(n-1),6*(n-1))
 
-	slct_mtx=Array{Float64}(0,0)
-	preload_vec=Array{Float64}(0)
-	stiff=Array{Float64}(0,0)
-	subset_spring_stiff=Vector{Float64}(0)
+	slct_mtx=zeros(0,0)
+	preload_vec=zeros(0)
+	stiff=zeros(0,0)
+	subset_spring_stiff=zeros(0)
 
 end
 
