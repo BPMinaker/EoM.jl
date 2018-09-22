@@ -62,7 +62,7 @@ function minreal_jordan(sys_in,verbose=false)
 
 	match_val=unique(match_val)  ## remove the duplicate entries, if 1 matches 2, then 2 matches 1
 
-	println(match_val)
+	# println(match_val)
 
 	match_vec=Vector[]
 	for i in match_val  ## for each list of matching values
