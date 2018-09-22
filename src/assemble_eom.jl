@@ -24,9 +24,9 @@ dim=size(data.constraint,2)
 nin=size(data.input,2)
 nout=size(data.output,1)
 
-data.M=[sparse(1.0I,dim,dim) spzeros(dim,dim+nin); spzeros(dim,dim) mass_mtx -data.input_rate; spzeros(nin,2*dim+nin)]
+data.M=[I spzeros(dim,dim+nin); spzeros(dim,dim) mass_mtx -data.input_rate; spzeros(nin,2*dim+nin)]
 
-data.KC=[data.velocity sparse(-1.0I,dim,dim) spzeros(dim,nin); stiff_mtx damp_mtx  -data.input; spzeros(nin,2*dim) sparse(1.0I,nin,nin)];
+data.KC=[data.velocity -I spzeros(dim,nin); stiff_mtx damp_mtx -data.input; spzeros(nin,2*dim) I];
 
 s=size(data.right_jacobian,1)  ## Compute size of J matrices
 
@@ -38,21 +38,20 @@ else
 	l_orth=r_orth
 end
 
-
 ss_eqns=dss_data()  ## Create empty state space holder
 
 ## Pre and post multiply by orthogonal complements, and then cast in standard form
 ss_eqns.E=l_orth'*data.M*r_orth
 ss_eqns.A=-l_orth'*data.KC*r_orth
-ss_eqns.B=l_orth'*[zeros(2*dim,nin); Matrix(1.0I,nin,nin)]
-C=zeros(nout,2*dim+nin)
+ss_eqns.B=l_orth'*[spzeros(2*dim,nin); I]
+C=spzeros(nout,2*dim+nin)
 
 for i=1:nout
 	if(column[i]==1) ## p
- 			mask=[sparse(1.0I,dim,dim) spzeros(dim,dim+nin)]
+ 			mask=[I spzeros(dim,dim+nin)]
 
 	elseif(column[i]==2)  ## w
-		mask=[spzeros(dim,dim) sparse(1.0I,dim,dim) spzeros(dim,nin)]
+		mask=[spzeros(dim,dim) I spzeros(dim,nin)]
 
 	elseif(column[i]==3)  ## p dot
 		mask=-data.KC[1:dim,:]
@@ -61,7 +60,7 @@ for i=1:nout
 		mask=-pinv(Matrix(data.M[dim+1:2*dim,dim+1:2*dim]))*data.KC(dim+1:2*dim,:)
 
 	elseif(column[i]==5) ## p dot dot
-			mask=[data.velocity^2 -data.velocity  zeros(dim,nin)] - pinv(Matrix(data.M[dim+1:2*dim,dim+1:2*dim]))*data.KC[dim+1:2*dim,:]
+			mask=[data.velocity^2 -data.velocity zeros(dim,nin)] - pinv(Matrix(data.M[dim+1:2*dim,dim+1:2*dim]))*data.KC[dim+1:2*dim,:]
 	else
 		error("Matrix size error")
 	end

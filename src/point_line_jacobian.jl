@@ -25,8 +25,8 @@ for i in items
 	pointer2=6*(i.body_number[2]-1)  ## Column number of the end body
 	nrows=i.forces+i.moments
 
-	B1=[i.b_mtx[1];i.b_mtx[2]]*[I -skew(rs); zeros(3,3) I]; ## The skew rs makes 'theta'x'r'...
-	B2=[i.b_mtx[1];i.b_mtx[2]]*[I -skew(re); zeros(3,3) I]; ## rotation of the body that creates a translation at the joint, i.e, x1-theta*r = 0
+	B1=[i.b_mtx[1];i.b_mtx[2]]*[I -skew(rs); zeros(3,3) I] ## The skew rs makes 'theta'x'r'...
+	B2=[i.b_mtx[1];i.b_mtx[2]]*[I -skew(re); zeros(3,3) I] ## rotation of the body that creates a translation at the joint, i.e, x1-theta*r = 0
 
 	B=spzeros(nrows,6*num)
 	B[:,pointer1.+(1:6)]=B1 ## Positive
