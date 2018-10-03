@@ -62,9 +62,6 @@ if s>0  ## If the deflection matrix has more than zero rows (i.e. there are elas
 		flex_point_stiff[idx:idxe,idx:idxe]=sparse(i.s_mtx)
 		flex_point_dmpng[idx:idxe,idx:idxe]=sparse(i.d_mtx)
 
-		flex_point_stiff[idx:idxe,idx:idxe]+=spdiagm(0=>[i.stiffness[1]*ones(i.forces);i.stiffness[2]*ones(i.moments)])
-		flex_point_dmpng[idx:idxe,idx:idxe]+=spdiagm(0=>[i.damping[1]*ones(i.forces);i.damping[2]*ones(i.moments)])
-
 		idx=idxe+1
 	end
 

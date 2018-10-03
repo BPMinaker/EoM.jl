@@ -28,10 +28,12 @@ for i in items
 		end
 		if typeof(i)==flex_point
 			if size(i.d_mtx)==(0,0)
-				i.d_mtx=zeros(i.forces+i.moments,i.forces+i.moments)
+#				i.d_mtx=zeros(i.forces+i.moments,i.forces+i.moments)
+				i.d_mtx=spdiagm(0=>[i.damping[1]*ones(i.forces);i.damping[2]*ones(i.moments)])
 			end
 			if size(i.s_mtx)==(0,0)
-				i.s_mtx=zeros(i.forces+i.moments,i.forces+i.moments)
+#				i.s_mtx=zeros(i.forces+i.moments,i.forces+i.moments)
+				i.s_mtx=spdiagm(0=>[i.stiffness[1]*ones(i.forces);i.stiffness[2]*ones(i.moments)])
 			end
 		end
 
