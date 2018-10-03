@@ -70,15 +70,15 @@ end
 
 for i in items
 
-	a=i.unit  ## Axis of constraint
-	b=i.nu  ## Plane of constraint
+#	a=i.unit  ## Axis of constraint
+#	b=i.nu  ## Plane of constraint
 
 	if i.forces==3 ## For 3 forces, i.e. ball joint
 		i.b_mtx[1]=[I zeros(3,3)] ##
 	elseif i.forces==2 ## For 2 forces, i.e. cylindrical or pin joint
-		i.b_mtx[1]=[b' zeros(2,3)]
+		i.b_mtx[1]=[i.nu' zeros(2,3)]
 	elseif i.forces==1 ## For 1 force, i.e. planar
-		i.b_mtx[1]=[a' 0 0 0]
+		i.b_mtx[1]=[i.unit' 0 0 0]
 	elseif i.forces==0 ## For 0 forces
 		i.b_mtx[1]=zeros(0,6)
 	else
@@ -88,9 +88,9 @@ for i in items
 	if i.moments==3 ## For 3 moments, i.e. no rotational degrees of freedom
 		i.b_mtx[2]=[zeros(3,3) I]
 	elseif i.moments==2 ## For 2 moments, i.e. 1 rotational degree of freedom, i.e. Cylindrical joint
-		i.b_mtx[2]=[zeros(2,3) b']
+		i.b_mtx[2]=[zeros(2,3) i.nu']
 	elseif i.moments==1 ## For 1 moment, i.e. 2 rotational degrees of freedom, i.e. U-joint
-		i.b_mtx[2]=[0 0 0 a']
+		i.b_mtx[2]=[0 0 0 i.unit']
 	elseif i.moments==0 ## For 0 moments, i.e. sherical joint
 		i.b_mtx[2]=zeros(0,6)
 	else
