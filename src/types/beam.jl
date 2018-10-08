@@ -10,6 +10,7 @@ mutable struct beam
 	moments::Int
 	radius::Vector{Vector{Float64}}
 	stiffness::Float64
+	s_mtx::Array{Float64,2}
 	length::Float64
 	preload::Vector{Float64}
 	unit::Vector{Float64}
@@ -26,12 +27,13 @@ mutable struct beam
 	moments=2,
 	radius=[zeros(3),zeros(3)],
 	stiffness=0,
+	s_mtx=zeros(0,0),
 	length=0,
 	preload=[NaN,NaN,NaN,NaN],
 	unit=zeros(3),
 	nu=zeros(3,2),
 	b_mtx=[zeros(2,2),zeros(2,2)])
-		new(name,group,location,body,body_number,forces,moments,radius,stiffness,length,preload,unit,nu,b_mtx)
+		new(name,group,location,body,body_number,forces,moments,radius,stiffness,s_mtx,length,preload,unit,nu,b_mtx)
 	end
 end
 

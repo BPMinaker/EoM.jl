@@ -47,6 +47,11 @@ for i in items
 		if ~(typeof(i)==beam)
 			i.forces=Int(~i.twist)
 			i.moments=Int(i.twist)
+		else
+			l=i.length
+			D=sparse([0.0 0.0 0.0 -1.0 0.0 0.0 0.0 1.0; 2.0/l 0.0 0.0 1.0 -2.0/l 0.0 0.0 1.0; 0.0 0.0 -1.0 0.0 0.0 0.0 1.0 0.0; 0.0 2.0/l -1.0 0.0 0.0 -2.0/l -1.0 0.0])
+			i.s_mtx=i.stiffness/l*D'*spdiagm(0=>[1.0;3.0;1.0;3.0])*D
+			i.m_mtx=[0.0]
 		end
 	else
 		println("Something odd happened in initializing items...")
