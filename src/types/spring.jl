@@ -20,7 +20,7 @@ mutable struct spring
 	b_mtx::Vector{Array{Float64,2}}
 
 	function spring(
-	name,
+	name;
 	group="spring",
 	location=[zeros(3),zeros(3)],
 	body=["ground","ground"],
