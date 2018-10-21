@@ -11,6 +11,8 @@ mutable struct beam
 	radius::Vector{Vector{Float64}}
 	stiffness::Float64
 	s_mtx::Array{Float64,2}
+	mpul::Float64
+	m_mtx::Array{Float64,2}
 	length::Float64
 	preload::Vector{Float64}
 	unit::Vector{Float64}
