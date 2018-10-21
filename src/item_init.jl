@@ -53,7 +53,7 @@ for i in items
 			i.s_mtx=i.stiffness/l*D'*spdiagm(0=>[1;3;1;3])*D
 #			E=sparse([6 l 6 -l; 8 l -8 l])
 			E=sparse([6 0 0 l 6 0 0 -l; 8 0 0 l -8 0 0 l; 0 6 l 0 0 6 -l 0; 0 8 l 0 0 -8 l 0])
-			i.m_mtx=(E'*spdiagm(0=>[111/37;1;111/37;1])*E)/432
+			i.m_mtx=i.mpul*l*/432*E'*spdiagm(0=>[111/37;1;111/37;1])*E
 		end
 	else
 		println("Something odd happened in initializing items...")
