@@ -49,10 +49,11 @@ for i in items
 			i.moments=Int(i.twist)
 		else
 			l=i.length
-			D=sparse([0.0 0.0 0.0 -1.0 0.0 0.0 0.0 1.0; 2.0/l 0.0 0.0 1.0 -2.0/l 0.0 0.0 1.0; 0.0 0.0 -1.0 0.0 0.0 0.0 1.0 0.0; 0.0 2.0/l -1.0 0.0 0.0 -2.0/l -1.0 0.0])
-			i.s_mtx=i.stiffness/l*D'*spdiagm(0=>[1.0;3.0;1.0;3.0])*D
-			E=sparse([6.0 l 6.0 -l; 8.0 l -8.0 l]
-			i.m_mtx=(E'*spdiagm(0=>[111/37;1])*E)/432
+			D=sparse([0 0 0 -1 0 0 0 1; 2/l 0 0 1 -2/l 0 0 1; 0 0 -1 0 0 0 1 0; 0 2/l -1 0 0 -2/l -1 0])
+			i.s_mtx=i.stiffness/l*D'*spdiagm(0=>[1;3;1;3])*D
+#			E=sparse([6 l 6 -l; 8 l -8 l])
+			E=sparse([6 0 0 l 6 0 0 -l; 8 0 0 l -8 0 0 l; 0 6 l 0 0 6 -l 0; 0 8 l 0 0 -8 l 0])
+			i.m_mtx=(E'*spdiagm(0=>[111/37;1;111/37;1])*E)/432
 		end
 	else
 		println("Something odd happened in initializing items...")
