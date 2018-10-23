@@ -43,7 +43,7 @@ end
 
 for item in the_system.beams
 	l=item.length
-	D=[0 0 0 -1 0 0 0 1; 2/l 0 0 1 -2/l 0 0 1; 0 0 -1 0 0 0 1 0; 0 2/l -1 0 0 -2/l -1 0]  ## Relate the beam stiffness matrix to the deflection of the ends (diagonalize the typical beam stiffness matrix!)
+	D=[0 0 0 -1 0 0 0 1; 2/l 0 0 1 -2/l 0 0 1; 0 0 -1 0 0 0 1 0; 0 2/l 1 0 0 -2/l 1 0]  ## Relate the beam stiffness matrix to the deflection of the ends (diagonalize the typical beam stiffness matrix!)
 	temp=diagm(0=>(D'*item.preload))*[item.b_mtx[1];item.b_mtx[2];item.b_mtx[1];item.b_mtx[2]]
 	v1=temp[1,1:3]+temp[2,1:3]
 	m1=temp[3,4:6]+temp[4,4:6]
