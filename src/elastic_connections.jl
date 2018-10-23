@@ -67,14 +67,15 @@ if s>0  ## If the deflection matrix has more than zero rows (i.e. there are elas
 	## Relate the beam stiffness matrix to the deflection of the ends
 	idx=1
 	nb=8*length(the_system.beams)
-	beam_stiff=zeros(nb,nb)  ## Creates empty matrix for the beam stiffnesses
-	beam_inertia=zeros(nb,nb)  ## Creates empty atrix for the beam inertia
+	beam_stiff=spzeros(nb,nb)  ## Creates empty matrix for the beam stiffnesses
+	beam_damping=spzeros(nb,nb)
+	beam_inertia=spzeros(nb,nb)  ## Creates empty atrix for the beam inertia
 	for i in the_system.beams
 		l=i.length
 		D=[0 0 0 -1 0 0 0 1; 2/l 0 0 1 -2/l 0 0 1; 0 0 -1 0 0 0 1 0; 0 2/l -1 0 0 -2/l -1 0]
-		beam_stiff[8*idx.+(-7:0),8*idx.+(-7:0)]=i.stiffness/l*D'*[1 3 1 3]*D
+		beam_stiff[8*idx.+(-7:0),8*idx.+(-7:0)]=i.stiffness/l*D'*spdiagm(0=>[1,3,1,3])*D
 		E=[6 0 0 l 6 0 0 -l; 8 0 0 l -8 0 0 l; 0 6 l 0 0 6 -l 0; 0 8 l 0 0 -8 l 0]
-		beam_inertia[8*idx.+(-7:0),8*idx.+(-7:0)]=i.mpul*l/432*E'*[111/37 1 111/37 1]*E
+		beam_inertia[8*idx.+(-7:0),8*idx.+(-7:0)]=i.mpul*l/432*E'*spdiagm(0=>[111/37,1,111/37,1])*E
 		idx+=1
 	end
 
@@ -82,7 +83,7 @@ if s>0  ## If the deflection matrix has more than zero rows (i.e. there are elas
 	stiff=blockdiag(spdiagm(0=>spring_stiff),flex_point_stiff,beam_stiff)
 
 	## Convert damping row vector into diagonal matrix  -> a column for each elastic item
- 	dmpng=blockdiag(spdiagm(0=>spring_dmpng),flex_point_dmpng,spdiagm(0=>zero(beam_stiff)))
+ 	dmpng=blockdiag(spdiagm(0=>spring_dmpng),flex_point_dmpng,beam_damping)
  	#zeros(1,3*the_system.ntriangle_3s) zeros(1,5*the_system.ntriangle_5s) ])
 
 	## Compute the diagonal inertia values, mostly zero except the inertance of the springs
