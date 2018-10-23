@@ -78,9 +78,6 @@ if s>0  ## If the deflection matrix has more than zero rows (i.e. there are elas
 		beam_inertia[8*idx.+(-7:0),8*idx.+(-7:0)]=i.mpul*l/432*(E'*spdiagm(0=>[111/37,1,111/37,1])*E)
 		idx+=1
 
-println(beam_stiff)
-println(beam_inertia)
-
 	end
 
 	## Converts stiffness row vector into diagonal matrix -> a column for each elastic item
@@ -101,9 +98,6 @@ println(beam_inertia)
 	stiff_mtx=defln_mtx'*stiff*defln_mtx
 	dmpng_mtx=defln_mtx'*dmpng*defln_mtx
 	inertia_mtx=defln_mtx'*inertia*defln_mtx
-
-	println(stiff_mtx)
-	println(inertia_mtx)
 
 else
 	verb && println("No flexible connectors.")  ## If there are no springs or flex point items, define empty matrices
