@@ -98,6 +98,9 @@ if s>0  ## If the deflection matrix has more than zero rows (i.e. there are elas
 	dmpng_mtx=defln_mtx'*dmpng*defln_mtx
 	inertia_mtx=defln_mtx'*inertia*defln_mtx
 
+	println(stiff_mtx)
+	println(inertia_mtx)
+
 else
 	verb && println("No flexible connectors.")  ## If there are no springs or flex point items, define empty matrices
 
