@@ -80,6 +80,11 @@ if s>0  ## If the deflection matrix has more than zero rows (i.e. there are elas
 
 	end
 
+	println(Matrix(beam_stiff))
+
+	println(Matrix(beam_inertia))
+
+
 	## Converts stiffness row vector into diagonal matrix -> a column for each elastic item
 	stiff=blockdiag(spdiagm(0=>spring_stiff),flex_point_stiff,beam_stiff)
 
