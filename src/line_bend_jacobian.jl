@@ -16,7 +16,6 @@ mtx=zeros(8*length(items),6*num); ## Initially define deflection matrix as zero 
 
 idx=1
 for i in items
-#	l=i.length
 	rs=i.radius[1]  ## Radius from body1 cg to point of action of directed item on body1; 's'=start
 	re=i.radius[2]  ## Radius from body2 cg to point of action of directed item on body2; 'e'=end
 	pointer1=6*(i.body_number[1]-1)  ## Column number of the start body
@@ -29,13 +28,7 @@ for i in items
 	B[1:4,pointer1.+(1:6)]=B1
 	B[5:8,pointer2.+(1:6)]=B2
 
-#	D=[0 0 0 -1 0 0 0 1; 2/l 0 0 1 -2/l 0 0 1; 0 0 -1 0 0 0 1 0; 0 2/l -1 0 0 -2/l -1 0]  ## Relate the beam stiffness matrix to the deflection of the ends (diagonalize the typical beam stiffness matrix!)
-#	mtx[4*idx.+(-3:0),:]=D*B
 	mtx[8*idx.+(-7:0),:]=B
-
-#	E=[6 0 0 l 6 0 0 -l; 8 0 0 l -8 0 0 l; 0 6 l 0 0 6 -l 0; 0 8 l 0 0 -8 l 0]
-#	mtx2[4*idx.+(-3:0),:]=E*B
-
 	idx+=1
 end
 
