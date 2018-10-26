@@ -230,6 +230,14 @@ function minreal_jordan(sys_in,verbose=false)
 				B2=Bjm[match[i][2],:]  ## build second B matrix
 				C2=Cjm[:,match[i][2]]  ## build second C matrix
 
+
+println(B1)
+println(C1)
+println(B2)
+println(C2)
+
+				println([C1 C2]*[B1;B2])
+
 				Q,S,P=svd([C1 C2]*[B1;B2])  ## Q*S*P' should = G
 				if S[2]<1e-10
 					Bjm[match[i][1],:]=P[:,1]' ## compute combined B, C, overwrite first B matrix
