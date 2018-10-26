@@ -232,11 +232,21 @@ function minreal_jordan(sys_in,verbose=false)
 
 
 println(B1)
+println(typeof(B1))
 println(C1)
-println(B2)
-println(C2)
+println(typeof(C1))
 
-				println([C1 C2]*[B1;B2])
+println(B2)
+println(typeof(B2))
+
+println(C2)
+println(typeof(C2))
+
+println([C1 C2]*[B1;B2])
+println(typeof([C1 C2]*[B1;B2]))
+
+
+
 
 				Q,S,P=svd([C1 C2]*[B1;B2])  ## Q*S*P' should = G
 				if S[2]<1e-10
