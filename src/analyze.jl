@@ -23,10 +23,11 @@ wpts=500
 (wpts*nvpts>4000) && (wpts=Int(round(4000/nvpts)))
 
 for i=1:nvpts
+	println(i)
 	result[i]=analysis()
 
 	result[i].ss_eqns=dss2ss(dss_eqns[i],verbose && i<2)  ## Reduce to standard form
-#	result[i].jordan=minreal_jordan(result[i].ss_eqns,verbose && i<2)  ## Reduce to minimal Jordan form
+	result[i].jordan=minreal_jordan(result[i].ss_eqns,verbose && i<2)  ## Reduce to minimal Jordan form
 
 	F=eigen(dss_eqns[i].A,dss_eqns[i].E)  ## Find the eigen
 #	println(F.values)
