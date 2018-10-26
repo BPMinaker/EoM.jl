@@ -225,10 +225,10 @@ function minreal_jordan(sys_in,verbose=false)
 
 			else ## matching single real root, works for mimo
 
-				B1=Bjm[match[i][1],:]  ## build first B matrix
-				C1=Cjm[:,match[i][1]]  ## build first C matrix
-				B2=Bjm[match[i][2],:]  ## build second B matrix
-				C2=Cjm[:,match[i][2]]  ## build second C matrix
+				B1=Bjm[match[i][1]:match[i][1],:]  ## build first B matrix
+				C1=Cjm[:,match[i][1]:match[i][1]]  ## build first C matrix
+				B2=Bjm[match[i][2]:match[i][2],:]  ## build second B matrix
+				C2=Cjm[:,match[i][2]:match[i][2]]  ## build second C matrix
 
 
 println(B1)
