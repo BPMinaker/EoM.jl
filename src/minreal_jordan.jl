@@ -208,7 +208,7 @@ function minreal_jordan(sys_in,verbose=false)
 					w=H[2,1]/z
 					x=H[2,2]/z
 				else
-					println("Something weird happened")
+					error("Something weird happened in Jordan form calcs")
 				end
 
 #				H2=[y z]'*[w x]
@@ -230,29 +230,13 @@ function minreal_jordan(sys_in,verbose=false)
 				B2=Bjm[match[i][2]:match[i][2],:]  ## build second B matrix
 				C2=Cjm[:,match[i][2]:match[i][2]]  ## build second C matrix
 
-
-println(B1)
-println(typeof(B1))
-println(C1)
-println(typeof(C1))
-
-println(B2)
-println(typeof(B2))
-
-println(C2)
-println(typeof(C2))
-
-println([C1 C2]*[B1;B2])
-println(typeof([C1 C2]*[B1;B2]))
-
-
-
-
 				Q,S,P=svd([C1 C2]*[B1;B2])  ## Q*S*P' should = G
-				if S[2]<1e-10
+				if abs(S[1])/norm(S)>0.99
 					Bjm[match[i][1],:]=P[:,1]' ## compute combined B, C, overwrite first B matrix
 					Cjm[:,match[i][1]]=Q[:,1]*S[1]  ## overwrite first C matrix
 					push!(dup,match[i][2])  ## record which row can be removed
+				else
+					error("Something weird happened in Jordan form calcs")
 				end
 				i+=1  ## go to next match
 			end
