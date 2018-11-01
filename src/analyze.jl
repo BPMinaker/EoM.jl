@@ -27,7 +27,7 @@ for i=1:nvpts
 	result[i]=analysis()
 
 	result[i].ss_eqns=dss2ss(dss_eqns[i],verbose && i<2)  ## Reduce to standard form
-	result[i].jordan=minreal_jordan(result[i].ss_eqns,verbose && i<2)  ## Reduce to minimal Jordan form
+#	result[i].jordan=minreal_jordan(result[i].ss_eqns,verbose && i<2)  ## Reduce to minimal Jordan form
 
 	F=eigen(dss_eqns[i].A,dss_eqns[i].E)  ## Find the eigen
 #	println(F.values)
@@ -54,13 +54,13 @@ for i=1:nvpts
 
 	result[i].freq_resp=zeros(nout,nin,length(w))
 
-	# for j=1:wpts
-	# 	result[i].freq_resp[:,:,j]=result[i].ss_eqns.C*((I*w[j]im-result[i].ss_eqns.A)\result[i].ss_eqns.B)+result[i].ss_eqns.D
-	# end
-
 	for j=1:wpts
-		result[i].freq_resp[:,:,j]=result[i].jordan.C*(Tridiagonal(I*w[j]im-result[i].jordan.A)\result[i].jordan.B)+result[i].jordan.D
+		result[i].freq_resp[:,:,j]=result[i].ss_eqns.C*((I*w[j]im-result[i].ss_eqns.A)\result[i].ss_eqns.B)+result[i].ss_eqns.D
 	end
+
+	# for j=1:wpts
+	# 	result[i].freq_resp[:,:,j]=result[i].jordan.C*(Tridiagonal(I*w[j]im-result[i].jordan.A)\result[i].jordan.B)+result[i].jordan.D
+	# end
 
 	try
 		result[i].ss_resp=-result[i].ss_eqns.C*(result[i].ss_eqns.A\result[i].ss_eqns.B)+result[i].ss_eqns.D
