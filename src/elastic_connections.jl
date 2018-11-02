@@ -57,6 +57,8 @@ if s>0  ## If the deflection matrix has more than zero rows (i.e. there are elas
 
 	idx=1
 	for i in the_system.flex_points  ## For each elastic point item
+		println(i.d_mtx)
+
 		idxe=idx+i.forces+i.moments-1
 		flex_point_stiff[idx:idxe,idx:idxe]=sparse(i.s_mtx)
 		flex_point_dmpng[idx:idxe,idx:idxe]=sparse(i.d_mtx)
