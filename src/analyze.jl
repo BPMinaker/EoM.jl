@@ -20,7 +20,7 @@ lower=zeros(nvpts)
 upper=zeros(nvpts)
 
 wpts=500
-(wpts*nvpts>4000) && (wpts=Int(round(4000/nvpts)))
+(wpts*nvpts>2500) && (wpts=Int(round(2500/nvpts)))
 
 for i=1:nvpts
 #	println(i)
