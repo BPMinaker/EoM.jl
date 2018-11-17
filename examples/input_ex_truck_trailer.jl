@@ -144,12 +144,12 @@ push!(the_system.item,item)
 ## Note that the y location will not reach steady state with constant delta
 ## input, so adding the sensor will give an error if the steady state gain
 ## is computed.  It will work fine when a time history is computed.
-item=sensor("\$y_{\\text{f}}\$")
-item.body[1]="truck"
-item.body[2]="ground"
-item.location[1]=[a,0,0]
-item.location[2]=[a,0.1,0]
-push!(the_system.item,item)
+# item=sensor("\$y_{\\text{f}}\$")
+# item.body[1]="truck"
+# item.body[2]="ground"
+# item.location[1]=[a,0,0]
+# item.location[2]=[a,0.1,0]
+# push!(the_system.item,item)
 
 the_system
 
