@@ -66,7 +66,8 @@ function minreal_jordan(sys_in,verbose=false)
 
 	match_vec=Vector[]
 	for i in match_val  ## for each list of matching values
-		verbose && println("Found repeated roots at ",i)
+		#verbose && 
+		println("Found repeated roots at ",i)
 		j=length(i)
 		t=abs.(jvec[:,i]'*jvec[:,i])-ones(j,j)  ## dot product of colinear vectors = +/-1
 #		println(t)
@@ -94,7 +95,7 @@ function minreal_jordan(sys_in,verbose=false)
 
 	for i in match_val
 		j=1
-		while j<length(i)+1
+		while (j<length(i)+1 && r<m)
 			t=rank(round.([jvec[:,1:i[j]-1] jvec[:,i[j]+1:end]],digits=6))  ## find rank with vector removed
 			if t==r  ## if removing this vector had no effect on the rank
 				verbose && println("Replacing vector $(i[j]+1) with pseudovector...")
