@@ -54,16 +54,15 @@ function minreal_jordan(sys_in,verbose=false)
 
 	match_val=Vector[]
 	for i=1:m
-		if abs(imag(val[i]))<1e-6
-#			t=findall(abs.(val.-val[i]).<1e-6)  ## find all matching real eigenvalues
-			t=findall(round.(val,sigdigits=6).==round(val[i],sigdigits=6))
+		if abs(imag(val[i]))<1e-6  ## if eigenvalue is real
+			t=findall(round.(val,sigdigits=6).==round(val[i],sigdigits=6))  ## find matching values
 			length(t)>1 && push!(match_val,t)  ## record them
 		end
 	end
 
 	match_val=unique(match_val)  ## remove the duplicate entries, if 1 matches 2, then 2 matches 1
 
-	println(match_val)
+	#println(match_val)
 
 	match_vec=Vector[]
 	for i in match_val  ## for each list of matching values
@@ -87,7 +86,7 @@ function minreal_jordan(sys_in,verbose=false)
 		jvec[:,i]=jvec[:,sorted]  ## put all colinear vectors with same value next to each other
 	end
 
-	r=rank(round.(jvec,digits=6))  ## round the eigenvectors and find the rank (all vectors same magnitude)
+	r=rank(round.(jvec,sigdigits=6))  ## round the eigenvectors and find the rank (all vectors same magnitude)
 	verbose && println("Jordan vector rank is $r, size $m.")
 
 	dpl=Int64[]
@@ -97,7 +96,7 @@ function minreal_jordan(sys_in,verbose=false)
 	for i in match_val
 		j=1
 		while (j<length(i)+1 && r<m)
-			t=rank(round.([jvec[:,1:i[j]-1] jvec[:,i[j]+1:end]],digits=6))  ## find rank with vector removed
+			t=rank(round.([jvec[:,1:i[j]-1] jvec[:,i[j]+1:end]],sigdigits=6))  ## find rank with vector removed
 			if t==r  ## if removing this vector had no effect on the rank
 				verbose && println("Replacing vector $(i[j]+1) with pseudovector...")
 				jvec[:,i[j]+1]=pinv([AA-val[i[j]]*Matrix(1.0I,m,m);jvec[:,i[j]]'])*[jvec[:,i[j]];0]  ## add one row to allow unique solution, pvector must be orthogonal
@@ -110,7 +109,7 @@ function minreal_jordan(sys_in,verbose=false)
 			chk=norm(AA-jvec*Aj*inv(jvec))  ## confirm factorization is correct
 			chk>1e-8 && println("Factorization check=$(chk)...")
 			j+=1
-			r=rank(round.(jvec,digits=6))  ## recompute rank
+			r=rank(round.(jvec,sigdigits=6))  ## recompute rank
 			verbose && println("Basis vector rank is now $r.")
 		end
 	end
