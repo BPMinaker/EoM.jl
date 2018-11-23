@@ -63,7 +63,7 @@ for i=1:nvpts
 	end
 
 	try
-		result[i].ss_resp=-result[i].ss_eqns.C*(result[i].ss_eqns.A\result[i].ss_eqns.B)+result[i].ss_eqns.D
+		result[i].ss_resp=-result[i].jordan.C*(result[i].jordan.A\result[i].jordan.B)+result[i].jordan.D
 	catch
 		result[i].ss_resp=-result[i].ss_eqns.C*pinv(result[i].ss_eqns.A)*result[i].ss_eqns.B+result[i].ss_eqns.D
 	end
