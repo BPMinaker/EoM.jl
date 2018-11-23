@@ -128,7 +128,7 @@ item.body[1]="chassis"
 item.body[2]="ground"
 item.location[1]=[a,0,0]
 item.location[2]=[a,0.1,0]
-push!(the_system.item,item)
+#push!(the_system.item,item)
 
 the_system
 
