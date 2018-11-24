@@ -19,8 +19,8 @@ for old in the_system.item
 
 		item=deepcopy(old)
 
-		item.name=replace(item.name,"LF","RF")
-		item.name=replace(item.name,"LR","RR")
+		item.name=replace(item.name,"LF"=>"RF")
+		item.name=replace(item.name,"LR"=>"RR")
 
 		if(isa(item,body))
 
@@ -31,10 +31,10 @@ for old in the_system.item
 
 		elseif(isa(item,rigid_point) || isa(item,flex_point))
 
-			item.body[1]=replace(item.body[1],"LF","RF")
-			item.body[1]=replace(item.body[1],"LR","RR")
-			item.body[2]=replace(item.body[2],"LF","RF")
-			item.body[2]=replace(item.body[2],"LR","RR")
+			item.body[1]=replace(item.body[1],"LF"=>"RF")
+			item.body[1]=replace(item.body[1],"LR"=>"RR")
+			item.body[2]=replace(item.body[2],"LF"=>"RF")
+			item.body[2]=replace(item.body[2],"LR"=>"RR")
 
 			item.location[2]=-item.location[2]
 			item.axis[2]=-item.axis[2]
@@ -43,10 +43,10 @@ for old in the_system.item
 
 		elseif(isa(item,link) || isa(item,spring) || isa(item,beam) || isa(item,sensor) || isa(item,actuator))
 
-			item.body[1]=replace(item.body[1],"LF","RF")
-			item.body[1]=replace(item.body[1],"LR","RR")
-			item.body[2]=replace(item.body[2],"LF","RF")
-			item.body[2]=replace(item.body[2],"LR","RR")
+			item.body[1]=replace(item.body[1],"LF"=>"RF")
+			item.body[1]=replace(item.body[1],"LR"=>"RR")
+			item.body[2]=replace(item.body[2],"LF"=>"RF")
+			item.body[2]=replace(item.body[2],"LR"=>"RR")
 
 			item.location[1][2]=-item.location[1][2]
 			item.location[2][2]=-item.location[2][2]
@@ -54,8 +54,8 @@ for old in the_system.item
 
 		elseif(isa(item,load))
 
-			item.body=replace(item.body,"LF","RF")
-			item.body=replace(item.body,"LR","RR")
+			item.body=replace(item.body,"LF"=>"RF")
+			item.body=replace(item.body,"LR"=>"RR")
 
 			item.location[2]=-item.location[2]
 			item.force[2]=-item.force[2]
