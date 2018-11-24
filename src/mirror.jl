@@ -15,7 +15,7 @@ function mirror!(the_system)
 
 for old in the_system.item
 
-	if(occusin("LF ",old.name) || occursin("LR ",old.name))
+	if(occursin("LF ",old.name) || occursin("LR ",old.name))
 
 		item=deepcopy(old)
 
