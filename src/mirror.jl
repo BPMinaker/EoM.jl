@@ -15,7 +15,7 @@ function mirror!(the_system)
 
 for old in the_system.item
 
-	if(contains(old.name,"LF ") | contains(old.name,"LR "))
+	if(occusin("LF ",old.name) || occursin("LR ",old.name))
 
 		item=deepcopy(old)
 
@@ -29,7 +29,7 @@ for old in the_system.item
 			item.products_of_inertia[2]=-item.products_of_inertia[2]
 			push!(the_system.item,item)
 
-		elseif(isa(item,rigid_point) | isa(item,flex_point))
+		elseif(isa(item,rigid_point) || isa(item,flex_point))
 
 			item.body[1]=replace(item.body[1],"LF","RF")
 			item.body[1]=replace(item.body[1],"LR","RR")
@@ -41,7 +41,7 @@ for old in the_system.item
 			item.rolling_axis[2]=-item.rolling_axis[2]
 			push!(the_system.item,item)
 
-		elseif(isa(item,link) | isa(item,spring) | isa(item,beam) | isa(item,sensor) | isa(item,actuator))
+		elseif(isa(item,link) || isa(item,spring) || isa(item,beam) || isa(item,sensor) || isa(item,actuator))
 
 			item.body[1]=replace(item.body[1],"LF","RF")
 			item.body[1]=replace(item.body[1],"LR","RR")
