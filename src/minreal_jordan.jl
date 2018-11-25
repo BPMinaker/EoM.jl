@@ -76,7 +76,7 @@ function minreal_jordan(sys_in,verbose=false)
 			push!(match_vec,u)
 		end
 		match_vec=unique(match_vec)  ## remove the duplicate entries
-println(math_vec)
+println(match_vec)
 		sorted=Int64[]
 		for k in match_vec
 			for n in k
