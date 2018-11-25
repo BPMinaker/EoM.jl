@@ -62,29 +62,28 @@ function minreal_jordan(sys_in,verbose=false)
 
 	match_val=unique(match_val)  ## remove the duplicate entries, if 1 matches 2, then 2 matches 1
 
-	println(match_val)
+	#println(match_val)
 
 	match_vec=Vector[]
 	for i in match_val  ## for each list of matching values
 		verbose && println("Found repeated roots at ",i)
 		j=length(i)
-		t=abs.(jvec[:,i]'*jvec[:,i])-ones(j,j)  ## dot product of colinear vectors = +/-1
-		println(t)
-		for k=1:j
-			u=findall(abs.(t[:,k]).<1e-6)  ## find the colinear vectors
-			println(u)
-			push!(match_vec,u)
-		end
-		match_vec=unique(match_vec)  ## remove the duplicate entries
-println(match_vec)
-		sorted=Int64[]
-		for k in match_vec
-			for n in k
-				push!(sorted,i[n])
+		if j>2
+			t=abs.(jvec[:,i]'*jvec[:,i])-ones(j,j)  ## dot product of colinear vectors = +/-1
+			println(t)
+			for k=1:j
+				u=findall(abs.(t[:,k]).<1e-6)  ## find the colinear vectors
+				push!(match_vec,u)
 			end
+			match_vec=unique(match_vec)  ## remove the duplicate entries
+			sorted=Int64[]
+			for k in match_vec
+				for n in k
+					push!(sorted,i[n])
+				end
+			end
+			jvec[:,i]=jvec[:,sorted]  ## put all colinear vectors with same value next to each other
 		end
-		println(sorted)
-		jvec[:,i]=jvec[:,sorted]  ## put all colinear vectors with same value next to each other
 	end
 
 	r=rank(round.(jvec,sigdigits=6))  ## round the eigenvectors and find the rank (all vectors same magnitude)
