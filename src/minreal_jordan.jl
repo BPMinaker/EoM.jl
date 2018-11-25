@@ -70,7 +70,6 @@ function minreal_jordan(sys_in,verbose=false)
 		j=length(i)
 		if j>2
 			t=abs.(jvec[:,i]'*jvec[:,i])-ones(j,j)  ## dot product of colinear vectors = +/-1
-			println(t)
 			for k=1:j
 				u=findall(abs.(t[:,k]).<1e-6)  ## find the colinear vectors
 				push!(match_vec,u)
