@@ -41,7 +41,7 @@ if(rank(Matrix(test_mtx))==s)
 		println("Finding all forces of constraint and flexible item preloads...")
 	end
 
-	lambda=test_mtx\[-data.force; data.preload]  ## lambda (constraint forces)=-inverse(test_mtx)*frcvec
+	lambda=sparse(test_mtx\Array([-data.force; data.preload]))  ## lambda (constraint forces)=-inverse(test_mtx)*frcvec
 	verb && println("Finding deflections...")
 
 	# [B    0 ]      {0}         satisfies constraints
@@ -49,7 +49,7 @@ if(rank(Matrix(test_mtx))==s)
 	# [PSD  P ]{d}  {fp}         the known elastic preloads result from motion of the system plus initial deflection before motion
 
 	temp_mtx=ind_test_mtx[:,q+1:end]
-	static=temp_mtx\[zeros(q,1);-data.force-data.constraint'*lambda[1:q];data.preload]
+	static=sparse(temp_mtx\Array([zeros(q,1);-data.force-data.constraint'*lambda[1:q];data.preload]))
 	static=-static[1:r]
 	sumf=test_mtx[1:end-p,:]*lambda+data.force
 else
@@ -60,7 +60,7 @@ else
 
 	if(rank(Matrix(ind_test_mtx))==t)
 		verb && println("Finding all forces of constraint, flexible item preloads, and deflections...")
-		temp=Matrix(ind_test_mtx)\[zeros(q);-data.force;data.preload]
+		temp=sparse(ind_test_mtx\Array([zeros(q);-data.force;data.preload]))
 	else
 		if(verb)
 			println("Warning: some preloads cannot be found uniquely!")
