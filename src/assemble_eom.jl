@@ -24,9 +24,9 @@ dim=size(data.constraint,2)
 nin=size(data.input,2)
 nout=size(data.output,1)
 
-data.M=[I spzeros(dim,dim+nin); spzeros(dim,dim) mass_mtx -data.input_rate; spzeros(nin,2*dim+nin)]
+data.M=[I zeros(dim,dim+nin); zeros(dim,dim) mass_mtx -data.input_rate; zeros(nin,2*dim+nin)]
 
-data.KC=[data.velocity -I spzeros(dim,nin); stiff_mtx damp_mtx -data.input; spzeros(nin,2*dim) I];
+data.KC=[data.velocity -I zeros(dim,nin); stiff_mtx damp_mtx -data.input; zeros(nin,2*dim) I];
 
 s=size(data.right_jacobian,1)  ## Compute size of J matrices
 
@@ -43,15 +43,15 @@ ss_eqns=dss_data()  ## Create empty state space holder
 ## Pre and post multiply by orthogonal complements, and then cast in standard form
 ss_eqns.E=l_orth'*data.M*r_orth
 ss_eqns.A=-l_orth'*data.KC*r_orth
-ss_eqns.B=l_orth'*[spzeros(2*dim,nin); I]
-C=spzeros(nout,2*dim+nin)
+ss_eqns.B=l_orth'*[zeros(2*dim,nin); I]
+C=zeros(nout,2*dim+nin)
 
 for i=1:nout
 	if(column[i]==1) ## p
- 			mask=[I spzeros(dim,dim+nin)]
+ 			mask=[I zeros(dim,dim+nin)]
 
 	elseif(column[i]==2)  ## w
-		mask=[spzeros(dim,dim) I spzeros(dim,nin)]
+		mask=[zeros(dim,dim) I zeros(dim,nin)]
 
 	elseif(column[i]==3)  ## p dot
 		mask=-data.KC[1:dim,:]

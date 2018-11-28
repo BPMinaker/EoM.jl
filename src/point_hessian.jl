@@ -14,7 +14,7 @@ function point_hessian(items,num)
 ##
 ## in=flex_points or rigid_points, num=number of bodys, mtx=stiffness
 
-mtx=spzeros(6*num,6*num) ## Initially define blank row vector
+mtx=zeros(6*num,6*num) ## Initially define blank row vector
 n=6*(num-1) ## n excludes the ground body
 
 for i in items

@@ -21,27 +21,27 @@ q,r=size(data.constraint) ## q=the number of rows in the constraint matrix
 # [J' H']{lam}={f}      rigid constraint force plus elastic force equals total applied force
 # [0  S]{f}    {fp}     subset of the elastic preloads are known
 
-test_mtx=[data.constraint' data.deflection'; spzeros(p,q) data.selection]
+test_mtx=[data.constraint' data.deflection'; zeros(p,q) data.selection]
 s=size(test_mtx,2)
 
 # [ 0    J     0 ]{lam}  {0}    defln satisfies constraints
 # [ J'   K  H'S'P]{x} ={-f}   forces sum to zero
 # [ 0   PSH    P ]{d} {fp}   some of the elastic preloads are known
 
-ind_test_mtx=[spzeros(q,q) data.constraint spzeros(q,p); data.constraint' data.stiffness data.deflection'*data.selection'*sparse(diagm(0=>data.subset_spring_stiffness)); spzeros(p,q) sparse(diagm(0=>data.subset_spring_stiffness))*data.selection*data.deflection sparse(diagm(0=>data.subset_spring_stiffness))]
+ind_test_mtx=[zeros(q,q) data.constraint zeros(q,p); data.constraint' data.stiffness data.deflection'*data.selection'*diagm(0=>data.subset_spring_stiffness); zeros(p,q) diagm(0=>data.subset_spring_stiffness)*data.selection*data.deflection diagm(0=>data.subset_spring_stiffness)]
 t=size(ind_test_mtx,1)
 
 sumf=0
 lambda=zeros(0)
 static=zeros(0)
 
-if(rank(Matrix(test_mtx))==s)
-	if(verb)
+if rank(test_mtx)==s
+	if verb
 		println("Statically determinate system.  Good.")
 		println("Finding all forces of constraint and flexible item preloads...")
 	end
 
-	lambda=sparse(test_mtx\Array([-data.force; data.preload]))  ## lambda (constraint forces)=-inverse(test_mtx)*frcvec
+	lambda=test_mtx\[-data.force; data.preload]  ## lambda (constraint forces)=-inverse(test_mtx)*frcvec
 	verb && println("Finding deflections...")
 
 	# [B    0 ]      {0}         satisfies constraints
@@ -49,24 +49,24 @@ if(rank(Matrix(test_mtx))==s)
 	# [PSD  P ]{d}  {fp}         the known elastic preloads result from motion of the system plus initial deflection before motion
 
 	temp_mtx=ind_test_mtx[:,q+1:end]
-	static=sparse(temp_mtx\Array([zeros(q,1);-data.force-data.constraint'*lambda[1:q];data.preload]))
+	static=temp_mtx\[zeros(q,1);-data.force-data.constraint'*lambda[1:q];data.preload]
 	static=-static[1:r]
 	sumf=test_mtx[1:end-p,:]*lambda+data.force
 else
-	if(verb)
+	if verb
 		println("Warning: this is a statically indeterminate system!")
 		println("Trying to use item stiffness to determine preloads...")
 	end
 
-	if(rank(Matrix(ind_test_mtx))==t)
+	if rank(ind_test_mtx)==t
 		verb && println("Finding all forces of constraint, flexible item preloads, and deflections...")
-		temp=sparse(ind_test_mtx\Array([zeros(q);-data.force;data.preload]))
+		temp=ind_test_mtx\[zeros(q);-data.force;data.preload]
 	else
-		if(verb)
+		if verb
 			println("Warning: some preloads cannot be found uniquely!")
 			println("Attempting a trial solution anyway...")
 		end
-		temp=pinv(Matrix(ind_test_mtx))*[zeros(q);-data.force;data.preload]
+		temp=pinv(ind_test_mtx)*[zeros(q);-data.force;data.preload]
 	end
 	static=-temp[q+1:q+r]
 	lambda=[temp[1:q];[diagm(0=>data.spring_stiffness)*data.deflection data.selection'*diagm(0=>data.subset_spring_stiffness)]*temp[q+1:end]]

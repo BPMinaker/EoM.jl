@@ -15,7 +15,7 @@ function point_line_jacobian(items,num)
 
 nr=sum(broadcast(num_fm,items))  ## Find total number of rows needed
 
-mtx=spzeros(nr,6*num)  ## Initially define blank matrix
+mtx=zeros(nr,6*num)  ## Initially define blank matrix
 
 idx=1
 for i in items
@@ -28,7 +28,7 @@ for i in items
 	B1=[i.b_mtx[1];i.b_mtx[2]]*[I -skew(rs); zeros(3,3) I] ## The skew rs makes 'theta'x'r'...
 	B2=[i.b_mtx[1];i.b_mtx[2]]*[I -skew(re); zeros(3,3) I] ## rotation of the body that creates a translation at the joint, i.e, x1-theta*r = 0
 
-	B=spzeros(nrows,6*num)
+	B=zeros(nrows,6*num)
 	B[:,pointer1.+(1:6)]=B1 ## Positive
 	B[:,pointer2.+(1:6)]=-B2 ## Negative, so the equations sum to zero, i.e x1 - x3 = 0
 

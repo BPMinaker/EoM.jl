@@ -12,11 +12,11 @@ function line_stretch_hessian(items,num)
 ##
 ##--------------------------------------------------------------------
 
-mtx=spzeros(6*num,6*num) ## Create empty matrix
+mtx=zeros(6*num,6*num) ## Create empty matrix
 
 for i in items
 
-	temp=spzeros(3,6*num)
+	temp=zeros(3,6*num)
 	u=i.unit  ## Unit vector defining axis of action of directed item
 	rs=i.radius[1]  ## Radius from body1 cg to point of action of directed item on body1; 's'=start
 	re=i.radius[2]  ## Radius from body2 cg to point of action of directed item on body2; 'e'=end

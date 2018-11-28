@@ -47,7 +47,7 @@ function inertia_mtx(obj::body)
 end
 
 function mass_mtx(obj::body)
-	sparse([obj.mass*Matrix(1.0I,3,3) zeros(3,3); zeros(3,3) inertia_mtx(obj)])  ## Stack mass and inertia terms
+	[obj.mass*(zeros(3,3)+I) zeros(3,3); zeros(3,3) inertia_mtx(obj)]  ## Stack mass and inertia terms
 end
 
 function weight(obj::body,g=9.81)

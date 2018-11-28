@@ -3,7 +3,6 @@
 module EoM
 
 using Printf
-using SparseArrays
 using LinearAlgebra
 using Dates
 
@@ -116,63 +115,63 @@ mutable struct eom_data
 	name::String
 	input_names::Vector{String}
 	output_names::Vector{String}
-	mass::SparseMatrixCSC{Float64,Int64}  ## mass matrix from bodies
-	inertia::SparseMatrixCSC{Float64,Int64}  ## mass matrix from springs
-	damping::SparseMatrixCSC{Float64,Int64}  ## damping matrix from dampers
-	stiffness::SparseMatrixCSC{Float64,Int64}  ## stiffness matrix from springs
-	tangent_stiffness::SparseMatrixCSC{Float64,Int64}  ## stiffness matrix from internal loads
-	load_stiffness::SparseMatrixCSC{Float64,Int64}  ## stiffness matrix from external loads
-	velocity::SparseMatrixCSC{Float64,Int64}  ## velocity matrix for kinematics differential equation
-	momentum::SparseMatrixCSC{Float64,Int64}  ## momentum matrix that gets added to damping matrix
-	constraint::SparseMatrixCSC{Float64,Int64}  ## holonomic constraint jacobian
-	nh_constraint::SparseMatrixCSC{Float64,Int64}  ## nonholonomic constraint jacobian
-	deflection::SparseMatrixCSC{Float64,Int64}   ## elactic deflections jacobian
+	mass::Array{Float64,2}  ## mass matrix from bodies
+	inertia::Array{Float64,2}  ## mass matrix from springs
+	damping::Array{Float64,2}  ## damping matrix from dampers
+	stiffness::Array{Float64,2}  ## stiffness matrix from springs
+	tangent_stiffness::Array{Float64,2}  ## stiffness matrix from internal loads
+	load_stiffness::Array{Float64,2}  ## stiffness matrix from external loads
+	velocity::Array{Float64,2}  ## velocity matrix for kinematics differential equation
+	momentum::Array{Float64,2}  ## momentum matrix that gets added to damping matrix
+	constraint::Array{Float64,2}  ## holonomic constraint jacobian
+	nh_constraint::Array{Float64,2}  ## nonholonomic constraint jacobian
+	deflection::Array{Float64,2}   ## elactic deflections jacobian
 	lambda::Vector{Float64}  ## lagrange multipliers, internal preloads
 	static::Vector{Float64}  ## static deflection
-	selection::SparseMatrixCSC{Float64,Int64}  ## indicator of which springs preload is known in advance
+	selection::Array{Float64,2}  ## indicator of which springs preload is known in advance
 	spring_stiffness::Vector{Float64}  ## all flexible item stiffnesses
 	subset_spring_stiffness::Vector{Float64}  ## stiffnesses of springs with known preload
-	left_jacobian::SparseMatrixCSC{Float64,Int64}
-	right_jacobian::SparseMatrixCSC{Float64,Int64}
+	left_jacobian::Array{Float64,2}
+	right_jacobian::Array{Float64,2}
 	force::Vector{Float64}  ## external forces
 	preload::Vector{Float64}  ## all known and NaN preloads
-	input::SparseMatrixCSC{Float64,Int64}
-	input_rate::SparseMatrixCSC{Float64,Int64}
-	output::SparseMatrixCSC{Float64,Int64}
-	feedthrough::SparseMatrixCSC{Float64,Int64}
-	M::SparseMatrixCSC{Float64,Int64}
-	KC::SparseMatrixCSC{Float64,Int64}
+	input::Array{Float64,2}
+	input_rate::Array{Float64,2}
+	output::Array{Float64,2}
+	feedthrough::Array{Float64,2}
+	M::Array{Float64,2}
+	KC::Array{Float64,2}
 
 	function eom_data(
 	name="",
 	input_names=[],
 	output_names=[],
-	mass=sparse(1.0I,0,0),
-	inertia=sparse(1.0I,0,0),
-	damping=sparse(1.0I,0,0),
-	stiffness=sparse(1.0I,0,0),
-	tangent_stiffness=sparse(1.0I,0,0),
-	load_stiffness=sparse(1.0I,0,0),
-	velocity=sparse(1.0I,0,0),
-	momentum=sparse(1.0I,0,0),
-	constraint=sparse(1.0I,0,0),
-	nh_constraint=sparse(1.0I,0,0),
-	deflection=sparse(1.0I,0,0),
+	mass=zeros(0,0),
+	inertia=zeros(0,0),
+	damping=zeros(0,0),
+	stiffness=zeros(0,0),
+	tangent_stiffness=zeros(0,0),
+	load_stiffness=zeros(0,0),
+	velocity=zeros(0,0),
+	momentum=zeros(0,0),
+	constraint=zeros(0,0),
+	nh_constraint=zeros(0,0),
+	deflection=zeros(0,0),
 	lambda=Vector{Float64}(undef,0),
 	static=Vector{Float64}(undef,0),
-	selection=sparse(1.0I,0,0),
+	selection=zeros(0,0),
 	spring_stiffness=Vector{Float64}(undef,0),
 	subset_spring_stiffness=Vector{Float64}(undef,0),
-	left_jacobian=sparse(1.0I,0,0),
-	right_jacobian=sparse(1.0I,0,0),
+	left_jacobian=zeros(0,0),
+	right_jacobian=zeros(0,0),
 	force=Vector{Float64}(undef,0),
 	preload=Vector{Float64}(undef,0),
-	input=sparse(1.0I,0,0),
-	input_rate=sparse(1.0I,0,0),
-	output=sparse(1.0I,0,0),
-	feedthrough=sparse(1.0I,0,0),
-	M=sparse(1.0I,0,0),
-	KC=sparse(1.0I,0,0))
+	input=zeros(0,0),
+	input_rate=zeros(0,0),
+	output=zeros(0,0),
+	feedthrough=zeros(0,0),
+	M=zeros(0,0),
+	KC=zeros(0,0))
 		new(name,input_names,output_names,mass,inertia,damping,stiffness,tangent_stiffness,load_stiffness,velocity,momentum,constraint,nh_constraint,deflection,lambda,static,selection,spring_stiffness,subset_spring_stiffness,left_jacobian,right_jacobian,force,preload,input,input_rate,output,feedthrough,M,KC)
 	end
 end
