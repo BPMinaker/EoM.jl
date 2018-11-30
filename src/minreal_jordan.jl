@@ -55,7 +55,7 @@ function minreal_jordan(sys_in,verbose=false)
 	match_val=Vector[]
 	for i=1:m
 		if abs(imag(val[i]))<1e-6  ## if eigenvalue is real
-			t=findall(round.(val,sigdigits=6).==round(val[i],sigdigits=6))  ## find matching values
+			t=findall(round.(round.(val,digits=6),sigdigits=6).==round.(round(val[i],digits=6),sigdigits=6))  ## find matching values
 			length(t)>1 && push!(match_val,t)  ## record them
 		end
 	end
