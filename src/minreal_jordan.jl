@@ -40,7 +40,7 @@ function minreal_jordan(sys_in,verbose=false)
 
 	# println(round.(jvec,5))
 
-	Aj=Tridiagonal(ld,md,ud)
+	Aj=diagm(-1=>ld,0=>md,1=>ud)
 
 	# if verbose
 	# 	println("Checking factorization...")
