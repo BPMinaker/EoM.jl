@@ -127,7 +127,6 @@ function minreal_jordan(sys_in,verbose=false)
 
 	Ajm=Aj
 
-	m=size(Ajm,1)
 	ind=1:m
 	sens=zeros(m)
 	i=1
@@ -164,6 +163,7 @@ function minreal_jordan(sys_in,verbose=false)
 # println(Bjm)
 # println(Cjm)
 
+	m=size(Ajm,1)
 	match=Vector[]
 	for i=1:m
 		t=findall(abs.(val.-val[i]).<1e-6)  ## find all matching eigenvalues
