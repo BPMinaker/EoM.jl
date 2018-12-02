@@ -127,6 +127,39 @@ function minreal_jordan(sys_in,verbose=false)
 
 	Ajm=Aj
 
+	m=size(Ajm,1)
+	ind=1:m
+	sens=zeros(m)
+	i=1
+	while i<m+1
+		if i<m && abs(Ajm[i,i]-Ajm[i+1,i+1])<1e-6  ## if the roots are repeated
+			sens[i]=norm(Cjm[:,i:i+1]*(Int64.((abs.(Ajm[i:i+1,i:i+1])+Matrix(1.0I,2,2)).>1e-6))*Bjm[i:i+1,:])
+			sens[i+1]=sens[i]
+			i+=2
+		else
+			sens[i]=norm(Cjm[:,i:i]*Bjm[i:i,:])
+			i+=1
+		end
+	end
+
+	# println(sens)
+	flag=findall(sens.>maximum(sens)*1e-5)  ## find roots where sensitivity is more than 1e-5 times maximum
+	# println(flag)
+
+	t=setdiff(ind,flag)
+	if verbose && length(t)>0
+		print("Removing non-contributing modes ")
+		for i in t
+			print("$i, ")
+		end
+		println("...")
+	end
+
+	Ajm=Ajm[flag,flag] ## keep only sensitive roots
+	Bjm=Bjm[flag,:]
+	Cjm=Cjm[:,flag]
+
+
 # println(Ajm)
 # println(Bjm)
 # println(Cjm)
@@ -263,45 +296,11 @@ function minreal_jordan(sys_in,verbose=false)
 	Ajm=Ajm[nind,nind]  ## removing rows, columns
 	Bjm=Bjm[nind,:]
 	Cjm=Cjm[:,nind]
-	m=size(Ajm,1)
-	ind=1:m
-
-	sens=zeros(m)
-	i=1
-	while i<m+1
-		if i<m && abs(Ajm[i,i]-Ajm[i+1,i+1])<1e-6  ## if the roots are repeated
-			sens[i]=norm(Cjm[:,i:i+1]*(Int64.((abs.(Ajm[i:i+1,i:i+1])+Matrix(1.0I,2,2)).>1e-6))*Bjm[i:i+1,:])
-			sens[i+1]=sens[i]
-			#Q,S,P=svd([Cjm[:,i:i+1]; Cjm[:,i:i+1]*Ajm[i:i+1,i:i+1]]*[Bjm[i:i+1,:] Ajm[i:i+1,i:i+1]*Bjm[i:i+1,:]])
-			#sens[i]=S[1]
-			#sens[i+1]=S[2]
-			i+=2
-		else
-			sens[i]=norm(Cjm[:,i:i]*Bjm[i:i,:])
-			#Q,S,P=svd([Cjm[:,i:i]; Cjm[:,i:i]*Ajm[i:i,i:i]]*[Bjm[i:i,:] Ajm[i:i,i:i]*Bjm[i:i,:]])
-			#sens[i]=S[1]
-			i+=1
-		end
-	end
-
-	# println(sens)
-	flag=findall(sens.>maximum(sens)*1e-5)  ## find roots where sensitivity is more than 1e-5 times maximum
-	# println(flag)
-
-	t=setdiff(ind,flag)
-	if verbose && length(t)>0
-		print("Removing non-contributing modes ")
-		for i in t
-			print("$i, ")
-		end
-		println("...")
-	end
 
 	jordan=ss_data()
-
-	jordan.A=Ajm[flag,flag]  ## keep only sensitive roots
-	jordan.B=Bjm[flag,:]
-	jordan.C=Cjm[:,flag]
+	jordan.A=Ajm
+	jordan.B=Bjm
+	jordan.C=Cjm
 	jordan.D=sys_in.D
 
 	verbose && println("System is now of dimension ",size(jordan.A),".")
