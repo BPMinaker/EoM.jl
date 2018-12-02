@@ -65,7 +65,7 @@ for i=1:nvpts
 	try
 		result[i].ss_resp=-result[i].jordan.C*(result[i].jordan.A\result[i].jordan.B)+result[i].jordan.D
 	catch
-		result[i].ss_resp=-result[i].ss_eqns.C*pinv(result[i].ss_eqns.A)*result[i].ss_eqns.B+result[i].ss_eqns.D
+		result[i].ss_resp=-result[i].jordan.C*pinv(result[i].jordan.A)*result[i].jordan.B+result[i].jordan.D
 	end
 
 	# result[i].zero_val=eigvals([ss_eqns.A ss_eqns.B;ss_eqns.C ss_eqns.D],[ss_eqns.E zeros(ss_eqns.B);zeros(ss_eqns.C) zeros(ss_eqns.D)])
