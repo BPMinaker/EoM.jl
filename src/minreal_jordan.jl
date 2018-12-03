@@ -133,10 +133,11 @@ function minreal_jordan(sys_in,verbose=false)
 	match_val=Vector[]
 	for i=1:m
 		t=findall(round.(round.(val,digits=5),sigdigits=6).==round.(round(val[i],digits=5),sigdigits=6))  ## find matching values
-		length(t)>1 && push!(match_val,t)  ## record the rest
+		length(t)>1 && push!(match_val,t)  ## record them
 	end
 	match_val=unique(match_val)  ## remove the duplicate entries, if 1 matches 2, then 2 matches 1
-	# println(match)
+
+	println(match_val)
 
 	while i<length(match_val)
 		if abs(imag(val[match_val[i][1]]))>1e-6  ## if matching root is complex, skip to next
@@ -147,6 +148,8 @@ function minreal_jordan(sys_in,verbose=false)
 			deleteat!(match_val,i)  ## otherwise delete this entry
 		end
 	end
+
+	println(match_val)
 
 	dup=Int[]
 	i=1
