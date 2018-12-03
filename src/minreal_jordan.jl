@@ -213,33 +213,33 @@ function minreal_jordan(sys_in,verbose=false)
 #				H2=[y z]'*[w x]
 #				err=norm(H-H2)
 
-				Bjm[match[i][1],:].=y  ## compute combined B, C, overwrite first B matrix
-				Bjm[match[i+1][1],:].=z
-				Cjm[:,match[i][1]].=w ## overwrite first C matrix
-				Cjm[:,match[i+1][1]].=x
+				Bjm[match_val[i][1],:].=y  ## compute combined B, C, overwrite first B matrix
+				Bjm[match_val[i+1][1],:].=z
+				Cjm[:,match_val[i][1]].=w ## overwrite first C matrix
+				Cjm[:,match_val[i+1][1]].=x
 
-				push!(dup,match[i][2])  ## record which row can be removed
-				push!(dup,match[i+1][2])  ## record which row can be removed
+				push!(dup,match_val[i][2])  ## record which row can be removed
+				push!(dup,match_val[i+1][2])  ## record which row can be removed
 				i+=2  ## go to next match
 
 			else ## matching single real root, works for mimo
 
-				B1=Bjm[match[i][1]:match[i][1],:]  ## build first B matrix
-				C1=Cjm[:,match[i][1]:match[i][1]]  ## build first C matrix
-				B2=Bjm[match[i][2]:match[i][2],:]  ## build second B matrix
-				C2=Cjm[:,match[i][2]:match[i][2]]  ## build second C matrix
+				B1=Bjm[match_val[i][1]:match_val[i][1],:]  ## build first B matrix
+				C1=Cjm[:,match_val[i][1]:match_val[i][1]]  ## build first C matrix
+				B2=Bjm[match_val[i][2]:match_val[i][2],:]  ## build second B matrix
+				C2=Cjm[:,match_val[i][2]:match_val[i][2]]  ## build second C matrix
 
 				Q,S,P=svd([C1 C2]*[B1;B2])  ## Q*S*P' should = G
 				if abs(S[1])/norm(S)>0.99
-					Bjm[match[i][1],:]=P[:,1]' ## compute combined B, C, overwrite first B matrix
-					Cjm[:,match[i][1]]=Q[:,1]*S[1]  ## overwrite first C matrix
-					push!(dup,match[i][2])  ## record which row can be removed
+					Bjm[match_val[i][1],:]=P[:,1]' ## compute combined B, C, overwrite first B matrix
+					Cjm[:,match_val[i][1]]=Q[:,1]*S[1]  ## overwrite first C matrix
+					push!(dup,match_val[i][2])  ## record which row can be removed
 				else
 					error("Something weird happened in Jordan form calcs")
 				end
 				i+=1  ## go to next match
 			end
-		elseif length(match[i])>2  ## found multiple mathing roots with no duplicate
+		elseif length(match_val[i])>2  ## found multiple mathing roots with no duplicate
 			println("Multiple matching roots, not implemented yet...")
 			i+=1
 		else  ## shouldn't get here?
