@@ -137,7 +137,7 @@ function minreal_jordan(sys_in,verbose=false)
 	end
 	match_val=unique(match_val)  ## remove the duplicate entries, if 1 matches 2, then 2 matches 1
 
-	println(match_val)
+# println(match_val)
 
 	while i<length(match_val)
 		if abs(imag(val[match_val[i][1]]))>1e-6  ## if matching root is complex, skip to next
@@ -149,7 +149,7 @@ function minreal_jordan(sys_in,verbose=false)
 		end
 	end
 
-	println(match_val)
+# println(match_val)
 
 	dup=Int[]
 	i=1
