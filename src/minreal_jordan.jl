@@ -38,6 +38,8 @@ function minreal_jordan(sys_in,verbose=false)
 		i+=1
 	end
 
+	jvec=real.(jvec)
+
 	# println(round.(jvec,5))
 
 	Aj=diagm(-1=>ld,0=>md,1=>ud)
@@ -59,40 +61,12 @@ function minreal_jordan(sys_in,verbose=false)
 			length(t)>1 && push!(match_val,t)  ## record them
 		end
 	end
-
 	match_val=unique(match_val)  ## remove the duplicate entries, if 1 matches 2, then 2 matches 1
 
 	#println(match_val)
 
-	# match_vec=Vector[]
-	# for i in match_val  ## for each list of matching values
-	# 	verbose && println("Found repeated roots at ",i)
-	# 	j=length(i)
-	#
-	# 	t=abs.(jvec[:,i]'*jvec[:,i])-ones(j,j)  ## dot product of colinear vectors = +/-1
-	# 	println(i)
-	# 	println(t)
-	# 	for k=1:j
-	# 		u=findall(abs.(t[:,k]).<1e-6)  ## find the colinear vectors
-	# 		push!(match_vec,u)
-	# 	end
-	# 	match_vec=unique(match_vec)  ## remove the duplicate entries
-	# 	println(match_vec)
-	# 	sorted=Int64[]
-	# 	for k in match_vec
-	# 		for n in k
-	# 			push!(sorted,i[n])
-	# 		end
-	# 	end
-	# 	jvec[:,i]=jvec[:,sorted]  ## put all colinear vectors with same value next to each other
-	# end
-
 	r=rank(round.(jvec,sigdigits=6))  ## round the eigenvectors and find the rank (all vectors same magnitude)
 	verbose && println("Jordan vector rank is $r, size $m.")
-
-	dpl=Int64[]
-	dplb=Int64[]
-	dplln=Int64.(zeros(m))
 
 	for i in match_val
 		j=1
@@ -100,11 +74,8 @@ function minreal_jordan(sys_in,verbose=false)
 			t=rank(round.([jvec[:,1:i[j]-1] jvec[:,i[j]+1:end]],sigdigits=6))  ## find rank with vector removed
 			if t==r  ## if removing this vector had no effect on the rank
 				verbose && println("Replacing vector $(i[j]+1) with pseudovector...")
-				jvec[:,i[j]+1]=pinv([AA-val[i[j]]*Matrix(1.0I,m,m);jvec[:,i[j]]'])*[jvec[:,i[j]];0]  ## add one row to allow unique solution, pvector must be orthogonal
+				jvec[:,i[j]+1]=pinv([AA-val[i[j]]*diagm(0=>ones(m));jvec[:,i[j]]'])*[jvec[:,i[j]];0]  ## add one row to allow unique solution, pvector must be orthogonal
 				Aj[i[j],i[j]+1]=1  ## set entry in A matrix where pvector is located
-				push!(dpl,i[j])  ## record that this root has a duplicate
-				push!(dplb,i[j]+1)  ## record that next root is a duplicate
-				dplln[i[j]]=i[j]+1  ## record where the duplicate is located
 				j+=1
 			end
 			chk=norm(AA-jvec*Aj*inv(jvec))  ## confirm factorization is correct
@@ -118,24 +89,19 @@ function minreal_jordan(sys_in,verbose=false)
 	# println(dpl)
 	# println(dplb)
 
-	####
-	jvec=real.(jvec)
-	#####
-
 	Bjm=(jvec\BB)
 	Cjm=(CC*jvec)
-
 	Ajm=Aj
 
 	ind=1:m
 	sens=zeros(m)
 	i=1
 	while i<m+1
-		if i<m && abs(Ajm[i,i]-Ajm[i+1,i+1])<1e-6  ## if the roots are repeated
-			sens[i]=norm(Cjm[:,i:i+1]*(Int64.((abs.(Ajm[i:i+1,i:i+1])+Matrix(1.0I,2,2)).>1e-6))*Bjm[i:i+1,:])
+		if i<m && Ajm[i,i+1]!=0.0  ## if there are entries to the right, do 2x2 sensitivity
+			sens[i]=norm(Cjm[:,i:i+1]*(Int64.((abs.(Ajm[i:i+1,i:i+1])+diagm(0=>ones(2))).>1e-6))*Bjm[i:i+1,:])
 			sens[i+1]=sens[i]
 			i+=2
-		else
+		else  ## otherwise, just B and C
 			sens[i]=norm(Cjm[:,i:i]*Bjm[i:i,:])
 			i+=1
 		end
@@ -164,41 +130,39 @@ function minreal_jordan(sys_in,verbose=false)
 # println(Cjm)
 
 	m=size(Ajm,1)
-	match=Vector[]
+	match_val=Vector[]
 	for i=1:m
-		t=findall(abs.(val.-val[i]).<1e-6)  ## find all matching eigenvalues
-#		if contains(==,dpl,i)  ## if this root has a duplicate
-		if any((y->begin ==(y,dpl) end),i)
-			t=setdiff(t,dplb)  ## remove all duplcate roots
-		elseif any((y->begin ==(y,dplb) end),i)
-			#contains(==,dplb,i)  ## or if this root is a duplcate
-			t=setdiff(t,dpl)  ## remove all the originals
-		end
-		push!(match,t)  ## record the rest
+		t=findall(round.(round.(val,digits=5),sigdigits=6).==round.(round(val[i],digits=5),sigdigits=6))  ## find matching values
+		length(t)>1 && push!(match_val,t)  ## record the rest
 	end
-	match=unique(match)  ## remove the duplicate entries, if 1 matches 2, then 2 matches 1
+	match_val=unique(match_val)  ## remove the duplicate entries, if 1 matches 2, then 2 matches 1
 	# println(match)
+
+	while i<length(match_val)
+		if abs(imag(val[match_val[i][1]]))>1e-6  ## if matching root is complex, skip to next
+			i+=1
+		elseif Ajm[match_val[i][1],match_val[i][1]+1]==0  ## or if matching root is real and not repeated (pvector), skip to next
+			i+=1
+		else
+			deleteat!(match_val,i)  ## otherwise delete this entry
+		end
+	end
 
 	dup=Int[]
 	i=1
 	flag=false
 
-	while i<length(match)
-		# println(i)
-		# println(match[i])
-		# readline(STDIN)
+	while i<length(match_val)
+		if length(match_val[i])==2
+			if val[match_val[i][1]]==conj(val[match_val[i+1][1]])  ## matching complex pair, works for siso only
 
-		if length(match[i])==2  ## matching complex or duplicate root, works for siso
-			if (val[match[i][1]]==conj(val[match[i+1][1]]) || dplln[match[i][1]]==match[i+1][1])  ## matching pair of roots or duplicate
-
-				B1=Bjm[match[i][1]:match[i+1][1],:]  ## build first B matrix
-				C1=Cjm[:,match[i][1]:match[i+1][1]]  ## build first C matrix
-				B2=Bjm[match[i][2]:match[i+1][2],:]  ## build second B matrix
-				C2=Cjm[:,match[i][2]:match[i+1][2]]  ## build second C matrix
+				B1=Bjm[match_val[i][1]:match_val[i+1][1],:]  ## build first B matrix
+				C1=Cjm[:,match_val[i][1]:match_val[i+1][1]]  ## build first C matrix
+				B2=Bjm[match_val[i][2]:match_val[i+1][2],:]  ## build second B matrix
+				C2=Cjm[:,match_val[i][2]:match_val[i+1][2]]  ## build second C matrix
 
 				H=B1*C1+B2*C2
 				nn=B1[1]^2+B1[2]^2+B2[1]^2+B2[2]^2
-
 
 				mx,ind=findmax(abs.(H))
 
@@ -310,24 +274,6 @@ function minreal_jordan(sys_in,verbose=false)
 end
 
 
-# 			Bjm[match[i][1],:]=1.0  ## compute combined B, C, overwrite first B matrix
-# 			Bjm[match[i+1][1],:]=0.0
-# 			Cjm[:,match[i][1]]=[C1 C2]*[B1;B2]  ## overwrite first C matrix
-# 			Cjm[:,match[i+1][1]]=det([C1;B1'])+det([C2;B2'])
-
-
-# u=sum(Bjm.^2,2).^0.5  ## compute input sensitivity
-# v=sum(Cjm.^2,1).^0.5  ## compute output sensitivity
-# sens=u.*(v')
-# for i=1:m-1
-# 	if abs(Ajm[i,i+1])>1e-10  ## if off diagonal elements, compute cross sensitivity
-# 		w=abs(v[i]*u[i+1])+abs(v[i+1]*u[i])
-# 		sens[i]+=w
-# 		sens[i+1]+=w
-# 	end
-# end
-
-
 
 	# i=1
 	# while r<m && i<m+1  ## if not full rank, and not past the end, check each vector
@@ -352,4 +298,29 @@ end
 	# 	i+=1  ## go to next vector
 	# 	r=rank(round.(jvec,6))  ## recompute rank
 	# 	verbose && println("Basis vector rank is now $r.")
+	# end
+
+
+
+	# match_vec=Vector[]
+	# for i in match_val  ## for each list of matching values
+	# 	verbose && println("Found repeated roots at ",i)
+	# 	j=length(i)
+	#
+	# 	t=abs.(jvec[:,i]'*jvec[:,i])-ones(j,j)  ## dot product of colinear vectors = +/-1
+	# 	println(i)
+	# 	println(t)
+	# 	for k=1:j
+	# 		u=findall(abs.(t[:,k]).<1e-6)  ## find the colinear vectors
+	# 		push!(match_vec,u)
+	# 	end
+	# 	match_vec=unique(match_vec)  ## remove the duplicate entries
+	# 	println(match_vec)
+	# 	sorted=Int64[]
+	# 	for k in match_vec
+	# 		for n in k
+	# 			push!(sorted,i[n])
+	# 		end
+	# 	end
+	# 	jvec[:,i]=jvec[:,sorted]  ## put all colinear vectors with same value next to each other
 	# end
