@@ -123,13 +123,13 @@ function minreal_jordan(sys_in,verbose=false)
 	Ajm=Ajm[flag,flag] ## keep only sensitive roots
 	Bjm=Bjm[flag,:]
 	Cjm=Cjm[:,flag]
-
+	val=val[flag]
+	m=length(val)
 
 # println(Ajm)
 # println(Bjm)
 # println(Cjm)
 
-	m=size(Ajm,1)
 	match_val=Vector[]
 	for i=1:m
 		t=findall(round.(round.(val,digits=5),sigdigits=6).==round.(round(val[i],digits=5),sigdigits=6))  ## find matching values
