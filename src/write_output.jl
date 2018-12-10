@@ -162,6 +162,7 @@ for i=1:length(data_out)
 	end
 end
 
+str=""
 if nvpts==1
 	str*="list_in=\""
 	for i in input_names
@@ -174,8 +175,8 @@ if nvpts==1
 	end
 	str*="\"\n"
 
-	str="item_in(n)=word(list_in,n)\n"
-	str="item_out(n)=word(list_out,n)\n"
+	str*="item_in(n)=word(list_in,n)\n"
+	str*="item_out(n)=word(list_out,n)\n"
 
 	for i=1:nin
 		str*="set term x11 persist $i\nset logscale x\nset xzeroaxis\nset xlabel 'Frequency [Hz]'\nset ylabel 'Gain [dB]'\nplot for [z=$(3+(i-1)*nout):$(2+i*nout)] 'bode.out' using 1:z with lines title item_in(i)"
