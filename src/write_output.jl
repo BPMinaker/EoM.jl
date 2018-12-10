@@ -176,11 +176,11 @@ if nvpts==1
 	end
 end
 
-out=joinpath(dir_output,'plots.gp')
+out=joinpath(dir_output,"plots.gp")
 open(out,"w") do file
 	write(file,str)
 end
-	
+
 dss_path=joinpath(dir_output,dir_raw,"dss")
 ss_path=joinpath(dir_output,dir_raw,"ss")
 jordan_path=joinpath(dir_output,dir_raw,"jordan")
