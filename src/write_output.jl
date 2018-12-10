@@ -165,15 +165,13 @@ end
 if nvpts==1
 	str="item(n)=word(list,n)\n"
 	for i=1:nin
-			str*="set term x11 persist $i\nset logscale x\nset xzeroaxis\nset xlabel 'Frequency [Hz]'\nset ylabel 'Gain [dB]'\nplot for [z=$(3+(i-1)*nout):$(2+i*nout)] 'bode.out' using 1:z with lines title '' "
-		end
-	else
-		for i=1:nin*nout
-			str*="set term x11 persist $i\nset logscale x\nset xlabel 'Frequency [Hz]'\nset ylabel 'vpoint'\nset zlabel 'Gain [dB]' rotate by 90\nsplot 'bode.out' using 1:2:2+$i with lines title '' "
-		end
-
-		str*="unset logscale x\nset yrange [-60<*:]\nset xzeroaxis\nset xlabel 'vpoint'\nset ylabel 'Eigenvalue [rad/s]'\nset term x11 persist $(nin*nout+1)\nplot 'eigen.out' using 2:(abs(\$3)<1e-4?NaN:\$3) with points pt 7 lw 2 title 'Real', 'eigen.out' using 2:(abs(\$4)<1e-4?NaN:\$4) with points pt 6 lw 2 title 'Imaginary'"
+		str*="set term x11 persist $i\nset logscale x\nset xzeroaxis\nset xlabel 'Frequency [Hz]'\nset ylabel 'Gain [dB]'\nplot for [z=$(3+(i-1)*nout):$(2+i*nout)] 'bode.out' using 1:z with lines title '' "
 	end
+else
+	for i=1:nin*nout
+		str*="set term x11 persist $i\nset logscale x\nset xlabel 'Frequency [Hz]'\nset ylabel 'vpoint'\nset zlabel 'Gain [dB]' rotate by 90\nsplot 'bode.out' using 1:2:2+$i with lines title '' "
+	end
+	str*="unset logscale x\nset yrange [-60<*:]\nset xzeroaxis\nset xlabel 'vpoint'\nset ylabel 'Eigenvalue [rad/s]'\nset term x11 persist $(nin*nout+1)\nplot 'eigen.out' using 2:(abs(\$3)<1e-4?NaN:\$3) with points pt 7 lw 2 title 'Real', 'eigen.out' using 2:(abs(\$4)<1e-4?NaN:\$4) with points pt 6 lw 2 title 'Imaginary'"
 end
 
 out=joinpath(dir_output,"plots.gp")
