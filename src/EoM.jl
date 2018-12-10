@@ -5,6 +5,8 @@ module EoM
 using Printf
 using LinearAlgebra
 using Dates
+using DelimitedFiles
+
 
 export run_eom
 export analyze

@@ -162,60 +162,59 @@ for i=1:length(data_out)
 	end
 end
 
-tmp=joinpath(dir_output,"bode.out")
+if nvpts==1
+	str="item(n)=word(list,n)\n"
+	for i=1:nin
+			str*="set term x11 persist $i\nset logscale x\nset xzeroaxis\nset xlabel 'Frequency [Hz]'\nset ylabel 'Gain [dB]'\nplot for [z=$(3+(i-1)*nout):$(2+i*nout)] 'bode.out' using 1:z with lines title '' "
+		end
+	else
+		for i=1:nin*nout
+			str*="set term x11 persist $i\nset logscale x\nset xlabel 'Frequency [Hz]'\nset ylabel 'vpoint'\nset zlabel 'Gain [dB]' rotate by 90\nsplot 'bode.out' using 1:2:2+$i with lines title '' "
+		end
 
-# if verbose
-# 	@gp verb=0  ## turn off gnuplot messages
-#
-# 	if nvpts==1
-# 		for i=1:nin
-# 			@gp("set term qt persist $i","set logscale x","set xzeroaxis","set xlabel 'Frequency [Hz]'","set ylabel 'Gain [dB]'","plot for [z=$(3+(i-1)*nout):$(2+i*nout)] '$tmp' using 1:z with lines title '' ")
-# 		end
-# 	else
-# 		for i=1:nin*nout
-# 			@gp("set term qt persist $i","set logscale x","set xlabel 'Frequency [Hz]'","set ylabel 'vpoint'","set zlabel 'Gain [dB]' rotate by 90","splot '$tmp' using 1:2:2+$i with lines title '' ")
-# 		end
-#
-# 		tmp=joinpath(dir_output,"eigen.out")
-# 		@gp("unset logscale x","set yrange [-60<*:]","set xzeroaxis","set xlabel 'vpoint'","set ylabel 'Eigenvalue [rad/s]'","set term qt persist $(nin*nout+1)","plot '$tmp' using 2:(abs(\$3)<1e-4?NaN:\$3) with points pt 7 lw 2 title 'Real', '$tmp' using 2:(abs(\$4)<1e-4?NaN:\$4) with points pt 6 lw 2 title 'Imaginary'")
-# 	end
-# end
+		str*="unset logscale x\nset yrange [-60<*:]\nset xzeroaxis\nset xlabel 'vpoint'\nset ylabel 'Eigenvalue [rad/s]'\nset term x11 persist $(nin*nout+1)\nplot 'eigen.out' using 2:(abs(\$3)<1e-4?NaN:\$3) with points pt 7 lw 2 title 'Real', 'eigen.out' using 2:(abs(\$4)<1e-4?NaN:\$4) with points pt 6 lw 2 title 'Imaginary'"
+	end
+end
 
-
+out=joinpath(dir_output,'plots.gp')
+open(out,"w") do file
+	write(file,str)
+end
+	
 dss_path=joinpath(dir_output,dir_raw,"dss")
 ss_path=joinpath(dir_output,dir_raw,"ss")
 jordan_path=joinpath(dir_output,dir_raw,"jordan")
 
-write_mtx(eoms[1].A,joinpath(dss_path,"A.out"))
-write_mtx(eoms[1].B,joinpath(dss_path,"B.out"))
-write_mtx(eoms[1].C,joinpath(dss_path,"C.out"))
-write_mtx(eoms[1].D,joinpath(dss_path,"D.out"))
-write_mtx(eoms[1].E,joinpath(dss_path,"E.out"))
+writedlm(joinpath(dss_path,"A.out"),eoms[1].A)
+writedlm(joinpath(dss_path,"B.out"),eoms[1].B)
+writedlm(joinpath(dss_path,"C.out"),eoms[1].C)
+writedlm(joinpath(dss_path,"D.out"),eoms[1].D)
+writedlm(joinpath(dss_path,"E.out"),eoms[1].E)
 
-write_mtx(results[1].ss_eqns.A,joinpath(ss_path,"A.out"))
-write_mtx(results[1].ss_eqns.B,joinpath(ss_path,"B.out"))
-write_mtx(results[1].ss_eqns.C,joinpath(ss_path,"C.out"))
-write_mtx(results[1].ss_eqns.D,joinpath(ss_path,"D.out"))
+writedlm(joinpath(ss_path,"A.out"),results[1].ss_eqns.A)
+writedlm(joinpath(ss_path,"B.out"),results[1].ss_eqns.B)
+writedlm(joinpath(ss_path,"C.out"),results[1].ss_eqns.C)
+writedlm(joinpath(ss_path,"D.out"),results[1].ss_eqns.D)
 
 sys=[results[1].ss_eqns.A results[1].ss_eqns.B; results[1].ss_eqns.C results[1].ss_eqns.D]
 sys=(abs.(sys).>=1e-9).*sys
-write_mtx(sys,joinpath(jordan_path,"ABCD.out"))
+writedlm(joinpath(jordan_path,"ABCD.out"),sys)
 
-write_mtx(results[1].jordan.A,joinpath(jordan_path,"A.out"))
-write_mtx(results[1].jordan.B,joinpath(jordan_path,"B.out"))
-write_mtx(results[1].jordan.C,joinpath(jordan_path,"C.out"))
-write_mtx(results[1].jordan.D,joinpath(jordan_path,"D.out"))
+writedlm(joinpath(jordan_path,"A.out"),results[1].jordan.A)
+writedlm(joinpath(jordan_path,"B.out"),results[1].jordan.B)
+writedlm(joinpath(jordan_path,"C.out"),results[1].jordan.C)
+writedlm(joinpath(jordan_path,"D.out"),results[1].jordan.D)
 
 sys=[results[1].jordan.A results[1].jordan.B; results[1].jordan.C results[1].jordan.D]
 sys=(abs.(sys).>=1e-9).*sys
-write_mtx(sys,joinpath(jordan_path,"ABCD.out"))
+writedlm(joinpath(jordan_path,"ABCD.out"),sys)
 
-# write_mtx_ptrn(eoms[1].Am,joinpath(dir_output,dir_raw,"Amp.out"))
-# write_mtx_ptrn(eoms[1].Bm,joinpath(dir_output,dir_raw,"Bmp.out"))
-# write_mtx_ptrn(eoms[1].Cm,joinpath(dir_output,dir_raw,"Cmp.out"))
-# write_mtx_ptrn(eoms[1].Dm,joinpath(dir_output,dir_raw,"Dmp.out"))
+# writedlm_ptrn(eoms[1].Am,joinpath(dir_output,dir_raw,"Amp.out"))
+# writedlm_ptrn(eoms[1].Bm,joinpath(dir_output,dir_raw,"Bmp.out"))
+# writedlm_ptrn(eoms[1].Cm,joinpath(dir_output,dir_raw,"Cmp.out"))
+# writedlm_ptrn(eoms[1].Dm,joinpath(dir_output,dir_raw,"Dmp.out"))
 #
-# write_mtx_ptrn([eoms[1].Am eoms[1].Bm; eoms[1].Cm eoms[1].Dm],joinpath(dir_output,dir_raw,"ABCDmp.out"))
+# writedlm_ptrn([eoms[1].Am eoms[1].Bm; eoms[1].Cm eoms[1].Dm],joinpath(dir_output,dir_raw,"ABCDmp.out"))
 
 # mtx=eoms[1].stiffness+eoms[1].tangent_stiffness+eoms[1].load_stiffness
 # r,c,v=findnz(mtx)
@@ -225,52 +224,52 @@ dir_output
 
 end ## Leave
 
-function write_mtx(mtx,file_name)
-	str=""
-	for i=1:size(mtx,1)
-		for j=1:size(mtx,2)
-			str*= @sprintf("%.12e ",mtx[i,j])
-		end
-		str*="\n"
-	end
-	str*="\n"
-	open(file_name,"w") do handle
-		write(handle,str)
-	end
-end
+# function write_mtx(mtx,file_name)
+# 	str=""
+# 	for i=1:size(mtx,1)
+# 		for j=1:size(mtx,2)
+# 			str*= @sprintf("%.12e ",mtx[i,j])
+# 		end
+# 		str*="\n"
+# 	end
+# 	str*="\n"
+# 	open(file_name,"w") do handle
+# 		write(handle,str)
+# 	end
+# end
 
-function write_mtx_ptrn(mtx,file_name)
-
-	str="\\begin{tikzpicture}[every left delimiter/.style={xshift=1.5ex},every right delimiter/.style={xshift=-1.5ex}]\n"
-
-
-	str*="\\matrix (pat)[row sep={1ex,between origins},column sep={1ex,between origins},matrix of math nodes,left delimiter={[},right delimiter={]}]\n"
-
-	str*="{\n"
-	for i=1:size(mtx,1)
-		for j=1:size(mtx,2)
-			if j==size(mtx,2)
-				cc="\\\\"
-			else
-				cc="&"
-			end
-			if abs(mtx[i,j])>1e-6
-				str*="."*cc
-			else
-				str*=" "*cc
-			end
-		end
-		str*="\n"
-	end
-	str*="};\n"
-
-	str*="\\node [left=0ex of pat] {\$\\mathbf{$(file_name[end-6])}=\$};\n"
-	str*="\\end{tikzpicture}\n"
-
-	open(file_name,"w") do handle
-		write(handle,str)
-	end
-end
+# function write_mtx_ptrn(mtx,file_name)
+#
+# 	str="\\begin{tikzpicture}[every left delimiter/.style={xshift=1.5ex},every right delimiter/.style={xshift=-1.5ex}]\n"
+#
+#
+# 	str*="\\matrix (pat)[row sep={1ex,between origins},column sep={1ex,between origins},matrix of math nodes,left delimiter={[},right delimiter={]}]\n"
+#
+# 	str*="{\n"
+# 	for i=1:size(mtx,1)
+# 		for j=1:size(mtx,2)
+# 			if j==size(mtx,2)
+# 				cc="\\\\"
+# 			else
+# 				cc="&"
+# 			end
+# 			if abs(mtx[i,j])>1e-6
+# 				str*="."*cc
+# 			else
+# 				str*=" "*cc
+# 			end
+# 		end
+# 		str*="\n"
+# 	end
+# 	str*="};\n"
+#
+# 	str*="\\node [left=0ex of pat] {\$\\mathbf{$(file_name[end-6])}=\$};\n"
+# 	str*="\\end{tikzpicture}\n"
+#
+# 	open(file_name,"w") do handle
+# 		write(handle,str)
+# 	end
+# end
 
 
 #writedlm(joinpath(pwd(),dir_output,dir_raw,"M.out"),result[1].M)
