@@ -179,7 +179,7 @@ if nvpts==1
 	str*="item_out(n)=word(list_out,n)\n"
 
 	for i=1:nin
-		str*="set term x11 persist $i\nset logscale x\nset xzeroaxis\nset xlabel 'Frequency [Hz]'\nset ylabel 'Gain [dB]'\nplot for [z=$(3+(i-1)*nout):$(2+i*nout)] 'bode.out' using 1:z with lines title 'item_out(z-2)/ item_in(i)'"
+		str*="set term x11 persist $i\nset logscale x\nset xzeroaxis\nset xlabel 'Frequency [Hz]'\nset ylabel 'Gain [dB]'\nplot for [z=$(3+(i-1)*nout):$(2+i*nout)] 'bode.out' using 1:z with lines title 'item_out(z-2).'/'.item_in($i)'"
 	end
 else
 	for i=1:nin*nout
