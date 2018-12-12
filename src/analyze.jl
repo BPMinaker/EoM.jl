@@ -27,7 +27,7 @@ for i=1:nvpts
 	result[i]=analysis()
 
 	result[i].ss_eqns=dss2ss(dss_eqns[i],verbose && i<2)  ## Reduce to standard form
-	result[i].jordan=minreal_jordan(result[i].ss_eqns,verbose)  ## Reduce to minimal Jordan form
+	result[i].jordan=minreal_jordan(result[i].ss_eqns,verbose && i<2)  ## Reduce to minimal Jordan form
 
 	F=eigen(dss_eqns[i].A,dss_eqns[i].E)  ## Find the eigen
 #	println(F.values)
@@ -40,10 +40,10 @@ for i=1:nvpts
 	upper[i]=maximum(t)
 end
 
-low=floor(log10(0.8*minimum(lower)/2/pi))
+low=floor(log10(0.5*minimum(lower)/2/pi))
 (low<-2) && (low=-2)
-high=ceil(log10(1.25*maximum(upper)/2/pi))
-w=2*pi*(10 .^ range(low,stop=high,length=wpts))
+high=ceil(log10(2.0*maximum(upper)/2/pi))
+w=2*pi*(10.0.^range(low,stop=high,length=wpts))
 
 for i=1:nvpts
 
