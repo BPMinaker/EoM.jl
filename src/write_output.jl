@@ -175,7 +175,7 @@ str*="item_out(n)=word(list_out,n)\n"
 
 if nvpts==1
 	for i=1:nin
-		str*="set term x11 persist $i\nset logscale x\nset xzeroaxis\nset xlabel 'Frequency [Hz]'\nset ylabel 'Gain [dB]'\nplot for [z=$(3+(i-1)*nout):$(2+i*nout)] 'bode.out' using 1:z with lines title item_out(z-2-$((i-1)*nout)).'/'.item_in($i) lw 2\n"
+		str*="set term x11 persist $i\nset logscale x\nset xzeroaxis\nset yrange [-60<*:]\nset xlabel 'Frequency [Hz]'\nset ylabel 'Gain [dB]'\nplot for [z=$(3+(i-1)*nout):$(2+i*nout)] 'bode.out' using 1:z with lines title item_out(z-2-$((i-1)*nout)).'/'.item_in($i) lw 2\n"
 	end
 else
 	for i=1:nin
