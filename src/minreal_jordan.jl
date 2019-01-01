@@ -78,7 +78,7 @@ function minreal_jordan(sys_in,verbose=false)
 				Aj[i[j],i[j]+1]=1  ## set entry in A matrix where pvector is located
 				j+=1
 			end
-			chk=norm(AA-jvec*Aj*inv(jvec))  ## confirm factorization is correct
+			chk=norm(AA-jvec*Aj*pinv(jvec))  ## confirm factorization is correct
 			chk>1e-8 && println("Factorization check=$(chk)...")
 			j+=1
 			r=rank(round.(jvec,sigdigits=6))  ## recompute rank
