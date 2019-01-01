@@ -52,7 +52,7 @@ end
 
 function weight(obj::body,g=9.81)
 	g*=[0,0,-1]
-	item=load("$obj.name weight")
+	item=load("$(obj.name) weight")
 	item.body=obj.name
 	item.location=obj.location
 	item.force=obj.mass*g;
