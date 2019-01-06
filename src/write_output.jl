@@ -1,4 +1,4 @@
-function write_output(the_system,eoms,results;verbose=false,dir_raw="unformatted",plot=false)
+function write_output(the_system,eoms,results;verbose=false,dir_raw="unformatted")
 ## Copyright (C) 2017, Bruce Minaker
 ## write_output.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -127,10 +127,10 @@ if(nin*nout>0 && nin*nout<16)
 		bode*="\n"
 # #		strs.zeros=[strs.zeros sprintf('%4.12e ',real(result{i}.math.zros),imag(result{i}.math.zros))];
 
-  		for j=1:length(results[i].hsv)
+		for j=1:length(results[i].hsv)
 			hsv*="{$j} $(the_system[i].vpt) $(results[i].hsv[j])\n"  ## Write the vpoint (e.g. speed), then the hankel_sv
-  		end
-  		hsv*="\n"
+		end
+		hsv*="\n"
 	end
 end
 
@@ -192,15 +192,6 @@ end
 out=joinpath(dir_output,"plots.gp")
 open(out,"w") do file
 	write(file,str)
-end
-
-if plot
-	try
-		cmd="cd $(dir_output);gnuplot plots.gp"
-		run(`bash -c $cmd`)
-	catch
-		println("Trouble running gnuplot.  Skipping.")
-	end
 end
 
 dss_path=joinpath(dir_output,dir_raw,"dss")

@@ -70,25 +70,37 @@ for i=1:nvpts
 
 	# result[i].zero_val=eigvals([ss_eqns.A ss_eqns.B;ss_eqns.C ss_eqns.D],[ss_eqns.E zeros(ss_eqns.B);zeros(ss_eqns.C) zeros(ss_eqns.D)])
 
-	try
-		WC=lyap(result[i].ss_eqns.A,result[i].ss_eqns.B*result[i].ss_eqns.B')
-		WO=lyap(result[i].ss_eqns.A',result[i].ss_eqns.C'*result[i].ss_eqns.C)
-		result[i].hsv=sqrt.(eigvals(WC*WO))
-	catch
-		tmp=size(result[i].ss_eqns.A,1)
-		result[i].hsv=zeros(length(tmp))
+	# try
+	# 	WC=lyap(result[i].ss_eqns.A,result[i].ss_eqns.B*result[i].ss_eqns.B')
+	# 	WO=lyap(result[i].ss_eqns.A',result[i].ss_eqns.C'*result[i].ss_eqns.C)
+	# 	result[i].hsv=sqrt.(eigvals(WC*WO))
+	# catch
+	# 	tmp=size(result[i].ss_eqns.A,1)
+	# 	result[i].hsv=zeros(length(tmp))
+	# end
+
+	result[i].modes=dss_eqns[i].phys*result[i].e_vect  ## Convert vector to physical coordinates
+	nb=div(size(result[i].modes,1),6)
+	nm=size(result[i].modes,2)
+
+	result[i].centre=zeros(size(result[i].modes))
+
+	for j=1:nm  ## For each mode
+		if norm(result[i].modes[:,j])>0  ## Check for non-zero displacement modes
+			temp,k=findmax(abs.(result[i].modes[:,j]))  ## Find max entry
+			result[i].modes[:,j]/=result[i].modes[k,j]  ## Scale motions to unity by diving by max value, but not abs of max, as complex possible
+		end
+
+		for k=1:nb  ## For each body
+			mtn=result[i].modes[6*k.+(-5:0),j]  ## motion of body k
+			temp,l=findmax(abs.(mtn))
+			phi=angle(mtn[l])
+			mtn*=exp(-phi*1im)  ## Remove unnecessary imag parts
+
+			result[i].centre[6*k.+(-5:0),j]=[-pinv(skew(mtn[4:6]))*mtn[1:3];mtn[4:6]/(norm(mtn[4:6])+eps(1.))]
+			## Radius to the instantaneous center of rotation of the body (rad=omega\v)
+		end
 	end
-
-		result[i].modes=dss_eqns[i].phys*result[i].e_vect  ## Convert vector to physical coordinates
-
-# 		for j=1:size(result[i].modes,2)  ## For each mode
-# 			if(norm(result[i].modes[:,j])>0)  ## Check for non-zero displacement modes
-# #				[~,k]=max(abs(result{i}.eom.modes(:,j)));  ## Find max entry
-# #				result{i}.eom.modes(:,j)=result{i}.eom.modes(:,j)/result{i}.eom.modes(k,j);  ## Scale motions to unity by diving by max value, but not abs of max, as complex possible
-# 			end
-# 		end
-#
-
 end
 
 result

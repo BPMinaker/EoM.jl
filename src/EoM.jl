@@ -62,18 +62,6 @@ include("mirror.jl")
 include("thin_rod.jl")
 
 
-# include(joinpath("types","actuator.jl"))
-# include(joinpath("types","beam.jl"))
-# include(joinpath("types","body.jl"))
-# include(joinpath("types","flex_point.jl"))
-# include(joinpath("types","link.jl"))
-# include(joinpath("types","load.jl"))
-# include(joinpath("types","nh_point.jl"))
-# include(joinpath("types","rigid_point.jl"))
-# include(joinpath("types","sensor.jl"))
-# include(joinpath("types","spring.jl"))
-
-
 fldr=joinpath(dirname(dirname(pathof(EoM))),"examples")
 xmpls=readdir(fldr)
 for i in xmpls
@@ -226,6 +214,7 @@ mutable struct analysis
 	ss_resp::Array{Float64,2}
 	zero_val::Vector{Complex{Float64}}
 	hsv::Vector{Float64}
+	centre::Array{Complex{Float64},2}
 
 	function analysis(
 	ss_eqns=ss_data(),
@@ -237,8 +226,9 @@ mutable struct analysis
 	freq_resp=Array{Float64}(undef,0,0,0),
 	ss_resp=Array{Float64}(undef,0,0),
 	zero_val=Vector{Float64}(undef,0),
-	hsv=Vector{Float64}(undef,0))
-		new(ss_eqns,jordan,e_vect,modes,e_val,w,freq_resp,ss_resp,zero_val,hsv)
+	hsv=Vector{Float64}(undef,0),
+	centre=Array{Float64}(undef,0,0))
+		new(ss_eqns,jordan,e_vect,modes,e_val,w,freq_resp,ss_resp,zero_val,hsv,centre)
 	end
 end
 
