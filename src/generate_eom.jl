@@ -52,7 +52,7 @@ dss_eqns=assemble_eom!(data,col,verbose)
 
 #!verbose && print(".")
 
-dss_eqns
+dss_eqns,data
 
 ## End of routine
 end

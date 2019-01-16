@@ -68,39 +68,6 @@ for i in xmpls
 	include(joinpath(fldr,i))
 end
 
-mutable struct mbd_system
-	name::String
-	vpt::Float64
-	item::Vector{Any}
-	bodys::Vector{body}
-	links::Vector{link}
-	springs::Vector{spring}
-	rigid_points::Vector{rigid_point}
-	flex_points::Vector{flex_point}
-	nh_points::Vector{nh_point}
-	beams::Vector{beam}
-	loads::Vector{load}
-	sensors::Vector{sensor}
-	actuators::Vector{actuator}
-
-	function mbd_system(
-	name="Unnamed System",
-	vpt=0,
-	item=Vector{Any}(undef,0),
-	bodys=Vector{body}(undef,0),
-	links=Vector{link}(undef,0),
-	springs=Vector{spring}(undef,0),
-	rigid_points=Vector{rigid_point}(undef,0),
-	flex_points=Vector{flex_point}(undef,0),
-	nh_points=Vector{nh_point}(undef,0),
-	beams=Vector{beam}(undef,0),
-	loads=Vector{load}(undef,0),
-	sensors=Vector{sensor}(undef,0),
-	actuators=Vector{actuator}(undef,0))
-		new(name,vpt,item,bodys,links,springs,rigid_points,flex_points,nh_points,beams,loads,sensors,actuators)
-	end
-end
-
 mutable struct eom_data
 	name::String
 	input_names::Vector{String}
@@ -163,6 +130,40 @@ mutable struct eom_data
 	M=zeros(0,0),
 	KC=zeros(0,0))
 		new(name,input_names,output_names,mass,inertia,damping,stiffness,tangent_stiffness,load_stiffness,velocity,momentum,constraint,nh_constraint,deflection,lambda,static,selection,spring_stiffness,subset_spring_stiffness,left_jacobian,right_jacobian,force,preload,input,input_rate,output,feedthrough,M,KC)
+	end
+end
+
+mutable struct mbd_system
+	name::String
+	vpt::Float64
+	item::Vector{Any}
+	bodys::Vector{body}
+	links::Vector{link}
+	springs::Vector{spring}
+	rigid_points::Vector{rigid_point}
+	flex_points::Vector{flex_point}
+	nh_points::Vector{nh_point}
+	beams::Vector{beam}
+	loads::Vector{load}
+	sensors::Vector{sensor}
+	actuators::Vector{actuator}
+	data::eom_data
+
+	function mbd_system(
+	name="Unnamed System",
+	vpt=0,
+	item=Vector{Any}(undef,0),
+	bodys=Vector{body}(undef,0),
+	links=Vector{link}(undef,0),
+	springs=Vector{spring}(undef,0),
+	rigid_points=Vector{rigid_point}(undef,0),
+	flex_points=Vector{flex_point}(undef,0),
+	nh_points=Vector{nh_point}(undef,0),
+	beams=Vector{beam}(undef,0),
+	loads=Vector{load}(undef,0),
+	sensors=Vector{sensor}(undef,0),
+	actuators=Vector{actuator}(undef,0))
+		new(name,vpt,item,bodys,links,springs,rigid_points,flex_points,nh_points,beams,loads,sensors,actuators)
 	end
 end
 

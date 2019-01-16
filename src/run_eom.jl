@@ -34,7 +34,7 @@ for i=1:n
 	verbose && (i<2) && println("Running analysis of $(the_system[1].name) ...")
 	verbose && (i<2) && println("Found $(length(the_system[1].item)) items...")
 	sort_system!(the_system[i],(i<2)*verbose)  ## Sort all the input structs
-	the_eqns[i]=generate_eom(the_system[i],(i<2)*verbose)
+	the_eqns[i],the_system[i].data=generate_eom(the_system[i],(i<2)*verbose)
 
 end
 
