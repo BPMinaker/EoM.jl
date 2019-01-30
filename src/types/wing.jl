@@ -1,5 +1,6 @@
 export wing
 export name
+export build_mtx
 
 mutable struct wing
 	name::String
@@ -40,6 +41,26 @@ function name(obj::wing)
 	obj.name
 end
 
-# function location(obj::body)
-# 	obj.location
-# end
+function build_mtx(obj::wing)
+    mtx=zeros(6,6)
+    mtx[1,1]=obj.CXu
+    mtx[1,3]=obj.CXw
+    mtx[1,5]=obj.CXq*obj.chord/2
+    mtx[2,2]=obj.CYv
+    mtx[2,4]=obj.CYp*obj.span/2
+    mtx[2,6]=obj.CYr*obj.span/2
+    mtx[3,1]=obj.CZu
+    mtx[3,3]=obj.CZw
+    mtx[3,5]=obj.CZq*obj.chord/2
+    mtx[4,2]=obj.Clv*obj.span
+    mtx[4,4]=obj.Clp*obj.span^2/2
+    mtx[4,6]=obj.Clr*obj.span^2/2
+    mtx[5,1]=obj.Cmu*obj.chord
+    mtx[5,3]=obj.Cmw*obj.chord
+    mtx[5,5]=obj.Cmq*obj.chord^2/2
+    mtx[6,2]=obj.Cnv*obj.span
+    mtx[6,4]=obj.Cnp*obj.span^2/2
+    mtx[6,6]=obj.Cnr*obj.span^2/2
+
+    mtx
+end
