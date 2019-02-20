@@ -34,7 +34,7 @@ if(s>0)
 	r_orth=nullspace(Matrix([data.right_jacobian zeros(s,nin)]))
 	l_orth=nullspace(Matrix([data.left_jacobian zeros(s,nin)]))
 else
-	r_orth=speye(2*dim+nin)
+	r_orth=diagm(0=>ones(2*dim+nin))
 	l_orth=r_orth
 end
 
