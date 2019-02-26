@@ -22,12 +22,17 @@ upper=zeros(nvpts)
 wpts=500
 (wpts*nvpts>2500) && (wpts=Int(round(2500/nvpts)))
 
+js=false
 for i=1:nvpts
 #	println(i)
 	result[i]=analysis()
 
 	result[i].ss_eqns=dss2ss(dss_eqns[i],verbose && i<2)  ## Reduce to standard form
-	result[i].jordan=minreal_jordan(result[i].ss_eqns,verbose && i<2)  ## Reduce to minimal Jordan form
+	try
+		result[i].jordan=minreal_jordan(result[i].ss_eqns,verbose && i<2)  ## Reduce to minimal Jordan form
+		js=true
+	catch
+	end
 
 	F=eigen(dss_eqns[i].A,dss_eqns[i].E)  ## Find the eigen
 #	println(F.values)
@@ -54,18 +59,28 @@ for i=1:nvpts
 
 	result[i].freq_resp=zeros(nout,nin,length(w))
 
-	# for j=1:wpts
-	# 	result[i].freq_resp[:,:,j]=result[i].ss_eqns.C*((I*w[j]im-result[i].ss_eqns.A)\result[i].ss_eqns.B)+result[i].ss_eqns.D
-	# end
+	#
 
-	for j=1:wpts
-		result[i].freq_resp[:,:,j]=result[i].jordan.C*(Tridiagonal(I*w[j]im-result[i].jordan.A)\result[i].jordan.B)+result[i].jordan.D
-	end
+	if js
+		for j=1:wpts
+			result[i].freq_resp[:,:,j]=result[i].jordan.C*(Tridiagonal(I*w[j]im-result[i].jordan.A)\result[i].jordan.B)+result[i].jordan.D
+		end
 
-	try
-		result[i].ss_resp=-result[i].jordan.C*(result[i].jordan.A\result[i].jordan.B)+result[i].jordan.D
-	catch
-		result[i].ss_resp=-result[i].jordan.C*pinv(result[i].jordan.A)*result[i].jordan.B+result[i].jordan.D
+		try
+			result[i].ss_resp=-result[i].jordan.C*(result[i].jordan.A\result[i].jordan.B)+result[i].jordan.D
+		catch
+			result[i].ss_resp=-result[i].jordan.C*pinv(result[i].jordan.A)*result[i].jordan.B+result[i].jordan.D
+		end
+	else
+		for j=1:wpts
+			result[i].freq_resp[:,:,j]=result[i].ss_eqns.C*((I*w[j]im-result[i].ss_eqns.A)\result[i].ss_eqns.B)+result[i].ss_eqns.D
+		end
+
+		try
+			result[i].ss_resp=-result[i].ss_eqns.C*(result[i].ss_eqns.A\result[i].ss_eqns.B)+result[i].ss_eqns.D
+		catch
+			result[i].ss_resp=-result[i].ss_eqns.C*pinv(result[i].ss_eqns.A)*result[i].ss_eqns.B+result[i].ss_eqns.D
+		end
 	end
 
 	# result[i].zero_val=eigvals([ss_eqns.A ss_eqns.B;ss_eqns.C ss_eqns.D],[ss_eqns.E zeros(ss_eqns.B);zeros(ss_eqns.C) zeros(ss_eqns.D)])

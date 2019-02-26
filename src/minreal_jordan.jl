@@ -9,7 +9,7 @@ function minreal_jordan(sys_in,verbose=false)
 	val,vec=eigen(AA)
 	m=length(val)
 
-	## println(val)
+#	println(val)
 
 	jvec=vec
 	md=real(val)
@@ -63,25 +63,27 @@ function minreal_jordan(sys_in,verbose=false)
 	end
 	match_val=unique(match_val)  ## remove the duplicate entries, if 1 matches 2, then 2 matches 1
 
-	#println(match_val)
+#	println(match_val)
+#	println(nullspace(AA))
 
-	r=rank(round.(jvec,sigdigits=6))  ## round the eigenvectors and find the rank (all vectors same magnitude)
+	r=rank(round.(jvec,digits=6))  ## round the eigenvectors and find the rank (all vectors same magnitude)
 	verbose && println("Jordan vector rank is $r, size $m.")
 
 	for i in match_val
 		j=1
 		while (j<length(i)+1 && r<m)
-			t=rank(round.([jvec[:,1:i[j]-1] jvec[:,i[j]+1:end]],sigdigits=6))  ## find rank with vector removed
+			t=rank(round.([jvec[:,1:i[j]-1] jvec[:,i[j]+1:end]],digits=6))  ## find rank with vector removed
 			if t==r  ## if removing this vector had no effect on the rank
 				verbose && println("Replacing vector $(i[j]+1) with pseudovector...")
 				jvec[:,i[j]+1]=pinv([AA-val[i[j]]*diagm(0=>ones(m));jvec[:,i[j]]'])*[jvec[:,i[j]];0]  ## add one row to allow unique solution, pvector must be orthogonal
+			#	println(jvec[:,i[j]+1])
 				Aj[i[j],i[j]+1]=1  ## set entry in A matrix where pvector is located
 				j+=1
 			end
 			chk=norm(AA-jvec*Aj*pinv(jvec))  ## confirm factorization is correct
 			chk>1e-8 && println("Factorization check=$(chk)...")
 			j+=1
-			r=rank(round.(jvec,sigdigits=6))  ## recompute rank
+			r=rank(round.(jvec,digits=6))  ## recompute rank
 			verbose && println("Basis vector rank is now $r.")
 		end
 	end
