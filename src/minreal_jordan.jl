@@ -7,10 +7,17 @@ function minreal_jordan(sys_in,verbose=false)
 	verbose && println("Computing Jordan minimal realization...")
 
 	val,vec=eigen(AA)
+#	println(AA)
+#	println(val)
+
+#	t=findall(abs.(val).>1.e-5)    ## remove zeros
+#	println(t)
+
+#	val=val[t]
+#	vec=vec[:,t]
 	m=length(val)
 
 #	println(val)
-
 	jvec=vec
 	md=real(val)
 	ud=zeros(m-1)
@@ -19,7 +26,7 @@ function minreal_jordan(sys_in,verbose=false)
 	i=1
 	while i<m
 		if (val[i]==conj(val[i+1])) && !(val[i]==val[i+1])
-			if abs(imag(val[i]))<1e-6
+			if abs(imag(val[i]))<1e-5
 				verbose && println("Rounding vectors $i and $(i+1)")
 				jvec[:,i]=real(jvec[:,i])
 				jvec[:,i+1]=real(jvec[:,i+1])
@@ -39,8 +46,6 @@ function minreal_jordan(sys_in,verbose=false)
 	end
 
 	jvec=real.(jvec)
-
-	# println(round.(jvec,5))
 
 	Aj=diagm(-1=>ld,0=>md,1=>ud)
 
@@ -80,16 +85,13 @@ function minreal_jordan(sys_in,verbose=false)
 				Aj[i[j],i[j]+1]=1  ## set entry in A matrix where pvector is located
 				j+=1
 			end
-			chk=norm(AA-jvec*Aj*pinv(jvec))  ## confirm factorization is correct
-			chk>1e-8 && println("Factorization check=$(chk)...")
 			j+=1
 			r=rank(round.(jvec,digits=6))  ## recompute rank
 			verbose && println("Basis vector rank is now $r.")
 		end
 	end
-
-	# println(dpl)
-	# println(dplb)
+	chk=norm(AA-jvec*Aj*inv(jvec))  ## confirm factorization is correct
+	chk>1e-6 && println("Factorization check=$(chk)...")
 
 	Bjm=(jvec\BB)
 	Cjm=(CC*jvec)
