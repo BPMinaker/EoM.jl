@@ -8,11 +8,13 @@ using Dates
 using DelimitedFiles
 
 
+export build_examples
 export run_eom
 export analyze
 export write_output
-export skew
 
+
+export skew
 export mbd_system
 export thin_rod
 export mirror!
@@ -30,6 +32,7 @@ end
 
 include("run_eom.jl")
 include("setup.jl")
+include("build_examples.jl")
 include("mass.jl")
 include("sort_system.jl")
 include("find_bodynum.jl")
@@ -61,12 +64,11 @@ include("syst_props.jl")
 include("mirror.jl")
 include("thin_rod.jl")
 
-
-fldr=joinpath(dirname(dirname(pathof(EoM))),"examples")
-xmpls=readdir(fldr)
-for i in xmpls
-	include(joinpath(fldr,i))
-end
+# fldr=joinpath(dirname(dirname(pathof(EoM))),"examples")
+# xmpls=readdir(fldr)
+# for i in xmpls
+# 	include(joinpath(fldr,i))
+# end
 
 mutable struct eom_data
 	name::String

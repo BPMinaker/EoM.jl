@@ -13,35 +13,38 @@ function setup(dir_raw)
 ##
 ##--------------------------------------------------------------------
 
+dir=joinpath(pwd(),"output")
+if(~isdir(dir))  ## If no output folder exists
+	mkdir(dir)  ## Create new empty output folder
+end
+
 ## Record the date and time for the output filenames, ISO format
 dtstr=Dates.format(now(),"yyyy-mm-dd")
-tmstr=Dates.format(now(),"HH-MM-SS-s")
-dir_output=joinpath(dtstr,tmstr)
-
-dir=joinpath(pwd(),dtstr)
+dir=joinpath(pwd(),"output",dtstr)
 if(~isdir(dir))  ## If no dated output folder exists
 	mkdir(dir)  ## Create new empty dated output folder
 end
 
-dir=joinpath(pwd(),dir_output)
-mkdir(dir)  ## Create new empty timed output folder
+tmstr=Dates.format(now(),"HH-MM-SS-s")
+dir_output=joinpath(dir,tmstr)
+mkdir(dir_output)  ## Create new empty timed output folder
 
-dir=joinpath(pwd(),dir_output,dir_raw)
+dir=joinpath(dir_output,dir_raw)
 if(~isdir(dir))  ## If no timed output folder exists
 	mkdir(dir)  ## Create new empty timed output folder
 end
 
-dir=joinpath(pwd(),dir_output,dir_raw,"dss")
+dir=joinpath(dir_output,dir_raw,"dss")
 if(~isdir(dir))
 	mkdir(dir)
 end
 
-dir=joinpath(pwd(),dir_output,dir_raw,"ss")
+dir=joinpath(dir_output,dir_raw,"ss")
 if(~isdir(dir))
 	mkdir(dir)
 end
 
-dir=joinpath(pwd(),dir_output,dir_raw,"jordan")
+dir=joinpath(dir_output,dir_raw,"jordan")
 if(~isdir(dir))
 	mkdir(dir)
 end

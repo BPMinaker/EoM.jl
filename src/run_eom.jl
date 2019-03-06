@@ -13,7 +13,6 @@ function run_eom(sysin::Function;vpts=[],verbose=false)
 ##
 ##--------------------------------------------------------------------
 
-
 n=1
 m=length(vpts)
 (m>1) && (n=m)
