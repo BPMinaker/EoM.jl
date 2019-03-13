@@ -30,7 +30,7 @@ eigen="###### Eigenvalues\nnum speed real imag realhz imaghz\n"
 freq="###### Natural Frequency\nnum speed nfreq zeta tau lambda\n"
 
 #strs.mode=["###### Modes $nn\n"]
-#strs.centre="###### Speed, Mode, Body, Rotation centre, Axis of rotation\nspeed num name rx rxi ry ryi rz rzi ux uxi uy uyi uz uzi\n"
+centre="###### Rotation centre, Axis of rotation\n num name speed r ri\n"
 
 bode="###### Bode Mag Phase\nfrequency speed"
 for i=1:nin*nout
@@ -75,8 +75,16 @@ for i=1:nvpts
 			zeta=NaN
 		end
 
-		eigen*="{$j} $(the_system[i].vpt) "*@sprintf("%.12e ",realpt) *@sprintf("%.12e ",imagpt)*@sprintf("%.12e ",realpt/2/pi) *@sprintf("%.12e ",imagpt/2/pi)*"\n"  ## Write the number, the speed, then the eigenvalue
+		eigen*="{$j} $(the_system[i].vpt) "*@sprintf("%.12e ",realpt)*@sprintf("%.12e ",imagpt)*@sprintf("%.12e ",realpt/2/pi)*@sprintf("%.12e ",imagpt/2/pi)*"\n"  ## Write the number, the speed, then the eigenvalue
 		freq*="{$j} $(the_system[i].vpt) "*@sprintf("%.12e ",omegan/2/pi)*@sprintf("%.12e ",zeta)*@sprintf("%.12e ",tau)*@sprintf("%.12e ",lambda)*"\n"  ## Write nat freq, etc.
+
+		for k=1:length(the_system[i].bodys)-1
+			for m=1:6
+				centre*="{$j} {$(the_system[i].bodys[k].name)} $(the_system[i].vpt) "*@sprintf("%.12e ",real(results[i].centre[6*k-6+m,j]))*@sprintf("%.12e ",imag(results[i].centre[6*k-6+m,j]))*"\n"  ## Write the number, the speed ...
+			end
+			centre*="\n"
+		end
+		centre*="\n"
 	end
 	eigen*="\n"
 	freq*="\n"
@@ -149,8 +157,8 @@ for i=1:length(data_out)
 	end
 end
 
-data_out=[eigen freq bode sstf hsv preload defln]
-file_name=["eigen.out" "freq.out" "bode.out" "sstf.out" "hsv.out" "preload.out" "defln.out"]
+data_out=[eigen freq centre bode sstf hsv preload defln]
+file_name=["eigen.out" "freq.out" "centre.out" "bode.out" "sstf.out" "hsv.out" "preload.out" "defln.out"]
 
 for i=1:length(data_out)
 	out=joinpath(dir_output,file_name[i])
