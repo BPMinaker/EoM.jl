@@ -17,14 +17,14 @@ verb && println("Looking for connection info...")
 
 for i in items
 	for j=1:length(names)
-		if(i.body[1]==names[j])
+		if i.body[1]==names[j]
 			i.body_number[1]=j
-		elseif(i.body[2]==names[j])
+		elseif i.body[2]==names[j]
 			i.body_number[2]=j
 		end
 	end
-	if(i.body_number[1]*i.body_number[2]==0)
-		error("Item $(i.name) is not attached to a body!")
+	if i.body_number[1]*i.body_number[2]==0
+		error("Item $(i.name) is attached to missing body!")
 	end
 end
 
@@ -37,17 +37,22 @@ verb && println("Looking for connection info...")
 
 for i in items
 	for j=1:length(names)
-		if(i.body==names[j])
+		if i.body==names[j]
 			i.body_number=j
 		end
-		if(i.frame==names[j])
+		if i.frame==names[j]
 			i.frame_number=j
 		end
+	end
+	if i.body_number==0
+		error("Item $(i.name) is attached to a missing body!")
+	end
+	if i.frame_number==0
+		error("Item $(i.name) is attached a missing frame!")
 	end
 end
 
 end
-
 
 function find_actnum!(items,names,verb=false)
 
@@ -55,9 +60,12 @@ verb && println("Looking for connection info...")
 
 for i in items
 	for j=1:length(names)
-		if(i.actuator==names[j])
+		if i.actuator==names[j]
 			i.actuator_number=j
 		end
+	end
+	if i.actuator_number==0
+		error("Item $(i.name) actuator not found!")
 	end
 end
 
