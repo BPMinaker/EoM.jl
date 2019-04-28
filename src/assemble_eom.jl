@@ -57,7 +57,7 @@ for i=1:nout
 		mask=-data.KC[1:dim,:]
 
 	elseif(column[i]==4)  ## w dot
-		mask=-pinv(Matrix(data.M[dim+1:2*dim,dim+1:2*dim]))*data.KC(dim+1:2*dim,:)
+		mask=-pinv(Matrix(data.M[dim+1:2*dim,dim+1:2*dim]))*data.KC[dim+1:2*dim,:]
 
 	elseif(column[i]==5) ## p dot dot
 			mask=[data.velocity^2 -data.velocity zeros(dim,nin)] - pinv(Matrix(data.M[dim+1:2*dim,dim+1:2*dim]))*data.KC[dim+1:2*dim,:]
