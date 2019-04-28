@@ -28,15 +28,23 @@ C2=Ctilde[:,n+1:end]
 # println("rank ",rank(A22))
 # println("size ",size(A22))
 
-A22i=pinv(A22)
+#A22i=pinv(A22)
 #println(A22i)
 
 ss_eqns=ss_data()
 
-ss_eqns.A=Sinv*(A11-A12*A22i*A21)
-ss_eqns.B=Sinv*(B1-A12*A22i*B2)
-ss_eqns.C=C1-C2*A22i*A21
-ss_eqns.D=dss_eqns.D-C2*A22i*B2
+#ss_eqns.A=Sinv*(A11-A12*A22i*A21)
+#ss_eqns.B=Sinv*(B1-A12*A22i*B2)
+#ss_eqns.C=C1-C2*A22i*A21
+#ss_eqns.D=dss_eqns.D-C2*A22i*B2
+
+A221=A22\A21
+A22B=A22\B2
+
+ss_eqns.A=Sinv*(A11-A12*A221)
+ss_eqns.B=Sinv*(B1-A12*A22B)
+ss_eqns.C=C1-C2*A221
+ss_eqns.D=dss_eqns.D-C2*A22B
 
 verbose && println("System is now of dimension ",(size(ss_eqns.A)),".")
 
