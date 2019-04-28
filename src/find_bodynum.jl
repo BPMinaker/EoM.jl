@@ -64,7 +64,7 @@ for i in items
 			i.actuator_number=j
 		end
 	end
-	if i.actuator_number==0
+	if i.actuator!="ground" && i.actuator_number==0
 		error("Item $(i.name) actuator not found!")
 	end
 end
