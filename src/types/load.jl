@@ -12,17 +12,27 @@ mutable struct load
 	frame::String
 	frame_number::Int
 
-	function load(
-	name,
-	group="load",
-	location=[0,0,0],
-	body="ground",
-	body_number=0,
-	force=[0,0,0],
-	moment=[0,0,0],
-	radius=[0,0,0],
-	frame="ground",
-	frame_number=0)
-		new(name,group,location,body,body_number,force,moment,radius,frame,frame_number)
-	end
 end
+
+load(str::String)=load(str,"load",zeros(3),"ground",0,zeros(3),zeros(3),zeros(3),"ground",0)
+
+function Base.show(io::IO, obj::load)
+	println(io,"Load:")
+	println(io,"Name: ",obj.name)
+	println(io,"Location: ",obj.location)
+	println(io,"Body: ",obj.body)
+end
+
+# function load(
+# name,
+# group="load",
+# location=[0,0,0],
+# body="ground",
+# body_number=0,
+# force=[0,0,0],
+# moment=[0,0,0],
+# radius=[0,0,0],
+# frame="ground",
+# frame_number=0)
+# 	new(name,group,location,body,body_number,force,moment,radius,frame,frame_number)
+# end
