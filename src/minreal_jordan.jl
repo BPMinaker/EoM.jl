@@ -7,25 +7,28 @@ function minreal_jordan(sys_in,verbose=false)
 	verbose && println("Computing Jordan minimal realization...")
 
 	val,vec=eigen(AA)
-#	println(AA)
-#	println(val)
 
-#	t=findall(abs.(val).>1.e-5)    ## remove zeros
-#	println(t)
+#	display(AA)
+#	display(val)
+#	display(vec)
 
-#	val=val[t]
-#	vec=vec[:,t]
 	m=length(val)
 
-#	println(val)
+	# sort eigenvalues by magnitude to group repeats
+	srt=sortslices([abs.(val) Vector(1:m)],dims=1)
+	idx=Int64.(srt[:,2])
+	val=val[idx]
+	vec=vec[:,idx]
+
 	jvec=vec
 	md=real(val)
 	ud=zeros(m-1)
 	ld=zeros(m-1)
 
+	## convert all eigenvectors to real by pairing or rounding
 	i=1
 	while i<m
-		if (val[i]==conj(val[i+1])) && !(val[i]==val[i+1])
+		if val[i]==conj(val[i+1]) && val[i]!=val[i+1]
 			if abs(imag(val[i]))<1e-5
 				verbose && println("Rounding vectors $i and $(i+1)")
 				jvec[:,i]=real(jvec[:,i])
@@ -44,46 +47,36 @@ function minreal_jordan(sys_in,verbose=false)
 		end
 		i+=1
 	end
-
 	jvec=real.(jvec)
 
-	Aj=diagm(-1=>ld,0=>md,1=>ud)
 
-	# if verbose
-	# 	println("Checking factorization...")
-	# 	chk=norm(AA-jvec*Aj*pinv(jvec))
-	# 	if chk<1e-8
-	# 	println("Checks ok.")
-	# 	else
-	# 		println("Problem with factorization!  Check=$(chk).")
-	# 	end
-	# end
-
+	## find matching eigenvalues
 	match_val=Vector[]
 	for i=1:m
 		if abs(imag(val[i]))<1e-6  ## if eigenvalue is real
-			t=findall(round.(round.(val,digits=5),sigdigits=6).==round.(round(val[i],digits=5),sigdigits=6))  ## find matching values
-			length(t)>1 && push!(match_val,t)  ## record them
+			t=findall(round.(round.(val,digits=5),sigdigits=6).==round.(round(val[i],digits=5),sigdigits=6))
+			length(t)>1 && push!(match_val,t)  ## record their locations
 		end
 	end
 	match_val=unique(match_val)  ## remove the duplicate entries, if 1 matches 2, then 2 matches 1
 
 #	println(match_val)
-#	println(nullspace(AA))
-
+	Aj=diagm(-1=>ld,0=>md,1=>ud)
 	r=rank(round.(jvec,digits=6))  ## round the eigenvectors and find the rank (all vectors same magnitude)
 	verbose && println("Jordan vector rank is $r, size $m.")
 
 	for i in match_val
+		B=AA-val[i[1]]*I
 		j=1
-		while (j<length(i)+1 && r<m)
-			t=rank(round.([jvec[:,1:i[j]-1] jvec[:,i[j]+1:end]],digits=6))  ## find rank with vector removed
+		length(i)>2 && println("Warning! Multiple repeating roots. Minimal realization may be faulty!")
+		while j<length(i) && r<m
+#			d=m-rank(B)
+#			println(d)
+			t=rank(round.([jvec[:,1:i[j]] jvec[:,i[j]+2:end]],digits=6))  ## find rank with vector removed
 			if t==r  ## if removing this vector had no effect on the rank
 				verbose && println("Replacing vector $(i[j]+1) with pseudovector...")
-				jvec[:,i[j]+1]=pinv([AA-val[i[j]]*diagm(0=>ones(m));jvec[:,i[j]]'])*[jvec[:,i[j]];0]  ## add one row to allow unique solution, pvector must be orthogonal
-			#	println(jvec[:,i[j]+1])
+				jvec[:,i[j]+1]=pinv([B;jvec[:,i[j]]'])*[jvec[:,i[j]];0]  ## add one row to allow unique solution, pvector must be orthogonal
 				Aj[i[j],i[j]+1]=1  ## set entry in A matrix where pvector is located
-				j+=1
 			end
 			j+=1
 			r=rank(round.(jvec,digits=6))  ## recompute rank
@@ -101,8 +94,13 @@ function minreal_jordan(sys_in,verbose=false)
 	sens=zeros(m)
 	i=1
 	while i<m+1
-		if i<m && Ajm[i,i+1]!=0.0  ## if there are entries to the right, do 2x2 sensitivity
-			sens[i]=norm(Cjm[:,i:i+1]*(Int64.((abs.(Ajm[i:i+1,i:i+1])+diagm(0=>ones(2))).>1e-6))*Bjm[i:i+1,:])
+		if i<m-1 && Ajm[i,i+1]!=0.0 && Ajm[i+1,i+2]!=0.0  ## 3x3 sensitivity
+			sens[i]=norm(Cjm[:,i:i+2]*(Int64.((abs.(Ajm[i:i+2,i:i+2])+I).>1e-6))*Bjm[i:i+2,:])
+			sens[i+1]=sens[i]
+			sens[i+2]=sens[i]
+			i+=3
+		elseif i<m && Ajm[i,i+1]!=0.0  ## 2x2 sensitivity
+			sens[i]=norm(Cjm[:,i:i+1]*(Int64.((abs.(Ajm[i:i+1,i:i+1])+I).>1e-6))*Bjm[i:i+1,:])
 			sens[i+1]=sens[i]
 			i+=2
 		else  ## otherwise, just B and C
@@ -331,3 +329,14 @@ end
 	# 	end
 	# 	jvec[:,i]=jvec[:,sorted]  ## put all colinear vectors with same value next to each other
 	# end
+
+
+		# if verbose
+		# 	println("Checking factorization...")
+		# 	chk=norm(AA-jvec*Aj*pinv(jvec))
+		# 	if chk<1e-8
+		# 	println("Checks ok.")
+		# 	else
+		# 		println("Problem with factorization!  Check=$(chk).")
+		# 	end
+		# end
