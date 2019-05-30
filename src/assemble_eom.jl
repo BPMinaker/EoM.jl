@@ -38,12 +38,10 @@ else
 	l_orth=r_orth
 end
 
-ss_eqns=dss_data()  ## Create empty state space holder
-
 ## Pre and post multiply by orthogonal complements, and then cast in standard form
-ss_eqns.E=l_orth'*data.M*r_orth
-ss_eqns.A=-l_orth'*data.KC*r_orth
-ss_eqns.B=l_orth'*[zeros(2*dim,nin); I]
+E=l_orth'*data.M*r_orth
+A=-l_orth'*data.KC*r_orth
+B=l_orth'*[zeros(2*dim,nin); I]
 C=zeros(nout,2*dim+nin)
 
 for i=1:nout
@@ -68,9 +66,12 @@ for i=1:nout
 	C[i,:]=data.output[i:i,:]*mask  ## Note transpose here -- behaviour different than Matlab/Octave
 end
 
-ss_eqns.C=C*r_orth
-ss_eqns.D=data.feedthrough  ## Add the user defined feed forward
-ss_eqns.phys=r_orth[1:dim,:]
+C*=r_orth
+D=data.feedthrough  ## Add the user defined feed forward
+phys=r_orth[1:dim,:]
+
+ss_eqns=dss_data(A,B,C,D,E,phys)
+
 verb && println("Okay, built equations of motion.")
 
 ss_eqns

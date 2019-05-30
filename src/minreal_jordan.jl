@@ -90,6 +90,12 @@ function minreal_jordan(sys_in,verbose=false)
 	Cjm=(CC*jvec)
 	Ajm=Aj
 
+	bm=norm(Bjm)
+	cm=norm(Cjm)
+
+	Bjm*=(cm/bm)^0.5
+	Cjm*=(bm/cm)^0.5
+
 	ind=1:m
 	sens=zeros(m)
 	i=1
@@ -266,11 +272,7 @@ function minreal_jordan(sys_in,verbose=false)
 	Bjm=Bjm[nind,:]
 	Cjm=Cjm[:,nind]
 
-	jordan=ss_data()
-	jordan.A=Ajm
-	jordan.B=Bjm
-	jordan.C=Cjm
-	jordan.D=sys_in.D
+	jordan=ss_data(Ajm,Bjm,Cjm,sys_in.D)
 
 	verbose && println("System is now of dimension ",size(jordan.A),".")
 

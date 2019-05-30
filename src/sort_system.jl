@@ -20,54 +20,72 @@ verbose && println("Sorting system...")
 ground=body("ground")
 push!(the_system.item,ground)  ## Ground body is added last (important!)
 
-the_system.bodys=the_system.item[broadcast(typeof,the_system.item).==body]
-the_system.links=the_system.item[broadcast(typeof,the_system.item).==link]
-the_system.springs=the_system.item[broadcast(typeof,the_system.item).==spring]
-the_system.rigid_points=the_system.item[broadcast(typeof,the_system.item).==rigid_point]
-the_system.flex_points=the_system.item[broadcast(typeof,the_system.item).==flex_point]
-the_system.nh_points=the_system.item[broadcast(typeof,the_system.item).==nh_point]
-the_system.beams=the_system.item[broadcast(typeof,the_system.item).==beam]
-the_system.loads=the_system.item[broadcast(typeof,the_system.item).==load]
-the_system.sensors=the_system.item[broadcast(typeof,the_system.item).==sensor]
-the_system.actuators=the_system.item[broadcast(typeof,the_system.item).==actuator]
+type=[body,load,link,spring,rigid_point,flex_point,nh_point,beam,sensor,actuator]
+types=[:bodys,:loads,:links,:springs,:rigid_points,:flex_points,:nh_points,:beams,:sensors,:actuators]
+
+for i=1:length(types)
+	setproperty!(the_system,types[i],the_system.item[broadcast(typeof,the_system.item).==type[i]])
+end
 
 names=broadcast(name,the_system.bodys)
-
-find_bodynum!(the_system.links,names)
-find_bodynum!(the_system.springs,names)
-find_bodynum!(the_system.rigid_points,names)
-find_bodynum!(the_system.flex_points,names)
-find_bodynum!(the_system.nh_points,names)
-find_bodynum!(the_system.beams,names)
-find_bodynum!(the_system.sensors,names)
-find_bodynum!(the_system.actuators,names)
-
+for i=3:length(types)
+	find_bodynum!(getproperty(the_system,types[i]),names)
+end
 find_bodyframenum!(the_system.loads,names)
 
 names=broadcast(name,the_system.actuators)
-
 find_actnum!(the_system.sensors,names)
 
 locations=broadcast(location,the_system.bodys)
+for i=2:length(types)
+	find_radius!(getproperty(the_system,types[i]),locations)
+end
 
-find_radius!(the_system.links,locations)
-find_radius!(the_system.springs,locations)
-find_radius!(the_system.rigid_points,locations)
-find_radius!(the_system.flex_points,locations)
-find_radius!(the_system.nh_points,locations)
-find_radius!(the_system.beams,locations)
-find_radius!(the_system.loads,locations)
-find_radius!(the_system.sensors,locations)
-find_radius!(the_system.actuators,locations)
-
-item_init!(the_system.links)
-item_init!(the_system.springs)
-item_init!(the_system.rigid_points)
-item_init!(the_system.flex_points)
-item_init!(the_system.nh_points)
-item_init!(the_system.beams)
-item_init!(the_system.sensors)
-item_init!(the_system.actuators)
+for i=3:length(types)
+	item_init!(getproperty(the_system,types[i]))
+end
 
 verbose && println("System sorted.")
 end  ## Leave
+
+
+
+
+# the_system.bodys=the_system.item[broadcast(typeof,the_system.item).==body]
+# the_system.links=the_system.item[broadcast(typeof,the_system.item).==link]
+# the_system.springs=the_system.item[broadcast(typeof,the_system.item).==spring]
+# the_system.rigid_points=the_system.item[broadcast(typeof,the_system.item).==rigid_point]
+# the_system.flex_points=the_system.item[broadcast(typeof,the_system.item).==flex_point]
+# the_system.nh_points=the_system.item[broadcast(typeof,the_system.item).==nh_point]
+# the_system.beams=the_system.item[broadcast(typeof,the_system.item).==beam]
+# the_system.loads=the_system.item[broadcast(typeof,the_system.item).==load]
+# the_system.sensors=the_system.item[broadcast(typeof,the_system.item).==sensor]
+# the_system.actuators=the_system.item[broadcast(typeof,the_system.item).==actuator]
+
+# find_bodynum!(the_system.links,names)
+# find_bodynum!(the_system.springs,names)
+# find_bodynum!(the_system.rigid_points,names)
+# find_bodynum!(the_system.flex_points,names)
+# find_bodynum!(the_system.nh_points,names)
+# find_bodynum!(the_system.beams,names)
+# find_bodynum!(the_system.sensors,names)
+# find_bodynum!(the_system.actuators,names)
+
+# find_radius!(the_system.links,locations)
+# find_radius!(the_system.springs,locations)
+# find_radius!(the_system.rigid_points,locations)
+# find_radius!(the_system.flex_points,locations)
+# find_radius!(the_system.nh_points,locations)
+# find_radius!(the_system.beams,locations)
+# find_radius!(the_system.loads,locations)
+# find_radius!(the_system.sensors,locations)
+# find_radius!(the_system.actuators,locations)
+
+# item_init!(the_system.links)
+# item_init!(the_system.springs)
+# item_init!(the_system.rigid_points)
+# item_init!(the_system.flex_points)
+# item_init!(the_system.nh_points)
+# item_init!(the_system.beams)
+# item_init!(the_system.sensors)
+# item_init!(the_system.actuators)

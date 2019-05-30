@@ -1,4 +1,4 @@
-function write_output(the_system,eoms,results;verbose=false,dir_raw="unformatted")
+function write_output(the_list,eoms,results;verbose=false,dir_raw="unformatted")
 ## Copyright (C) 2017, Bruce Minaker
 ## write_output.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -75,12 +75,12 @@ for i=1:nvpts
 			zeta=NaN
 		end
 
-		eigen*="{$j} $(the_system[i].vpt) "*@sprintf("%.12e ",realpt)*@sprintf("%.12e ",imagpt)*@sprintf("%.12e ",realpt/2/pi)*@sprintf("%.12e ",imagpt/2/pi)*"\n"  ## Write the number, the speed, then the eigenvalue
-		freq*="{$j} $(the_system[i].vpt) "*@sprintf("%.12e ",omegan/2/pi)*@sprintf("%.12e ",zeta)*@sprintf("%.12e ",tau)*@sprintf("%.12e ",lambda)*"\n"  ## Write nat freq, etc.
+		eigen*="{$j} $(the_list[i].vpt) "*@sprintf("%.12e ",realpt)*@sprintf("%.12e ",imagpt)*@sprintf("%.12e ",realpt/2/pi)*@sprintf("%.12e ",imagpt/2/pi)*"\n"  ## Write the number, the speed, then the eigenvalue
+		freq*="{$j} $(the_list[i].vpt) "*@sprintf("%.12e ",omegan/2/pi)*@sprintf("%.12e ",zeta)*@sprintf("%.12e ",tau)*@sprintf("%.12e ",lambda)*"\n"  ## Write nat freq, etc.
 
-		for k=1:length(the_system[i].bodys)-1
+		for k=1:length(the_list[i].system.bodys)-1
 			for m=1:6
-				centre*="{$j} {$(the_system[i].bodys[k].name)} $(the_system[i].vpt) "*@sprintf("%.12e ",real(results[i].centre[6*k-6+m,j]))*@sprintf("%.12e ",imag(results[i].centre[6*k-6+m,j]))*"\n"  ## Write the number, the speed ...
+				centre*="{$j} {$(the_list[i].system.bodys[k].name)} $(the_list[i].vpt) "*@sprintf("%.12e ",real(results[i].centre[6*k-6+m,j]))*@sprintf("%.12e ",imag(results[i].centre[6*k-6+m,j]))*"\n"  ## Write the number, the speed ...
 			end
 			centre*="\n"
 		end
@@ -90,8 +90,8 @@ for i=1:nvpts
 	freq*="\n"
 end
 
-input_names=broadcast(EoM.name,the_system[1].actuators)
-output_names=broadcast(EoM.name,the_system[1].sensors)
+input_names=broadcast(EoM.name,the_list[1].system.actuators)
+output_names=broadcast(EoM.name,the_list[1].system.sensors)
 
 if(nin*nout>0 && nin*nout<16)
 	for i=1:nvpts
@@ -106,7 +106,7 @@ if(nin*nout>0 && nin*nout<16)
 			end
 		else
 			## Each row starts with vpoint, followed by first column, written as a row, then next column, as a row
-			sstf*="$(the_system[i].vpt) "
+			sstf*="$(the_list[i].vpt) "
 			for k in reshape(results[i].ss_resp[:,:],1,nin*nout)
 				sstf*=@sprintf("%.12e ",k)
 			end
@@ -122,7 +122,7 @@ if(nin*nout>0 && nin*nout<16)
 
 		for j=1:length(results[i].w) ## Loop over frequency range
 			## Each row starts with freq in Hz, then speed
-			bode*=@sprintf("%.12e ",results[i].w[j]/2/pi)*"$(the_system[i].vpt) "
+			bode*=@sprintf("%.12e ",results[i].w[j]/2/pi)*"$(the_list[i].vpt) "
 			## Followed by first mag column, written as a row, then next column, as a row
 			for k in reshape(20*log10.(abs.(results[i].freq_resp[:,:,j])),1,nin*nout)
 				bode*=@sprintf("%.12e ",k)
@@ -136,14 +136,14 @@ if(nin*nout>0 && nin*nout<16)
 # #		strs.zeros=[strs.zeros sprintf('%4.12e ',real(result{i}.math.zros),imag(result{i}.math.zros))];
 
 		for j=1:length(results[i].hsv)
-			hsv*="{$j} $(the_system[i].vpt) $(results[i].hsv[j])\n"  ## Write the vpoint (e.g. speed), then the hankel_sv
+			hsv*="{$j} $(the_list[i].vpt) $(results[i].hsv[j])\n"  ## Write the vpoint (e.g. speed), then the hankel_sv
 		end
 		hsv*="\n"
 	end
 end
 
-preload,defln=load_defln(the_system[1])
-bodydata,pointdata,stiffnessdata=syst_props(the_system[1])
+preload,defln=load_defln(the_list[1].system)
+bodydata,pointdata,stiffnessdata=syst_props(the_list[1].system)
 
 data_out=[bodydata pointdata stiffnessdata]
 file_name=["bodydata.out" "pointdata.out" "stiffnessdata.out"]
@@ -230,18 +230,18 @@ sys=[results[1].jordan.A results[1].jordan.B; results[1].jordan.C results[1].jor
 sys=(abs.(sys).>=1e-9).*sys
 writedlm(joinpath(jordan_path,"ABCD.out"),sys)
 
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"mass.tex"),the_system[1].data.mass)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"s_stiff.tex"),the_system[1].data.stiffness)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"t_stiff.tex"),the_system[1].data.tangent_stiffness)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"l_stiff.tex"),the_system[1].data.load_stiffness)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"stiff.tex"),the_system[1].data.stiffness+the_system[1].data.load_stiffness+the_system[1].data.tangent_stiffness)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"damping.tex"),the_system[1].data.load_stiffness)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"velocity.tex"),the_system[1].data.velocity)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"momentum.tex"),the_system[1].data.momentum)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"constraint.tex"),the_system[1].data.constraint)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"nh_constraint.tex"),the_system[1].data.nh_constraint)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"input.tex"),the_system[1].data.input)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"output.tex"),the_system[1].data.output)
+write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"mass.tex"),the_list[1].data.mass)
+write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"s_stiff.tex"),the_list[1].data.stiffness)
+write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"t_stiff.tex"),the_list[1].data.tangent_stiffness)
+write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"l_stiff.tex"),the_list[1].data.load_stiffness)
+write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"stiff.tex"),the_list[1].data.stiffness+the_list[1].data.load_stiffness+the_list[1].data.tangent_stiffness)
+write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"damping.tex"),the_list[1].data.load_stiffness)
+write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"velocity.tex"),the_list[1].data.velocity)
+write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"momentum.tex"),the_list[1].data.momentum)
+write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"constraint.tex"),the_list[1].data.constraint)
+write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"nh_constraint.tex"),the_list[1].data.nh_constraint)
+write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"input.tex"),the_list[1].data.input)
+write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"output.tex"),the_list[1].data.output)
 
 dir_output
 
