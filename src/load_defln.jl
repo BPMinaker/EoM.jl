@@ -1,4 +1,4 @@
-function load_defln(the_system)
+function load_defln(the_system,dir_output)
 ## Copyright (C) 2017, Bruce Minaker
 ## load_defln.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -12,19 +12,21 @@ function load_defln(the_system)
 ##
 ##--------------------------------------------------------------------
 
-preload="###### Preload\nnum name type fx fy fz fxyz\n"
-defln="###### Deflection\nnum name type x y z\n"
+preload_f=open(joinpath(dir_output,"preload.out"),"w")
+println(preload_f,"###### Preload\nnum name type fx fy fz fxyz")
+
+defln_f=open(joinpath(dir_output,"defln.out"),"w")
+println(defln_f,"###### Deflection\nnum name type x y z")
 
 idx=1
-
 for item in [the_system.rigid_points;the_system.flex_points]
 	pload=[item.b_mtx[1];item.b_mtx[2]]'*item.preload
 	frc=pload[1:3]
 	mmt=pload[4:6]
-	preload*="{$idx} {$(item.name)}"
-	preload*=" force "*@sprintf("%.12e ",frc[1])*@sprintf("%.12e ",frc[2])*@sprintf("%.12e ",frc[3])*@sprintf("%.12e ",norm(frc))*"\n"
-	preload*="{} {}"
-	preload*=" moment "*@sprintf("%.12e ",mmt[1])*@sprintf("%.12e ",mmt[2])*@sprintf("%.12e ",mmt[3])*@sprintf("%.12e ",norm(mmt))*"\n"
+	print(preload_f,"{",idx,"} {",item.name,"} ")
+	println(preload_f,"force ",frc[1]," ",frc[2]," ",frc[3]," ",norm(frc))
+	print(preload_f,"{} {} ")
+	println(preload_f,"moment ",mmt[1]," ",mmt[2]," ",mmt[3]," ",norm(mmt))
 	idx+=1
 end
 
@@ -32,11 +34,11 @@ for item in [the_system.springs;the_system.links]
 	pload=[item.b_mtx[1];item.b_mtx[2]]'*item.preload
 	frc=pload[1:3]
 	mmt=pload[4:6]
-	preload*="{$idx} {$(item.name)}"
-	if(item.twist==0)
-		preload*=" force "*@sprintf("%.12e ",frc[1])*@sprintf("%.12e ",frc[2])*@sprintf("%.12e ",frc[3])*@sprintf("%.12e ",item.preload)*"\n"
+	print(preload_f,"{",idx,"} {",item.name,"} ")
+	if item.twist==0
+		println(preload_f,"force ",frc[1]," ",frc[2]," ",frc[3]," ",item.preload)
 	else
-		preload*=" moment "*@sprintf("%.12e ",mmt[1])*@sprintf("%.12e ",mmt[2])*@sprintf("%.12e ",mmt[3])*@sprintf("%.12e ",item.preload)*"\n"
+		println(preload_f,"moment ",mmt[1]," ",mmt[2]," ",mmt[3]," ",item.preload)
 	end
 	idx+=1
 end
@@ -49,19 +51,21 @@ for item in the_system.beams
 	m1=temp[3,4:6]+temp[4,4:6]
 	v2=temp[5,1:3]+temp[6,1:3]
 	m2=temp[7,4:6]+temp[8,4:6]
-	preload*="{$idx} {$(item.name)} shear "*@sprintf("%.12e ",v1[1])*@sprintf("%.12e ",v1[2])*@sprintf("%.12e ",v1[3])*@sprintf("%.12e ",norm(v1))*"\n"
-	preload*="{} {} moment "*@sprintf("%.12e ",m1[1])*@sprintf("%.12e ",m1[2])*@sprintf("%.12e ",m1[3])*@sprintf("%.12e ",norm(m1))*"\n"
-	preload*="{} {} shear "*@sprintf("%.12e ",v2[1])*@sprintf("%.12e ",v2[2])*@sprintf("%.12e ",v2[3])*@sprintf("%.12e ",norm(v2))*"\n"
-	preload*="{} {} moment "*@sprintf("%.12e ",m2[1])*@sprintf("%.12e ",m2[2])*@sprintf("%.12e ",m2[3])*@sprintf("%.12e ",norm(m2))*"\n"
+	println(preload_f,"{",idx,"} {",item.name,"} shear ",v1[1]," ",v1[2]," ",v1[3]," ",norm(v1))
+	println(preload_f,"{} {} moment ",m1[1]," ",m1[2]," ",m1[3]," ",norm(m1))
+	println(preload_f,"{} {} shear ",v2[1]," ",v2[2]," ",v2[3]," ",norm(v2))
+	println(preload_f,"{} {} moment ",m2[1]," ",m2[2]," ",m2[3]," ",norm(m2))
 	idx+=1
 end
 
 idx=1
 for item in the_system.bodys[1:end-1]
-	defln*="{$idx} {$(item.name)} translation "*@sprintf("%.12e ",item.deflection[1])*@sprintf("%.12e ",item.deflection[2])*@sprintf("%.12e ",item.deflection[3])*"\n{ } { } rotation "*@sprintf("%.12e ",item.angular_deflection[1])*@sprintf("%.12e ",item.angular_deflection[2])*@sprintf("%.12e ",item.angular_deflection[3])*"\n"
+	println(defln_f,"{",idx,"} {",item.name,"} translation ",item.deflection[1]," ",item.deflection[2]," ",item.deflection[3])
+	println(defln_f,"{ } { } rotation ",item.angular_deflection[1]," ",item.angular_deflection[2]," ",item.angular_deflection[3])
 	idx+=1
 end
 
-preload,defln
+close(preload_f)
+close(defln_f)
 
 end ## Leave

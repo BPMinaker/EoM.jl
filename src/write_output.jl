@@ -13,6 +13,7 @@ function write_output(the_list,eoms,results;verbose=false,dir_raw="unformatted")
 ##--------------------------------------------------------------------
 
 verbose && println("Writing output...")
+dir_output=setup(dir_raw)
 
 cmplx=0  ## Creates variable for number of oscillatory modes
 dmpd=0  ## Creates variable for number of non-oscillatory modes
@@ -26,33 +27,41 @@ nout=size(eoms[1].C,1)
 nvpts=length(results)
 
 ## Initialize output strings
-eigen="###### Eigenvalues\nnum speed real imag realhz imaghz\n"
-freq="###### Natural Frequency\nnum speed nfreq zeta tau lambda\n"
 
+eigen_f=open(joinpath(dir_output,"eigen.out"),"w")
+println(eigen_f,"###### Eigenvalues\nnum speed real imag realhz imaghz")
+
+freq_f=open(joinpath(dir_output,"freq.out"),"w")
+println(freq_f,"###### Natural Frequency\nnum speed nfreq zeta tau lambda")
+
+centre_f=open(joinpath(dir_output,"centre.out"),"w")
 #strs.mode=["###### Modes $nn\n"]
-centre="###### Rotation centre, Axis of rotation\n num name speed r ri\n"
+println(centre_f,"###### Rotation centre, Axis of rotation\n num name speed r ri")
 
-bode="###### Bode Mag Phase\nfrequency speed"
+bode_f=open(joinpath(dir_output,"bode.out"),"w")
+println(bode_f,"###### Bode Mag Phase")
+print(bode_f,"frequency speed")
+
 for i=1:nin*nout
-	bode*=" m$i"
+ 	print(bode_f," m$i")
 end
 for i=1:nin*nout
-	bode*=" p$i"
+	print(bode_f," p$i")
 end
-bode*="\n"
+println(bode_f,"")
 
-#zeros=['###### Zeros\n'	'Speed \n'];
-
-sstf="###### Steady State Transfer Function\n"
+sstf_f=open(joinpath(dir_output,"sstf.out"),"w")
+println(sstf_f,"###### Steady State Transfer Function")
 if (nvpts>1)
-	sstf*="speed"
+	print(sstf_f,"speed")
 	for i=1:nin*nout
-		sstf*=" $i"
+		print(sstf_f," ",i)
 	end
-	sstf*="\n"
+	println(sstf_f,"")
 end
 
-hsv="###### Hankel SVD\nnum speed hsv\n"
+hsv_f=open(joinpath(dir_output,"hsv.out"),"w")
+println(hsv_f,"###### Hankel SVD\nnum speed hsv")
 
 for i=1:nvpts
 	for j=1:length(results[i].e_val)
@@ -75,19 +84,22 @@ for i=1:nvpts
 			zeta=NaN
 		end
 
-		eigen*="{$j} $(the_list[i].vpt) "*@sprintf("%.12e ",realpt)*@sprintf("%.12e ",imagpt)*@sprintf("%.12e ",realpt/2/pi)*@sprintf("%.12e ",imagpt/2/pi)*"\n"  ## Write the number, the speed, then the eigenvalue
-		freq*="{$j} $(the_list[i].vpt) "*@sprintf("%.12e ",omegan/2/pi)*@sprintf("%.12e ",zeta)*@sprintf("%.12e ",tau)*@sprintf("%.12e ",lambda)*"\n"  ## Write nat freq, etc.
+		println(eigen_f,"{",j,"} ",the_list[i].vpt," ",realpt," ",imagpt," ",realpt/2/pi," ",imagpt/2/pi)  ## Write the number, the speed, then the eigenvalue
+		println(freq_f,"{",j,"} ",the_list[i].vpt," ",omegan/2/pi," ",zeta," ",tau," ",lambda)  ## Write nat freq, etc.
+
+#		eigen*="{$j} $(the_list[i].vpt) "*@sprintf("%.12e ",realpt)*@sprintf("%.12e ",imagpt)*@sprintf("%.12e ",realpt/2/pi)*@sprintf("%.12e ",imagpt/2/pi)*"\n"  ## Write the number, the speed, then the eigenvalue
+#		freq*="{$j} $(the_list[i].vpt) "*@sprintf("%.12e ",omegan/2/pi)*@sprintf("%.12e ",zeta)*@sprintf("%.12e ",tau)*@sprintf("%.12e ",lambda)*"\n"  ## Write nat freq, etc.
 
 		for k=1:length(the_list[i].system.bodys)-1
 			for m=1:6
-				centre*="{$j} {$(the_list[i].system.bodys[k].name)} $(the_list[i].vpt) "*@sprintf("%.12e ",real(results[i].centre[6*k-6+m,j]))*@sprintf("%.12e ",imag(results[i].centre[6*k-6+m,j]))*"\n"  ## Write the number, the speed ...
+				println(centre_f,"{",j,"} {",the_list[i].system.bodys[k].name,"} ",the_list[i].vpt," ",real(results[i].centre[6*k-6+m,j])," ",imag(results[i].centre[6*k-6+m,j]))  ## Write the number, the speed ...
 			end
-			centre*="\n"
+			println(centre_f,"")
 		end
-		centre*="\n"
+		println(centre_f,"")
 	end
-	eigen*="\n"
-	freq*="\n"
+	println(eigen_f,"")
+	println(freq_f,"")
 end
 
 input_names=broadcast(EoM.name,the_list[1].system.actuators)
@@ -96,21 +108,21 @@ output_names=broadcast(EoM.name,the_list[1].system.sensors)
 if(nin*nout>0 && nin*nout<16)
 	for i=1:nvpts
 		if(nvpts==1)
-			sstf*="num outputtoinput gain\n"
+			println(sstf_f,"num outputtoinput gain")
 
 			for j=1:nout
 				for k=1:nin
-					sstf*="{$((j-1)*nin+k)}"
-					sstf*=" {$(output_names[j])/$(input_names[k])} "*@sprintf("%.12e ",results[1].ss_resp[j,k])*"\n"
+					print(sstf_f,"{",(j-1)*nin+k,"} ")
+					println(sstf_f,"{",output_names[j],"/",input_names[k],"} ",results[1].ss_resp[j,k])
 				end
 			end
 		else
 			## Each row starts with vpoint, followed by first column, written as a row, then next column, as a row
-			sstf*="$(the_list[i].vpt) "
+			print(sstf_f,the_list[i].vpt," ")
 			for k in reshape(results[i].ss_resp[:,:],1,nin*nout)
-				sstf*=@sprintf("%.12e ",k)
+				print(sstf_f,k," ")
 			end
-			sstf*="\n"
+			println(sstf_f,"")
 		end
 
 		phs=angle.(results[i].freq_resp)  ## Search for where angle changes by almost 1 rotation
@@ -122,50 +134,35 @@ if(nin*nout>0 && nin*nout<16)
 
 		for j=1:length(results[i].w) ## Loop over frequency range
 			## Each row starts with freq in Hz, then speed
-			bode*=@sprintf("%.12e ",results[i].w[j]/2/pi)*"$(the_list[i].vpt) "
+			print(bode_f,results[i].w[j]/2/pi," ",the_list[i].vpt," ")
 			## Followed by first mag column, written as a row, then next column, as a row
 			for k in reshape(20*log10.(abs.(results[i].freq_resp[:,:,j])),1,nin*nout)
-				bode*=@sprintf("%.12e ",k)
+				print(bode_f,k," ")
 			end
 			for k in reshape(180/pi*phs[:,:,j],1,nin*nout)
-				bode*=@sprintf("%.12e ",k)  ## Followed by first phase column, written as a row, then next column, as a row
+				print(bode_f,k," ")  ## Followed by first phase column, written as a row, then next column, as a row
 			end
-			bode*="\n"
+			println(bode_f,"")
 		end
-		bode*="\n"
+		println(bode_f,"")
 # #		strs.zeros=[strs.zeros sprintf('%4.12e ',real(result{i}.math.zros),imag(result{i}.math.zros))];
 
 		for j=1:length(results[i].hsv)
-			hsv*="{$j} $(the_list[i].vpt) $(results[i].hsv[j])\n"  ## Write the vpoint (e.g. speed), then the hankel_sv
+			println(hsv_f,"{",j,"} ",the_list[i].vpt," ",results[i].hsv[j])  ## Write the vpoint (e.g. speed), then the hankel_sv
 		end
-		hsv*="\n"
+		println(hsv_f,"")
 	end
 end
 
-preload,defln=load_defln(the_list[1].system)
-bodydata,pointdata,stiffnessdata=syst_props(the_list[1].system)
+close(bode_f)
+close(sstf_f)
+close(eigen_f)
+close(freq_f)
+close(centre_f)
+close(hsv_f)
 
-data_out=[bodydata pointdata stiffnessdata]
-file_name=["bodydata.out" "pointdata.out" "stiffnessdata.out"]
-
-dir_output=setup(dir_raw)
-
-for i=1:length(data_out)
-	out=joinpath(dir_output,file_name[i])
-	open(out,"w") do file
-		write(file,data_out[i])
-	end
-end
-
-data_out=[eigen freq centre bode sstf hsv preload defln]
-file_name=["eigen.out" "freq.out" "centre.out" "bode.out" "sstf.out" "hsv.out" "preload.out" "defln.out"]
-
-for i=1:length(data_out)
-	out=joinpath(dir_output,file_name[i])
-	open(out,"w") do file
-		write(file,data_out[i])
-	end
-end
+load_defln(the_list[1].system,dir_output)
+syst_props(the_list[1].system,dir_output)
 
 str="list_in=\""
 for i in input_names

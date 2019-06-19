@@ -5,7 +5,7 @@ module EoM
 using LinearAlgebra
 using Dates
 using DelimitedFiles
-using Printf
+#using Printf
 
 export build_examples
 export run_eom
