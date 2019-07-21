@@ -10,6 +10,7 @@ using DelimitedFiles
 export build_examples
 export run_eom
 export analyze
+export full_ss
 export write_output
 
 
