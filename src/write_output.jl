@@ -1,4 +1,4 @@
-function write_output(the_list,eoms,results;verbose=false,dir_raw="unformatted")
+function write_output(the_list,eoms,results;verbose=false,dir_raw="unformatted",dir_time="")
 ## Copyright (C) 2017, Bruce Minaker
 ## write_output.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@ function write_output(the_list,eoms,results;verbose=false,dir_raw="unformatted")
 ##--------------------------------------------------------------------
 
 verbose && println("Writing output...")
-dir_output=setup(dir_raw)
+dir_output=setup(dir_raw,dir_time)
 
 cmplx=0  ## Creates variable for number of oscillatory modes
 dmpd=0  ## Creates variable for number of non-oscillatory modes

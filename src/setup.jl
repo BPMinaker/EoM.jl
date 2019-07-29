@@ -1,4 +1,4 @@
-function setup(dir_raw)
+function setup(dir_raw,dir_time)
 
 ## Copyright (C) 2017, Bruce Minaker
 ## setup.jl is free software; you can redistribute it and/or modify it
@@ -25,7 +25,11 @@ if(~isdir(dir))  ## If no dated output folder exists
 	mkdir(dir)  ## Create new empty dated output folder
 end
 
-tmstr=Dates.format(now(),"HH-MM-SS-s")
+if length(dir_time)==0
+	tmstr=Dates.format(now(),"HH-MM-SS-s")
+else
+	tmstr=dir_time
+end
 dir_output=joinpath(dir,tmstr)
 mkdir(dir_output)  ## Create new empty timed output folder
 
