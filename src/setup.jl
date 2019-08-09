@@ -31,7 +31,11 @@ else
 	tmstr=dir_time
 end
 dir_output=joinpath(dir,tmstr)
-mkdir(dir_output)  ## Create new empty timed output folder
+if(~isdir(dir_output))
+	mkdir(dir_output)  ## Create new empty timed output folder
+else
+	println("Warning! Reusing exisiting output folder!")
+end
 
 dir=joinpath(dir_output,dir_raw)
 if(~isdir(dir))  ## If no timed output folder exists
