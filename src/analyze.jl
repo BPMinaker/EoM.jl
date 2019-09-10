@@ -1,4 +1,4 @@
-function analyze(dss_eqns;verbose=false)
+function analyze(dss_eqns;jordan=false,verbose=false)
 ## Copyright (C) 2017, Bruce Minaker
 ## analyze.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -21,27 +21,41 @@ upper=zeros(nvpts)
 
 wpts=500
 (wpts*nvpts>2500) && (wpts=Int(round(2500/nvpts)))
-js=false
 
 for i=1:nvpts
-#	println(i)
-	result[i]=analysis()
 
+	result[i]=analysis()
 	result[i].ss_eqns=dss2ss(dss_eqns[i],verbose && i<2)  ## Reduce to standard form
 
-	try
-		result[i].jordan=minreal_jordan(result[i].ss_eqns,verbose && i<2)  ## Reduce to minimal Jordan form
-		js=true
-	catch
-		println("Trouble with Jordan form")
-		js=false
+	if jordan
+		try
+			result[i].jordan=minreal_jordan(result[i].ss_eqns,verbose && i<2)  ## Reduce to minimal Jordan form
+			js=true
+		catch
+			println("Trouble with Jordan form")
+			js=false
+		end
 	end
 
 	F=eigen(dss_eqns[i].A,dss_eqns[i].E)  ## Find the eigen
 #	println(F.values)
-
-	result[i].e_val=F.values[isfinite.(F.values)]  ## Discard modes with Inf or Nan vals
 	result[i].e_vect=F.vectors[:,isfinite.(F.values)]
+
+	F=eigen(result[i].ss_eqns.A)
+	result[i].e_val=F.values[isfinite.(F.values)]  ## Discard modes with Inf or Nan vals
+	result[i].omega_n=abs.(result[i].e_val)/2/pi
+	result[i].zeta=-real.(result[i].e_val)./abs.(result[i].e_val)
+	result[i].tau=-1.0./real.(result[i].e_val)
+	result[i].lambda=abs.(2*pi./imag.(result[i].e_val))
+
+	idx=abs.(real.(result[i].e_val)).<1e-10
+	result[i].tau[idx].=Inf
+	result[i].zeta[idx].=0
+
+	idx=abs.(imag.(result[i].e_val)).<1e-10
+	result[i].lambda[idx].=NaN
+	result[i].omega_n[idx].=NaN
+	result[i].zeta[idx].=NaN
 
 	t=abs.(result[i].e_val)
 	lower[i]=minimum(t[t.>1e-6])
@@ -49,33 +63,33 @@ for i=1:nvpts
 end
 
 low=floor(log10(0.5*minimum(lower)/2/pi))
-(low<-2) && (low=-2)
+(low < -2) && (low=-2)
 high=ceil(log10(2.0*maximum(upper)/2/pi))
 w=2*pi*(10.0.^range(low,stop=high,length=wpts))
 
 for i=1:nvpts
-#	println(i)
+
 	result[i].w=w
 	nin=size(result[i].ss_eqns.B,2)
 	nout=size(result[i].ss_eqns.C,1)
-#	nj=size(result[i].jordan.A,1)
 
 	result[i].freq_resp=zeros(nout,nin,length(w))
 
-	if js
-		A=result[i].jordan.A
-		B=result[i].jordan.B
-		C=result[i].jordan.C
-		D=result[i].jordan.D
-	else
-		A=result[i].ss_eqns.A
-		B=result[i].ss_eqns.B
-		C=result[i].ss_eqns.C
-		D=result[i].ss_eqns.D
-	end
+	A=result[i].ss_eqns.A
+	B=result[i].ss_eqns.B
+	C=result[i].ss_eqns.C
+	D=result[i].ss_eqns.D
 
+	val,vec=eigen(A)
 	for j=1:wpts
-		result[i].freq_resp[:,:,j]=C*((I*w[j]im-A)\B)+D
+		# result[i].freq_resp[:,:,j]=C*((I*w[j]im-A)\B)+D
+		detA=prod(val.-w[j]im)
+		#detA=det(I*w[j]im-A)
+		for m=1:nin
+			for n=1:nout
+				result[i].freq_resp[n,m,j]=(det(I*w[j]im-A+B[:,m]*C[n,:]')-detA)/detA+D[n,m]
+			end
+		end
 	end
 
 	try

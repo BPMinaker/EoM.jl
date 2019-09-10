@@ -4,7 +4,7 @@ verbose && println("System is of dimension ",size(dss_eqns.A),".")
 verbose && println("Converting from descriptor form to standard state space...")
 
 Q,S,P=svd(dss_eqns.E)  ##Q'*E*P should = S
-#println(S)
+
 S=S[S.>(maximum(size(dss_eqns.E))*eps(maximum(S)))]
 n=length(S)
 Sinv=diagm(0=>1.0 ./S)
@@ -24,18 +24,6 @@ B2=Btilde[n+1:end,:]
 C1=Ctilde[:,1:n]
 C2=Ctilde[:,n+1:end]
 
-# println("det ",det(A22))
-# println("rank ",rank(A22))
-# println("size ",size(A22))
-
-#A22i=pinv(A22)
-#println(A22i)
-
-#A=Sinv*(A11-A12*A22i*A21)
-#B=Sinv*(B1-A12*A22i*B2)
-#C=C1-C2*A22i*A21
-#D=dss_eqns.D-C2*A22i*B2
-
 A221=A22\A21
 A22B=A22\B2
 
@@ -44,16 +32,37 @@ B=Sinv*(B1-A12*A22B)
 C=C1-C2*A221
 D=dss_eqns.D-C2*A22B
 
-b=norm(B)
-c=norm(C)
+# b=norm(B)
+# c=norm(C)
+#
+# B*=(c/b)^0.5
+# C*=(b/c)^0.5
 
-B*=(c/b)^0.5
-C*=(b/c)^0.5
+rows=find_states(A,B)
+cols=find_states(A',C')
+states=rows .& cols
+idx=findall(states)
 
-ss_eqns=ss_data(A,B,C,D)
+ss_eqns=ss_data(A[idx,idx],B[idx,:],C[:,idx],D)
 
 verbose && println("System is now of dimension ",(size(ss_eqns.A)),".")
 
 ss_eqns
+
+end
+
+function find_states(A,B)
+
+sA=abs.(A) .> 1e-9 ## find entries in A that are significant
+idx=vec(any(abs.(B) .> 1e-9,dims=2))  ## find excitable rows of B
+didx=idx
+while any(didx)
+	sidx=vec(any(sA[:,findall(didx)],dims=2))  ## find rows of A that are secondary excitable
+	didx=sidx.&.~idx  ## isolate only the new entries
+	idx=idx.|sidx  ## add new entries to list
+end
+
+
+return idx
 
 end

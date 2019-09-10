@@ -16,13 +16,15 @@ function find_bodynum!(items,names,verb=false) ## Takes the key, i.e. springs an
 verb && println("Looking for connection info...")
 
 for i in items
-	temp1=findnext(i.body[1].==names,1)
-	temp2=findnext(i.body[2].==names,1)
-	if temp1!=nothing && temp2!=nothing
-		i.body_number[1]=temp1
-		i.body_number[2]=temp2
-	else
-		error("Item $(i.name) is attached to missing body!")
+	if !isa(i,body) && !isa(i,load)
+		temp1=findnext(i.body[1].==names,1)
+		temp2=findnext(i.body[2].==names,1)
+		if temp1!=nothing && temp2!=nothing
+			i.body_number[1]=temp1
+			i.body_number[2]=temp2
+		else
+			error("Item $(i.name) is attached to missing body!")
+		end
 	end
 end
 

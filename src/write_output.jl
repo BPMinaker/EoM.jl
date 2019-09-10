@@ -68,27 +68,8 @@ for i=1:nvpts
 		realpt=real(results[i].e_val[j])
 		imagpt=imag(results[i].e_val[j])
 
-		omegan=abs(results[i].e_val[j])
-		zeta=-realpt/omegan
-		lambda=2*pi/abs(imagpt)
-		tau=-1/realpt
-
-		if abs(realpt)<1e-10
-			tau=Inf
-			zeta=0
-		end
-
-		if abs(imagpt)<1e-10
-			lambda=NaN
-			omegan=NaN
-			zeta=NaN
-		end
-
 		println(eigen_f,"{",j,"} ",the_list[i].vpt," ",realpt," ",imagpt," ",realpt/2/pi," ",imagpt/2/pi)  ## Write the number, the speed, then the eigenvalue
-		println(freq_f,"{",j,"} ",the_list[i].vpt," ",omegan/2/pi," ",zeta," ",tau," ",lambda)  ## Write nat freq, etc.
-
-#		eigen*="{$j} $(the_list[i].vpt) "*@sprintf("%.12e ",realpt)*@sprintf("%.12e ",imagpt)*@sprintf("%.12e ",realpt/2/pi)*@sprintf("%.12e ",imagpt/2/pi)*"\n"  ## Write the number, the speed, then the eigenvalue
-#		freq*="{$j} $(the_list[i].vpt) "*@sprintf("%.12e ",omegan/2/pi)*@sprintf("%.12e ",zeta)*@sprintf("%.12e ",tau)*@sprintf("%.12e ",lambda)*"\n"  ## Write nat freq, etc.
+		println(freq_f,"{",j,"} ",the_list[i].vpt," ",results[i].omega_n[j]," ",results[i].zeta[j]," ",results[i].tau[j]," ",results[i].lambda[j])  ## Write nat freq, etc.
 
 		for k=1:length(the_list[i].system.bodys)-1
 			for m=1:6
@@ -119,7 +100,7 @@ if(nin*nout>0 && nin*nout<16)
 		else
 			## Each row starts with vpoint, followed by first column, written as a row, then next column, as a row
 			print(sstf_f,the_list[i].vpt," ")
-			for k in reshape(results[i].ss_resp[:,:],1,nin*nout)
+			for k in vec(results[i].ss_resp[:,:])
 				print(sstf_f,k," ")
 			end
 			println(sstf_f,"")
@@ -136,10 +117,10 @@ if(nin*nout>0 && nin*nout<16)
 			## Each row starts with freq in Hz, then speed
 			print(bode_f,results[i].w[j]/2/pi," ",the_list[i].vpt," ")
 			## Followed by first mag column, written as a row, then next column, as a row
-			for k in reshape(20*log10.(abs.(results[i].freq_resp[:,:,j])),1,nin*nout)
+			for k in vec(20*log10.(abs.(results[i].freq_resp[:,:,j])))
 				print(bode_f,k," ")
 			end
-			for k in reshape(180/pi*phs[:,:,j],1,nin*nout)
+			for k in vec(180/pi*phs[:,:,j])
 				print(bode_f,k," ")  ## Followed by first phase column, written as a row, then next column, as a row
 			end
 			println(bode_f,"")
@@ -278,6 +259,26 @@ function write_mtx_ptrn(file_name,mtx)
 	end
 end
 
+
+#
+# omegan=abs(results[i].e_val[j])
+# zeta=-realpt/omegan
+# lambda=2*pi/abs(imagpt)
+# tau=-1/realpt
+#
+# if abs(realpt)<1e-10
+# 	tau=Inf
+# 	zeta=0
+# end
+#
+# if abs(imagpt)<1e-10
+# 	lambda=NaN
+# 	omegan=NaN
+# 	zeta=NaN
+# end
+
+#		eigen*="{$j} $(the_list[i].vpt) "*@sprintf("%.12e ",realpt)*@sprintf("%.12e ",imagpt)*@sprintf("%.12e ",realpt/2/pi)*@sprintf("%.12e ",imagpt/2/pi)*"\n"  ## Write the number, the speed, then the eigenvalue
+#		freq*="{$j} $(the_list[i].vpt) "*@sprintf("%.12e ",omegan/2/pi)*@sprintf("%.12e ",zeta)*@sprintf("%.12e ",tau)*@sprintf("%.12e ",lambda)*"\n"  ## Write nat freq, etc.
 
 # writedlm_ptrn(eoms[1].Am,joinpath(dir_output,dir_raw,"Amp.out"))
 # writedlm_ptrn(eoms[1].Bm,joinpath(dir_output,dir_raw,"Bmp.out"))

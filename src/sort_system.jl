@@ -16,76 +16,52 @@ function sort_system!(the_system,verbose=false)
 
 verbose && println("Sorting system...")
 
-## First, ground is added to the system, because it is not in the user-defined system
-ground=body("ground")
-push!(the_system.item,ground)  ## Ground body is added last (important!)
 
-type=[body,load,link,spring,rigid_point,flex_point,nh_point,beam,sensor,actuator]
-types=[:bodys,:loads,:links,:springs,:rigid_points,:flex_points,:nh_points,:beams,:sensors,:actuators]
+## Fill in some extra info in each item
+item_init!(the_system.item)
 
-for i=1:length(types)
-	setproperty!(the_system,types[i],the_system.item[broadcast(typeof,the_system.item).==type[i]])
+## Ground is added to the system, because it is not in the user-defined system
+push!(the_system.item,body("ground"))  ## Ground body is added last (important!)
+
+
+## Find the type of each item, and sort into named fields
+for i in the_system.item
+	type=string(typeof(i))*"s"
+	type=replace(type,"EoM."=>"")
+	loc=getproperty(the_system,Symbol(type))
+	push!(loc,i)
 end
 
-names=broadcast(name,the_system.bodys)
-for i=3:length(types)
-	find_bodynum!(getproperty(the_system,types[i]),names)
-end
+## Find the body number from the name
+names=name.(the_system.bodys)
+find_bodynum!(the_system.item,names)
 find_bodyframenum!(the_system.loads,names)
 
-names=broadcast(name,the_system.actuators)
+## Find the actuator number from the name
+names=name.(the_system.actuators)
 find_actnum!(the_system.sensors,names)
 
-locations=broadcast(location,the_system.bodys)
-for i=2:length(types)
-	find_radius!(getproperty(the_system,types[i]),locations)
-end
-
-for i=3:length(types)
-	item_init!(getproperty(the_system,types[i]))
-end
+## Find the radius of each connector
+locations=location.(the_system.bodys)
+find_radius!(the_system.item,locations)
 
 verbose && println("System sorted.")
+
 end  ## Leave
 
 
+#types=[:bodys,:loads,:links,:springs,:rigid_points,:flex_points,:nh_points,:beams,:sensors,:actuators]
+#type=[body,load,link,spring,rigid_point,flex_point,nh_point,beam,sensor,actuator]
+#for i=1:length(types)
+#	setproperty!(the_system,types[i],the_system.item[typeof.(the_system.item).==type[i]])
+#end
 
-
-# the_system.bodys=the_system.item[broadcast(typeof,the_system.item).==body]
-# the_system.links=the_system.item[broadcast(typeof,the_system.item).==link]
-# the_system.springs=the_system.item[broadcast(typeof,the_system.item).==spring]
-# the_system.rigid_points=the_system.item[broadcast(typeof,the_system.item).==rigid_point]
-# the_system.flex_points=the_system.item[broadcast(typeof,the_system.item).==flex_point]
-# the_system.nh_points=the_system.item[broadcast(typeof,the_system.item).==nh_point]
-# the_system.beams=the_system.item[broadcast(typeof,the_system.item).==beam]
-# the_system.loads=the_system.item[broadcast(typeof,the_system.item).==load]
-# the_system.sensors=the_system.item[broadcast(typeof,the_system.item).==sensor]
-# the_system.actuators=the_system.item[broadcast(typeof,the_system.item).==actuator]
-
-# find_bodynum!(the_system.links,names)
-# find_bodynum!(the_system.springs,names)
-# find_bodynum!(the_system.rigid_points,names)
-# find_bodynum!(the_system.flex_points,names)
-# find_bodynum!(the_system.nh_points,names)
-# find_bodynum!(the_system.beams,names)
-# find_bodynum!(the_system.sensors,names)
-# find_bodynum!(the_system.actuators,names)
-
-# find_radius!(the_system.links,locations)
-# find_radius!(the_system.springs,locations)
-# find_radius!(the_system.rigid_points,locations)
-# find_radius!(the_system.flex_points,locations)
-# find_radius!(the_system.nh_points,locations)
-# find_radius!(the_system.beams,locations)
-# find_radius!(the_system.loads,locations)
-# find_radius!(the_system.sensors,locations)
-# find_radius!(the_system.actuators,locations)
-
-# item_init!(the_system.links)
-# item_init!(the_system.springs)
-# item_init!(the_system.rigid_points)
-# item_init!(the_system.flex_points)
-# item_init!(the_system.nh_points)
-# item_init!(the_system.beams)
-# item_init!(the_system.sensors)
-# item_init!(the_system.actuators)
+#for i=3:length(types)
+#	find_bodynum!(getproperty(the_system,types[i]),names)
+#end
+# for i=2:length(types)
+# 	find_radius!(getproperty(the_system,types[i]),locations)
+# end
+#for i=3:length(types)
+#	item_init!(getproperty(the_system,types[i]))
+#end

@@ -5,14 +5,14 @@ module EoM
 using LinearAlgebra
 using Dates
 using DelimitedFiles
-#using Printf
 
 export build_examples
 export run_eom
 export analyze
 export full_ss
 export write_output
-
+export weave_output
+export lsim
 
 export skew
 export mbd_system
@@ -60,16 +60,13 @@ include("full_ss.jl")
 include("dss2ss.jl")
 include("minreal_jordan.jl")
 include("write_output.jl")
+include("weave_output.jl")
 include("load_defln.jl")
 include("syst_props.jl")
 include("mirror.jl")
 include("thin_rod.jl")
+include("lsim.jl")
 
-# fldr=joinpath(dirname(dirname(pathof(EoM))),"examples")
-# xmpls=readdir(fldr)
-# for i in xmpls
-# 	include(joinpath(fldr,i))
-# end
 
 mutable struct eom_data
 	name::String
@@ -183,11 +180,28 @@ struct dss_data
 	phys::Array{Float64,2}
 end
 
+function Base.show(io::IO, obj::dss_data)
+	println(io,"Descriptor state space")
+	println(io,"A: ",obj.A)
+	println(io,"B: ",obj.B)
+	println(io,"C: ",obj.C)
+	println(io,"D: ",obj.D)
+	println(io,"E: ",obj.E)
+end
+
 struct ss_data
 	A::Array{Float64,2}
 	B::Array{Float64,2}
 	C::Array{Float64,2}
 	D::Array{Float64,2}
+end
+
+function Base.show(io::IO, obj::ss_data)
+	println(io,"State space")
+	println(io,"A: ",obj.A)
+	println(io,"B: ",obj.B)
+	println(io,"C: ",obj.C)
+	println(io,"D: ",obj.D)
 end
 
 ss_data()=ss_data(zeros(0,0),zeros(0,0),zeros(0,0),zeros(0,0))
@@ -198,6 +212,10 @@ mutable struct analysis
 	e_vect::Array{Complex{Float64},2}
 	modes::Array{Complex{Float64},2}
 	e_val::Vector{Complex{Float64}}
+	omega_n::Vector{Float64}
+	zeta::Vector{Float64}
+	tau::Vector{Float64}
+	lambda::Vector{Float64}
 	w::Vector{Float64}
 	freq_resp::Array{Complex{Float64},3}
 	ss_resp::Array{Float64,2}
@@ -211,6 +229,10 @@ ss_data(),
 ss_data(),
 zeros(0,0),
 zeros(0,0),
+zeros(0),
+zeros(0),
+zeros(0),
+zeros(0),
 zeros(0),
 zeros(0),
 zeros(0,0,0),

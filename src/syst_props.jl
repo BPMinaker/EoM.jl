@@ -63,7 +63,6 @@ for item in the_system.nh_points
 	else
 		println(point_f,"{} {} {}")
 	end
-	pointdata*="\n"
 	idx+=1
 end
 

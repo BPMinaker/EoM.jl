@@ -11,14 +11,18 @@ list=readdir(src)  ## Get list of examples
 
 for i in list
 	if ~isfile(joinpath(dir,i))
+		verbose && println("Copying ",i)
 		cp(joinpath(src,i),joinpath(dir,i))  ## Copy examples
+	else
+		verbose && println(i," already exists.  Skipping...")
 	end
 end
 
-verbose && println("Including examples...")
-list=readdir(dir)  ## Get list of local example files
-for i in list
-	Base.include(Main,joinpath(dir,i))  ## Include them all
 end
 
-end
+# verbose && println("Including examples...")
+
+# list=readdir(dir)  ## Get list of local example files
+# for i in list
+# 	Base.include(Main,joinpath(dir,i))  ## Include them all
+# end

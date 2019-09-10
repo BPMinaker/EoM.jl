@@ -17,7 +17,7 @@ verb && println("Initializing...")
 for i in items
 
 	## If the item has one node
-	if typeof(i)==rigid_point||typeof(i)==flex_point||typeof(i)==nh_point
+	if isa(i,rigid_point) || isa(i,flex_point) || isa(i,nh_point)
 		temp=norm(i.axis)
 		if temp>0
 			i.unit=i.axis/temp  ## Normalize any non-unit axis vectors
@@ -26,7 +26,7 @@ for i in items
 		if temp>0
 			i.rolling_unit=i.rolling_axis/temp
 		end
-		if typeof(i)==flex_point
+		if isa(i,flex_point)
 			if size(i.d_mtx)==(0,0)
 				i.d_mtx=diagm(0=>[i.damping[1]*ones(i.forces);i.damping[2]*ones(i.moments)])
 			end
@@ -36,16 +36,17 @@ for i in items
 		end
 
 	## If the item has two nodes
-	elseif typeof(i)==link||typeof(i)==spring||typeof(i)==beam||typeof(i)==sensor||typeof(i)==actuator
+	elseif isa(i,link) || isa(i,spring) || isa(i,beam) || isa(i,sensor) || isa(i,actuator)
 		temp=i.location[2]-i.location[1]  ## Tempvec = vector from location1 to location2
 		i.length=norm(temp)  ## New entry 'length' is the magnitude of the vector from location1 to location2
 		if i.length>0
 			i.unit=temp/i.length  ## New entry 'unit' is the unit vector from location1 to location2
 		end
-		if ~(typeof(i)==beam)
+		if ~isa(i,beam)
 			i.forces=Int(~i.twist)
 			i.moments=Int(i.twist)
 		end
+	elseif isa(i,body) || isa(i,load)
 	else
 		println("Something odd happened in initializing items...")
 		## find the normal to the triangle, but use Newell method rather than null()
@@ -55,9 +56,11 @@ for i in items
 		#in(i).unit=[ux;uy;uz]/norm([ux;uy;uz]);
 	end
 
-	i.nu=nullspace(Matrix(i.unit'))  ## Find directions perp to beam axis
-	if ~(round(i.unit'*cross(i.nu[:,1],i.nu[:,2]))==1)  ## Make sure it's right handed
-		i.nu=circshift(i.nu,[0,1]);
+	if !isa(i,body) && !isa(i,load)
+		i.nu=nullspace(Matrix(i.unit'))  ## Find directions perp to beam axis
+		if ~(round(i.unit'*cross(i.nu[:,1],i.nu[:,2]))==1)  ## Make sure it's right handed
+			i.nu=circshift(i.nu,[0,1]);
+		end
 	end
 
 	##i.r=[i.nu i.unit];  ## Build the rotation matrix
@@ -68,31 +71,33 @@ end
 
 for i in items
 
+	if !isa(i,body) && !isa(i,load)
 #	a=i.unit  ## Axis of constraint
 #	b=i.nu  ## Plane of constraint
 
-	if i.forces==3 ## For 3 forces, i.e. ball joint
-		i.b_mtx[1]=[I zeros(3,3)] ##
-	elseif i.forces==2 ## For 2 forces, i.e. cylindrical or pin joint
-		i.b_mtx[1]=[i.nu' zeros(2,3)]
-	elseif i.forces==1 ## For 1 force, i.e. planar
-		i.b_mtx[1]=[i.unit' 0 0 0]
-	elseif i.forces==0 ## For 0 forces
-		i.b_mtx[1]=zeros(0,6)
-	else
-		error("Error.  Item is defined incorrectly.")
-	end
+		if i.forces==3 ## For 3 forces, i.e. ball joint
+			i.b_mtx[1]=[I zeros(3,3)] ##
+		elseif i.forces==2 ## For 2 forces, i.e. cylindrical or pin joint
+			i.b_mtx[1]=[i.nu' zeros(2,3)]
+		elseif i.forces==1 ## For 1 force, i.e. planar
+			i.b_mtx[1]=[i.unit' 0 0 0]
+		elseif i.forces==0 ## For 0 forces
+			i.b_mtx[1]=zeros(0,6)
+		else
+			error("Error.  Item is defined incorrectly.")
+		end
 
-	if i.moments==3 ## For 3 moments, i.e. no rotational degrees of freedom
-		i.b_mtx[2]=[zeros(3,3) I]
-	elseif i.moments==2 ## For 2 moments, i.e. 1 rotational degree of freedom, i.e. Cylindrical joint
-		i.b_mtx[2]=[zeros(2,3) i.nu']
-	elseif i.moments==1 ## For 1 moment, i.e. 2 rotational degrees of freedom, i.e. U-joint
-		i.b_mtx[2]=[0 0 0 i.unit']
-	elseif i.moments==0 ## For 0 moments, i.e. sherical joint
-		i.b_mtx[2]=zeros(0,6)
-	else
-		error("Error.  Item is defined incorrectly.")
+		if i.moments==3 ## For 3 moments, i.e. no rotational degrees of freedom
+			i.b_mtx[2]=[zeros(3,3) I]
+		elseif i.moments==2 ## For 2 moments, i.e. 1 rotational degree of freedom, i.e. Cylindrical joint
+			i.b_mtx[2]=[zeros(2,3) i.nu']
+		elseif i.moments==1 ## For 1 moment, i.e. 2 rotational degrees of freedom, i.e. U-joint
+			i.b_mtx[2]=[0 0 0 i.unit']
+		elseif i.moments==0 ## For 0 moments, i.e. sherical joint
+			i.b_mtx[2]=zeros(0,6)
+		else
+			error("Error.  Item is defined incorrectly.")
+		end
 	end
 end
 
