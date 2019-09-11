@@ -24,14 +24,15 @@ nout=size(results[1].ss_eqns.C,1)
 nvpts=length(results)
 
 ## Initialize output
-dir=joinpath(pwd(),folder)
-if ~isdir(dir)  ## If no output folder exists
-	mkdir(dir)  ## Create new empty output folder
-end
 
 dir=joinpath(pwd(),"figures")
 if ~isdir(dir)
 	mkdir(dir)
+end
+
+dir=joinpath(pwd(),folder)
+if ~isdir(dir)  ## If no output folder exists
+	mkdir(dir)  ## Create new empty output folder
 end
 
 eigen_f=open(joinpath(dir,"eigen.out"),"w")
