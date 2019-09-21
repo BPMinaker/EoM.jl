@@ -1,4 +1,4 @@
-function analyze(dss_eqns;jordan=false,verbose=false)
+function analyze(dss_eqns;verbose=false)
 ## Copyright (C) 2017, Bruce Minaker
 ## analyze.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -27,22 +27,13 @@ for i=1:nvpts
 	result[i]=analysis()
 	result[i].ss_eqns=dss2ss(dss_eqns[i],verbose && i<2)  ## Reduce to standard form
 
-	if jordan
-		try
-			result[i].jordan=minreal_jordan(result[i].ss_eqns,verbose && i<2)  ## Reduce to minimal Jordan form
-			js=true
-		catch
-			println("Trouble with Jordan form")
-			js=false
-		end
-	end
-
 	F=eigen(dss_eqns[i].A,dss_eqns[i].E)  ## Find the eigen
 #	println(F.values)
 	result[i].e_vect=F.vectors[:,isfinite.(F.values)]
 
 	F=eigen(result[i].ss_eqns.A)
-	result[i].e_val=F.values[isfinite.(F.values)]  ## Discard modes with Inf or Nan vals
+	result[i].e_val=F.values
+	#[isfinite.(F.values)]  ## Discard modes with Inf or Nan vals
 	result[i].omega_n=abs.(result[i].e_val)/2/pi
 	result[i].zeta=-real.(result[i].e_val)./abs.(result[i].e_val)
 	result[i].tau=-1.0./real.(result[i].e_val)
@@ -80,10 +71,10 @@ for i=1:nvpts
 	C=result[i].ss_eqns.C
 	D=result[i].ss_eqns.D
 
-	val,vec=eigen(A)
+	#val,vec=eigen(A)
 	for j=1:wpts
 		# result[i].freq_resp[:,:,j]=C*((I*w[j]im-A)\B)+D
-		detA=prod(val.-w[j]im)
+		detA=prod(result[i].e_val.-w[j]im)
 		#detA=det(I*w[j]im-A)
 		for m=1:nin
 			for n=1:nout

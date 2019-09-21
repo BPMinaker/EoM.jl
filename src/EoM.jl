@@ -58,7 +58,6 @@ include("assemble_eom.jl")
 include("analyze.jl")
 include("full_ss.jl")
 include("dss2ss.jl")
-include("minreal_jordan.jl")
 include("write_output.jl")
 include("weave_output.jl")
 include("load_defln.jl")
@@ -208,7 +207,6 @@ ss_data()=ss_data(zeros(0,0),zeros(0,0),zeros(0,0),zeros(0,0))
 
 mutable struct analysis
 	ss_eqns::ss_data
-	jordan::ss_data
 	e_vect::Array{Complex{Float64},2}
 	modes::Array{Complex{Float64},2}
 	e_val::Vector{Complex{Float64}}
@@ -226,7 +224,6 @@ end
 
 analysis()=analysis(
 ss_data(),
-ss_data(),
 zeros(0,0),
 zeros(0,0),
 zeros(0),
@@ -242,55 +239,3 @@ zeros(0),
 zeros(0,0))
 
 end  # end module
-
-
-
-# function analysis(
-# ss_eqns=ss_data(),
-# jordan=ss_data(),
-# e_vect=zeros(0,0),
-# modes=zeros(0,0),
-# e_val=zeros(0),
-# w=zeros(0),
-# freq_resp=zeros(0,0,0),
-# ss_resp=zeros(0,0),
-# zero_val=zeros(0),
-# hsv=zeros(0),
-# centre=zeros(0,0))
-# 	new(ss_eqns,jordan,e_vect,modes,e_val,w,freq_resp,ss_resp,zero_val,hsv,centre)
-# end
-
-# function ss_data(
-# 	A=Array{Float64}(undef,0,0),
-# 	B=Array{Float64}(undef,0,0),
-# 	C=Array{Float64}(undef,0,0),
-# 	D=Array{Float64}(undef,0,0))
-# 		new(A,B,C,D)
-# end
-
-# function dss_data(
-# 	A=Array{Float64}(undef,0,0),
-# 	B=Array{Float64}(undef,0,0),
-# 	C=Array{Float64}(undef,0,0),
-# 	D=Array{Float64}(undef,0,0),
-# 	E=Array{Float64}(undef,0,0),
-# 	phys=Array{Float64}(undef,0,0))
-# 		new(A,B,C,D,E,phys)
-# end
-
-# function mbd_system(
-# name="Unnamed System",
-# vpt=0,
-# item=Vector{Any}(undef,0),
-# bodys=Vector{body}(undef,0),
-# links=Vector{link}(undef,0),
-# springs=Vector{spring}(undef,0),
-# rigid_points=Vector{rigid_point}(undef,0),
-# flex_points=Vector{flex_point}(undef,0),
-# nh_points=Vector{nh_point}(undef,0),
-# beams=Vector{beam}(undef,0),
-# loads=Vector{load}(undef,0),
-# sensors=Vector{sensor}(undef,0),
-# actuators=Vector{actuator}(undef,0))
-# 	new(name,vpt,item,bodys,links,springs,rigid_points,flex_points,nh_points,beams,loads,sensors,actuators)
-# end
