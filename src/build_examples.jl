@@ -2,8 +2,10 @@ function build_examples(;dir_examples="examples",verbose=false)
 
 dir=joinpath(pwd(),dir_examples)
 if ~isdir(dir)  ## If no examples folder exists
-	verbose && println("Building examples folder...")
+	println("Building examples folder...")
 	mkdir(dir)  ## Create new local examples folder
+else
+	println("Examples folder already exists...")
 end
 
 src=joinpath(dirname(dirname(pathof(EoM))),dir_examples)  ## Get name of examples folder

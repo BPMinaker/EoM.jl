@@ -19,6 +19,8 @@ export mbd_system
 export thin_rod
 export mirror!
 
+export e_val
+
 fldr=joinpath(dirname(pathof(EoM)),"types")
 types=readdir(fldr)
 for i in types
@@ -68,9 +70,6 @@ include("lsim.jl")
 
 
 mutable struct eom_data
-	name::String
-	input_names::Vector{String}
-	output_names::Vector{String}
 	mass::Array{Float64,2}  ## mass matrix from bodies
 	inertia::Array{Float64,2}  ## mass matrix from springs
 	damping::Array{Float64,2}  ## damping matrix from dampers
@@ -100,9 +99,6 @@ mutable struct eom_data
 end
 
 eom_data()=eom_data(
-"",
-[],
-[],
 zeros(0,0),
 zeros(0,0),
 zeros(0,0),
@@ -170,6 +166,10 @@ mbd_eom()=mbd_eom(
 mbd_system(),
 eom_data())
 
+function vpt(obj::mbd_eom)
+	obj.vpt
+end
+
 struct dss_data
 	A::Array{Float64,2}
 	B::Array{Float64,2}
@@ -207,7 +207,7 @@ ss_data()=ss_data(zeros(0,0),zeros(0,0),zeros(0,0),zeros(0,0))
 
 mutable struct analysis
 	ss_eqns::ss_data
-	e_vect::Array{Complex{Float64},2}
+	mode_vals::Vector{Complex{Float64}}
 	modes::Array{Complex{Float64},2}
 	e_val::Vector{Complex{Float64}}
 	omega_n::Vector{Float64}
@@ -224,7 +224,7 @@ end
 
 analysis()=analysis(
 ss_data(),
-zeros(0,0),
+zeros(0),
 zeros(0,0),
 zeros(0),
 zeros(0),
@@ -237,5 +237,9 @@ zeros(0,0),
 zeros(0),
 zeros(0),
 zeros(0,0))
+
+function e_val(obj::analysis)
+	obj.e_val
+end
 
 end  # end module

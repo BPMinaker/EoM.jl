@@ -132,7 +132,7 @@ item.axis=[1,0,0]
 push!(the_system.item,item)
 
 
-item=sensor("\$\\phi\$")   ## Roll angle sensor
+item=sensor("\\phi")   ## Roll angle sensor
 item.body[1]="frame"
 item.body[2]="ground"
 item.location[1]=[0.3,0,-0.9]
@@ -143,7 +143,7 @@ push!(the_system.item,item)
 location1=[1.1-0.8*sin(rake),0,-0.8*cos(rake)]
 location2=location1+0.25*[sin(rake),0,cos(rake)]
 
-item=sensor("\$\\delta\$")
+item=sensor("\\delta")
 item.body[1]="frame"
 item.body[2]="fork"
 item.location[1]=location1
@@ -151,7 +151,7 @@ item.location[2]=location2
 item.twist=1
 push!(the_system.item,item)
 
-item=actuator("\$m_{\\delta}\$")  ## The steer torque is the input
+item=actuator("m_{\\delta}")  ## The steer torque is the input
 item.body[1]="frame"
 item.body[2]="fork"
 item.location[1]=location1
@@ -159,7 +159,7 @@ item.location[2]=location2
 item.twist=1
 push!(the_system.item,item)
 
-# item=sensor("\$\\psi\$")   ## Yaw angle sensor
+# item=sensor("\\psi")   ## Yaw angle sensor
 # item.body[1]="frame"
 # item.body[2]="ground"
 # item.location[1]=[0.3,0,-0.9]

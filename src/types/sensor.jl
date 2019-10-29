@@ -21,10 +21,27 @@ mutable struct sensor
 	unit::Vector{Float64}
 	nu::Array{Float64,2}
 	b_mtx::Vector{Array{Float64,2}}
-
 end
 
-sensor(str::String)=sensor(str,"sensor",[zeros(3),zeros(3)],["ground","ground"],zeros(2),0,0,false,[zeros(3),zeros(3)],1,1,1,"ground",0,0,zeros(3),zeros(3,2),[zeros(2,2),zeros(2,2)])
+sensor(str::String)=sensor(
+str,
+"sensor",
+[zeros(3),zeros(3)],
+["ground","ground"],
+zeros(2),
+0,
+0,
+false,
+[zeros(3),zeros(3)],
+1,
+1,
+1,
+"ground",
+0,
+0,
+zeros(3),
+zeros(3,2),
+[zeros(2,2),zeros(2,2)])
 
 function Base.show(io::IO, obj::sensor)
 	println(io,"Sensor:")
@@ -52,25 +69,3 @@ end
 function num_fm(obj::sensor)
 	obj.forces+obj.moments
 end
-
-# function sensor(
-# name,
-# group="sensor",
-# location=[zeros(3),zeros(3)],
-# body=["ground","ground"],
-# body_number=zeros(2),
-# forces=0,
-# moments=0,
-# twist=false,
-# radius=[zeros(3),zeros(3)],
-# gain=1,
-# order=1,
-# frame=1,
-# actuator="ground",
-# actuator_number=0,
-# length=0,
-# unit=zeros(3),
-# nu=zeros(3,2),
-# b_mtx=[zeros(2,2),zeros(2,2)])
-# 	new(name,group,location,body,body_number,forces,moments,twist,radius,gain,order,frame,actuator,actuator_number,length,unit,nu,b_mtx)
-# end

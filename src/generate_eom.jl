@@ -18,7 +18,6 @@ function generate_eom(the_system,verbose=false)
 verbose && println("Okay, got the system info, building equations of motion...")
 
 data=eom_data()
-data.name=the_system.name
 
 ## Build the mass matrix
 data.mass=mass(the_system,verbose)

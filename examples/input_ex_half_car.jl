@@ -144,7 +144,7 @@ push!(the_system.item,item)
 
 
 ## Measure the bounce and pitch
-item=sensor("\$z_\\text{G}\$")
+item=sensor("z_\\text{G}")
 item.body[1]="chassis"
 item.body[2]="ground"
 item.location[1]=[0,0,0.25]
@@ -152,7 +152,7 @@ item.location[2]=[0,0,0]
 push!(the_system.item,item)
 
 
-item=sensor("\$\\theta\$")
+item=sensor("\\theta")
 item.body[1]="chassis"
 item.body[2]="ground"
 item.location[1]=[0,0,0.25]
@@ -163,7 +163,7 @@ push!(the_system.item,item)
 
 
 ## Add measure between ground and unsprung mass
-item=sensor("\$z_2-z_0\$")
+item=sensor("z_2-z_0")
 item.body[1]="front unsprung"
 item.actuator="front bump"
 item.location[1]=[0.1,0,0.3]

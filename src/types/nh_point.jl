@@ -18,7 +18,21 @@ mutable struct nh_point
 
 end
 
-nh_point(str::String)=nh_point(str,"nh_point",zeros(3),["ground","ground"],zeros(2),0,0,zeros(3),zeros(3),[zeros(3),zeros(3)],zeros(3),zeros(3),zeros(3,2),[zeros(2,2),zeros(2,2)])
+nh_point(str::String)=nh_point(
+str,
+"nh_point",
+zeros(3),
+["ground","ground"],
+zeros(2),
+0,
+0,
+zeros(3),
+zeros(3),
+[zeros(3),zeros(3)],
+zeros(3),
+zeros(3),
+zeros(3,2),
+[zeros(2,2),zeros(2,2)])
 
 function Base.show(io::IO, obj::nh_point)
 	println(io,"Nonholonomic point:")
@@ -27,24 +41,10 @@ function Base.show(io::IO, obj::nh_point)
 	println(io,"Bodies: ",obj.body)
 end
 
+function name(obj::nh_point)
+	obj.name
+end
+
 function num_fm(obj::nh_point)
 	obj.forces+obj.moments
 end
-
-# function nh_point(
-# name,
-# group="nh_point",
-# location=zeros(3),
-# body=["ground","ground"],
-# body_number=zeros(2),
-# forces=0,
-# moments=0,
-# axis=zeros(3),
-# rolling_axis=zeros(3),
-# radius=[zeros(3),zeros(3)],
-# unit=zeros(3),
-# rolling_unit=zeros(3),
-# nu=zeros(3,2),
-# b_mtx=[zeros(2,2),zeros(2,2)])
-# 	new(name,group,location,body,body_number,forces,moments,axis,rolling_axis,radius,unit,rolling_unit,nu,b_mtx)
-# end

@@ -11,10 +11,19 @@ mutable struct load
 	radius::Vector{Float64}
 	frame::String
 	frame_number::Int
-
 end
 
-load(str::String)=load(str,"load",zeros(3),"ground",0,zeros(3),zeros(3),zeros(3),"ground",0)
+load(str::String)=load(
+str,
+"load",
+zeros(3),
+"ground",
+0,
+zeros(3),
+zeros(3),
+zeros(3),
+"ground",
+0)
 
 function Base.show(io::IO, obj::load)
 	println(io,"Load:")
@@ -23,16 +32,6 @@ function Base.show(io::IO, obj::load)
 	println(io,"Body: ",obj.body)
 end
 
-# function load(
-# name,
-# group="load",
-# location=[0,0,0],
-# body="ground",
-# body_number=0,
-# force=[0,0,0],
-# moment=[0,0,0],
-# radius=[0,0,0],
-# frame="ground",
-# frame_number=0)
-# 	new(name,group,location,body,body_number,force,moment,radius,frame,frame_number)
-# end
+function name(obj::load)
+	obj.name
+end

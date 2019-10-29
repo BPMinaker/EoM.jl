@@ -83,8 +83,8 @@ for i=1:nvpts
 	println(freq_f,"")
 end
 
-input_names=broadcast(EoM.name,the_list[1].system.actuators)
-output_names=broadcast(EoM.name,the_list[1].system.sensors)
+input_names=EoM.name.(the_list[1].system.actuators)
+output_names=EoM.name.(the_list[1].system.sensors)
 
 if(nin*nout>0 && nin*nout<16)
 	for i=1:nvpts
@@ -94,7 +94,7 @@ if(nin*nout>0 && nin*nout<16)
 			for j=1:nout
 				for k=1:nin
 					print(sstf_f,"{",(j-1)*nin+k,"} ")
-					println(sstf_f,"{",output_names[j],"/",input_names[k],"} ",results[1].ss_resp[j,k])
+					println(sstf_f,"{\$",output_names[j],"/",input_names[k],"\$} ",results[1].ss_resp[j,k])
 				end
 			end
 		else
@@ -106,10 +106,12 @@ if(nin*nout>0 && nin*nout<16)
 			println(sstf_f,"")
 		end
 
+		mag=abs.(results[i].freq_resp).+eps(1.0)
 		phs=angle.(results[i].freq_resp)  ## Search for where angle changes by almost 1 rotation
 		for u=1:nout
 			for v=1:nin
 				phs[u,v,findall(abs.(diff(phs[u,v,:])).>6)].=Inf  ## Replace with Inf to trigger plot skip
+				phs[u,v,findall(mag[u,v,:].<1e-8)].=0  ## Set angle to zero is magnitude is almost zero
 			end
 		end
 
@@ -117,7 +119,7 @@ if(nin*nout>0 && nin*nout<16)
 			## Each row starts with freq in Hz, then speed
 			print(bode_f,results[i].w[j]/2/pi," ",the_list[i].vpt," ")
 			## Followed by first mag column, written as a row, then next column, as a row
-			for k in vec(20*log10.(abs.(results[i].freq_resp[:,:,j])))
+			for k in vec(20*log10.(mag[:,:,j]))
 				print(bode_f,k," ")
 			end
 			for k in vec(180/pi*phs[:,:,j])
@@ -182,7 +184,7 @@ end
 
 dss_path=joinpath(dir_output,dir_raw,"dss")
 ss_path=joinpath(dir_output,dir_raw,"ss")
-jordan_path=joinpath(dir_output,dir_raw,"jordan")
+#jordan_path=joinpath(dir_output,dir_raw,"jordan")
 
 writedlm(joinpath(dss_path,"A.out"),eoms[1].A)
 writedlm(joinpath(dss_path,"B.out"),eoms[1].B)
@@ -195,18 +197,18 @@ writedlm(joinpath(ss_path,"B.out"),results[1].ss_eqns.B)
 writedlm(joinpath(ss_path,"C.out"),results[1].ss_eqns.C)
 writedlm(joinpath(ss_path,"D.out"),results[1].ss_eqns.D)
 
-sys=[results[1].ss_eqns.A results[1].ss_eqns.B; results[1].ss_eqns.C results[1].ss_eqns.D]
-sys=(abs.(sys).>=1e-9).*sys
-writedlm(joinpath(jordan_path,"ABCD.out"),sys)
+# sys=[results[1].ss_eqns.A results[1].ss_eqns.B; results[1].ss_eqns.C results[1].ss_eqns.D]
+# sys=(abs.(sys).>=1e-9).*sys
+# writedlm(joinpath(jordan_path,"ABCD.out"),sys)
 
-writedlm(joinpath(jordan_path,"A.out"),results[1].jordan.A)
-writedlm(joinpath(jordan_path,"B.out"),results[1].jordan.B)
-writedlm(joinpath(jordan_path,"C.out"),results[1].jordan.C)
-writedlm(joinpath(jordan_path,"D.out"),results[1].jordan.D)
+# writedlm(joinpath(jordan_path,"A.out"),results[1].jordan.A)
+# writedlm(joinpath(jordan_path,"B.out"),results[1].jordan.B)
+# writedlm(joinpath(jordan_path,"C.out"),results[1].jordan.C)
+# writedlm(joinpath(jordan_path,"D.out"),results[1].jordan.D)
 
-sys=[results[1].jordan.A results[1].jordan.B; results[1].jordan.C results[1].jordan.D]
-sys=(abs.(sys).>=1e-9).*sys
-writedlm(joinpath(jordan_path,"ABCD.out"),sys)
+# sys=[results[1].jordan.A results[1].jordan.B; results[1].jordan.C results[1].jordan.D]
+# sys=(abs.(sys).>=1e-9).*sys
+# writedlm(joinpath(jordan_path,"ABCD.out"),sys)
 
 write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"mass.tex"),the_list[1].data.mass)
 write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"s_stiff.tex"),the_list[1].data.stiffness)

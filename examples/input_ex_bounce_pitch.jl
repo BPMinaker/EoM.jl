@@ -70,14 +70,14 @@ item.axis=[0,1,0]
 push!(the_system.item,item)
 
 ## Measure the bounce and pitch
-item=sensor("\$z_{\\textrm G}\$")
+item=sensor("z_{\\textrm G}")
 item.body[1]="chassis"
 item.body[2]="ground"
 item.location[1]=[0,0,0.25]
 item.location[2]=[0,0,0]
 push!(the_system.item,item)
 
-item=sensor("\$(a+b)\\theta\$")
+item=sensor("(a+b)\\theta")
 item.body[1]="chassis"
 item.body[2]="ground"
 item.location[1]=[0,0,0.25]
@@ -87,7 +87,7 @@ item.gain=a+b
 push!(the_system.item,item)
 
 ## Force the bounce and pitch
-item=actuator("\$u_{\\textrm f}\$")
+item=actuator("u_{\\textrm f}")
 item.body[1]="chassis"
 item.body[2]="ground"
 item.location[1]=[a,0,0.1];
@@ -96,7 +96,7 @@ item.gain=kf
 item.rate_gain=cf
 push!(the_system.item,item)
 
-item=actuator("\$u_{\\textrm r}\$")
+item=actuator("u_{\\textrm r}")
 item.body[1]="chassis"
 item.body[2]="ground"
 item.location[1]=[-b,0,0.1];

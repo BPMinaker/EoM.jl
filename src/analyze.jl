@@ -20,20 +20,39 @@ lower=zeros(nvpts)
 upper=zeros(nvpts)
 
 wpts=500
-(wpts*nvpts>2000) && (wpts=Int(round(2000/nvpts)))
+#(wpts*nvpts>2000) && (wpts=Int(round(2000/nvpts)))
 
 for i=1:nvpts
 
 	result[i]=analysis()
-	result[i].ss_eqns=dss2ss(dss_eqns[i],verbose && i<2)  ## Reduce to standard form
-
 	F=eigen(dss_eqns[i].A,dss_eqns[i].E)  ## Find the eigen
-#	println(F.values)
-	result[i].e_vect=F.vectors[:,isfinite.(F.values)]
+	vect=F.vectors[:,isfinite.(F.values)]
+	result[i].mode_vals=F.values[isfinite.(F.values)]  ## Discard modes with Inf or Nan vals
 
-	F=eigen(result[i].ss_eqns.A)
-	result[i].e_val=F.values
-	#[isfinite.(F.values)]  ## Discard modes with Inf or Nan vals
+	result[i].modes=dss_eqns[i].phys*vect  ## Convert vector to physical coordinates
+	nb=div(size(result[i].modes,1),6)
+	nm=size(result[i].modes,2)
+
+	result[i].centre=zeros(size(result[i].modes))
+
+	for j=1:nm  ## For each mode
+		if norm(result[i].modes[:,j])>0  ## Check for non-zero displacement modes
+			max,k=findmax(abs.(result[i].modes[:,j]))  ## Find max entry
+			result[i].modes[:,j]/=(2*result[i].modes[k,j])  ## Scale motions to unity by diving by max value, but not abs of max, as complex possible
+		end
+
+		for k=1:nb  ## For each body
+			mtn=result[i].modes[6*k.+(-5:0),j]  ## motion of body k
+			temp,l=findmax(abs.(mtn))
+			phi=angle(mtn[l])
+			mtn*=exp(-phi*1im)  ## Remove unnecessary imag parts
+
+			result[i].centre[6*k.+(-5:0),j]=[-pinv(skew(mtn[4:6]))*mtn[1:3];mtn[4:6]/(norm(mtn[4:6])+eps(1.))]
+			## Radius to the instantaneous center of rotation of the body (rad=omega\v)
+		end
+	end
+
+	result[i].ss_eqns,result[i].e_val=dss2ss(dss_eqns[i],verbose && i<2)  ## Reduce to standard form
 	result[i].omega_n=abs.(result[i].e_val)/2/pi
 	result[i].zeta=-real.(result[i].e_val)./abs.(result[i].e_val)
 	result[i].tau=-1.0./real.(result[i].e_val)
@@ -65,17 +84,14 @@ for i=1:nvpts
 	nout=size(result[i].ss_eqns.C,1)
 
 	result[i].freq_resp=zeros(nout,nin,length(w))
-
 	A=result[i].ss_eqns.A
 	B=result[i].ss_eqns.B
 	C=result[i].ss_eqns.C
 	D=result[i].ss_eqns.D
 
-	#val,vec=eigen(A)
 	for j=1:wpts
 		# result[i].freq_resp[:,:,j]=C*((I*w[j]im-A)\B)+D
-		detA=prod(result[i].e_val.-w[j]im)
-		#detA=det(I*w[j]im-A)
+		detA=det(I*w[j]im-A)
 		for m=1:nin
 			for n=1:nout
 				result[i].freq_resp[n,m,j]=(det(I*w[j]im-A+B[:,m]*C[n,:]')-detA)/detA+D[n,m]
@@ -99,29 +115,6 @@ for i=1:nvpts
 	# 	tmp=size(result[i].ss_eqns.A,1)
 	# 	result[i].hsv=zeros(length(tmp))
 	# end
-
-	result[i].modes=dss_eqns[i].phys*result[i].e_vect  ## Convert vector to physical coordinates
-	nb=div(size(result[i].modes,1),6)
-	nm=size(result[i].modes,2)
-
-	result[i].centre=zeros(size(result[i].modes))
-
-	for j=1:nm  ## For each mode
-		if norm(result[i].modes[:,j])>0  ## Check for non-zero displacement modes
-			temp,k=findmax(abs.(result[i].modes[:,j]))  ## Find max entry
-			result[i].modes[:,j]/=result[i].modes[k,j]  ## Scale motions to unity by diving by max value, but not abs of max, as complex possible
-		end
-
-		for k=1:nb  ## For each body
-			mtn=result[i].modes[6*k.+(-5:0),j]  ## motion of body k
-			temp,l=findmax(abs.(mtn))
-			phi=angle(mtn[l])
-			mtn*=exp(-phi*1im)  ## Remove unnecessary imag parts
-
-			result[i].centre[6*k.+(-5:0),j]=[-pinv(skew(mtn[4:6]))*mtn[1:3];mtn[4:6]/(norm(mtn[4:6])+eps(1.))]
-			## Radius to the instantaneous center of rotation of the body (rad=omega\v)
-		end
-	end
 end
 
 result

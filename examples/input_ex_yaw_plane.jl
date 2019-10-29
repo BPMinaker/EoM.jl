@@ -50,7 +50,7 @@ item.damping=[cr/u,0]
 push!(the_system.item,item)
 
 ## Add an actuator to apply the steering force
-item=actuator("\$\\delta_{\\text{f}}\$")
+item=actuator("\\delta_{\\text{f}}")
 item.body[1]="chassis"
 item.body[2]="ground"
 item.location[1]=[a,0,0]
@@ -59,7 +59,7 @@ item.gain=cf
 push!(the_system.item,item)
 
 ## Rear wheel steer, off by default
-item=actuator("\$\\delta_{\\text{r}}\$")
+item=actuator("\\delta_{\\text{r}}")
 item.body[1]="chassis"
 item.body[2]="ground"
 item.location[1]=[-b,0,0]
@@ -89,17 +89,18 @@ item.axis=[1,0,0]
 push!(the_system.item,item)
 
 ## Measure the yaw rate in rad/s
-item=sensor("\$r\$")
+item=sensor("r(a+b)/u")
 item.body[1]="chassis"
 item.body[2]="ground"
 item.location[1]=[0,0,0]
 item.location[2]=[0,0,0.1]
 item.twist=1
 item.order=2
+item.gain=(a+b)/u
 push!(the_system.item,item)
 
 ## Measure the body slip angle in rad/s
-item=sensor("\$\\beta\$")
+item=sensor("\\beta")
 item.body[1]="chassis"
 item.body[2]="ground"
 item.location[1]=[0,0,0]
@@ -110,20 +111,20 @@ item.gain=1/u
 push!(the_system.item,item)
 
 ## Measure the lateral acceleration in g
-item=sensor("\$a_{\\text{lat}}\$")
+item=sensor("a_{\\text{lat}}")
 item.body[1]="chassis"
 item.body[2]="ground"
 item.location[1]=[0,0,0]
 item.location[2]=[0,0.1,0]
 item.order=3
 item.gain=1/9.81
-push!(the_system.item,item)
+#push!(the_system.item,item)
 
 
 ## Note that the y location will not reach steady state with constant delta
 ## input, so adding the sensor will give an error if the steady state gain
 ## is computed.  It will work fine when a time history is computed.
-item=sensor("\$y_{\\text{f}}\$")
+item=sensor("y_{\\text{f}}")
 item.body[1]="chassis"
 item.body[2]="ground"
 item.location[1]=[a,0,0]

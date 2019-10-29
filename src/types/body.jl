@@ -20,13 +20,21 @@ mutable struct body
 	deflection::Vector{Float64}
 	angular_deflection::Vector{Float64}
 	x3d::String
-
-	# function body(name,group="body",location=[0,0,0],orientation=[0,0,0],mass=0,moments_of_inertia=[0,0,0],products_of_inertia=[0,0,0],velocity=[0,0,0],angular_velocity=[0,0,0],deflection=[NaN,NaN,NaN],angular_deflection=[NaN,NaN,NaN],x3d="")
-	# 	new(name,group,location,orientation,mass,moments_of_inertia,products_of_inertia,velocity,angular_velocity,deflection,angular_deflection,x3d)
-	# end
 end
 
-body(str::String)=body(str,"body",zeros(3),zeros(3),0,zeros(3),zeros(3),zeros(3),zeros(3),[NaN,NaN,NaN],[NaN,NaN,NaN],"")
+body(str::String)=body(
+str,
+"body",
+zeros(3),
+zeros(3),
+0,
+zeros(3),
+zeros(3),
+zeros(3),
+zeros(3),
+[NaN,NaN,NaN],
+[NaN,NaN,NaN],
+"")
 
 function Base.show(io::IO, obj::body)
 	println(io,"Body:")

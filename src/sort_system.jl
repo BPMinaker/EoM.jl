@@ -16,13 +16,11 @@ function sort_system!(the_system,verbose=false)
 
 verbose && println("Sorting system...")
 
-
 ## Fill in some extra info in each item
 item_init!(the_system.item)
 
 ## Ground is added to the system, because it is not in the user-defined system
 push!(the_system.item,body("ground"))  ## Ground body is added last (important!)
-
 
 ## Find the type of each item, and sort into named fields
 for i in the_system.item

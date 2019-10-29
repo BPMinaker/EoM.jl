@@ -22,7 +22,7 @@ for i=1:nvpts
 	n=size(dss_eqns[i].B,2)
 
 	temp=dss_data(dss_eqns[i].A,dss_eqns[i].B,dss_eqns[i].phys,zeros(m,n),dss_eqns[i].E,dss_eqns[i].phys)
-	result[i]=dss2ss(temp,verbose && i<2)  ## Reduce to standard form
+	result[i],val=dss2ss(temp,verbose && i<2)  ## Reduce to standard form
 end
 
 result

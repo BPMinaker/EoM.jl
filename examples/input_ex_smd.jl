@@ -43,14 +43,14 @@ item.axis=[0,0,1]
 push!(the_system.item,item)
 
 ## The actuator is a 'line item' and defined by two locations, location[1] attaches to body[1]...
-item=actuator("applied force")
+item=actuator("f")
 item.body[1]="block"
 item.body[2]="ground"
 item.location[1]=[0.05,0,1]
 item.location[2]=[0.05,0,0]
 push!(the_system.item,item)
 
-item=sensor("spring force")
+item=sensor("kx")
 item.body[1]="block"
 item.body[2]="ground"
 item.location[1]=[0,0.05,1]

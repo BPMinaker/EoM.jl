@@ -18,10 +18,26 @@ mutable struct spring
 	unit::Vector{Float64}
 	nu::Array{Float64,2}
 	b_mtx::Vector{Array{Float64,2}}
-
 end
 
-spring(str::String)=spring(str,"spring",[zeros(3),zeros(3)],["ground","ground"],zeros(2),0,0,false,[zeros(3),zeros(3)],0,0,NaN,0,0,zeros(3),zeros(3,2),[zeros(2,2),zeros(2,2)])
+spring(str::String)=spring(
+str,
+"spring",
+[zeros(3),zeros(3)],
+["ground","ground"],
+zeros(2),
+0,
+0,
+false,
+[zeros(3),zeros(3)],
+0,
+0,
+NaN,
+0,
+0,
+zeros(3),
+zeros(3,2),
+[zeros(2,2),zeros(2,2)])
 
 function Base.show(io::IO, obj::spring)
 	println(io,"Spring:")
@@ -30,6 +46,10 @@ function Base.show(io::IO, obj::spring)
 	println(io,"Bodies: ",obj.body)
 	println(io,"Stiffness: ",obj.stiffness)
 	println(io,"Damping: ",obj.damping)
+end
+
+function name(obj::spring)
+	obj.name
 end
 
 function stiffness(obj::spring)
@@ -51,24 +71,3 @@ end
 function num_fm(obj::spring)
 	obj.forces+obj.moments
 end
-
-# function spring(
-# name;
-# group="spring",
-# location=[zeros(3),zeros(3)],
-# body=["ground","ground"],
-# body_number=zeros(2),
-# forces=0,
-# moments=0,
-# twist=false,
-# radius=[zeros(3),zeros(3)],
-# stiffness=0,
-# damping=0,
-# preload=NaN,
-# inertance=0,
-# length=0,
-# unit=zeros(3),
-# nu=zeros(3,2),
-# b_mtx=[zeros(2,2),zeros(2,2)])
-# 	new(name,group,location,body,body_number,forces,moments,twist,radius,stiffness,damping,preload,inertance,length,unit,nu,b_mtx)
-# end

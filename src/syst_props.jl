@@ -89,17 +89,17 @@ for item in the_system.beams
 end
 
 for item in the_system.actuators
-	println(point_f,"{",idx,"} {",item.name,"} ",item.location[1][1]," ",item.location[1][2]," ",item.location[1][3]," {} {} {}")
+	println(point_f,"{",idx,"} {\$",item.name,"\$} ",item.location[1][1]," ",item.location[1][2]," ",item.location[1][3]," {} {} {}")
 	println(point_f,"{} {} ",item.location[2][1]," ",item.location[2][2]," ",item.location[2][3]," {} {} {}")
-	println(stiff_f,"{",idx2,"} {",item.name,"} ",item.gain," {} {} {}")
+	println(stiff_f,"{",idx2,"} {\$",item.name,"\$} ",item.gain," {} {} {}")
 	idx+=1
 	idx2+=1
 end
 
 for item in the_system.sensors
-	println(point_f,"{",idx,"} {",item.name,"} ",item.location[1][1]," ",item.location[1][2]," ",item.location[1][3]," {} {} {}")
+	println(point_f,"{",idx,"} {\$",item.name,"\$} ",item.location[1][1]," ",item.location[1][2]," ",item.location[1][3]," {} {} {}")
 	println(point_f,"{} {} ",item.location[2][1]," ",item.location[2][2]," ",item.location[2][3]," {} {} {}")
-	println(stiff_f,"{",idx2,"} {",item.name,"} ",item.gain," {} {} {}")
+	println(stiff_f,"{",idx2,"} {\$",item.name,"\$} ",item.gain," {} {} {}")
 	idx+=1
 	idx2+=1
 end
