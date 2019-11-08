@@ -1,5 +1,4 @@
 function input_ex_bicycle_rider(;u=0.1)
-the_system=mbd_system("Rigid Rider Bicycle")
 
 ## Copyright (C) 2017, Bruce Minaker
 ## input_ex_bicycle_rider.jl is free software; you can redistribute it and/or modify it
@@ -16,6 +15,7 @@ the_system=mbd_system("Rigid Rider Bicycle")
 
 ##  This is the benchmark bicycle problem that has been well studied in the literature
 ##  Meijaard, J.P., Papadopoulos, J.M., Ruina, A., Schwab, A.L., linearised dynamics equations for the balance and steer of a bicycle: a benchmark and review, Proc. Roy. Soc. A., Volume 463, Number 2084, 2007
+the_system=mbd_system("Rigid Rider Bicycle")
 
 g=-9.81
 rake=pi/10

@@ -1,5 +1,4 @@
 function input_ex_half_car(;u=0,a=1.189,b=2.885-1.189,kf=35000,kr=38000,cf=1000,cr=1200,m=16975/9.81,I=3267,kt=300000,muf=50,mur=50)
-the_system=mbd_system("Half Car Model")
 
 ## Copyright (C) 2017, Bruce Minaker
 ## input_ex_half_car.jl is free software; you can redistribute it and/or modify it
@@ -14,8 +13,9 @@ the_system=mbd_system("Half Car Model")
 ##
 ##--------------------------------------------------------------------
 
-## A bounce pitch model
+## A half car model
 ## Note tire and suspension properties are for both left and right sides summed
+the_system=mbd_system("Half Car Model")
 
 ## Add one body representing the chassis
 item=body("chassis")

@@ -1,5 +1,4 @@
 function input_ex_yaw_plane(;u=10.0,a=1.189,b=2.885-1.189,cf=80000.0,cr=80000.0,m=16975/9.81,I=3508.0)
-the_system=mbd_system("Yaw Plane Vehicle")
 
 ## Copyright (C) 2017, Bruce Minaker
 ## input_ex_yaw_plane.jl is free software; you can redistribute it and/or modify it
@@ -13,6 +12,15 @@ the_system=mbd_system("Yaw Plane Vehicle")
 ## General Public License for more details at www.gnu.org/copyleft/gpl.html.
 ##
 ##--------------------------------------------------------------------
+
+## The classic yaw plane model
+## a = front axle to truck cg
+## b = rear axle to truck cg
+## m = mass
+## I = yaw inertia
+## cf = front cornering stiffness (total)
+## cr = rear cornering stiffness (total)
+the_system=mbd_system("Yaw Plane Vehicle")
 
 if(u==0)
 	error("Speed must be non-zero!")

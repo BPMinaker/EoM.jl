@@ -1,5 +1,4 @@
 function input_ex_beam(;m1=10.0,m2=10.0,EI=100.0)
-the_system=mbd_system("Masses and Beam")
 
 ## Copyright (C) 2017, Bruce Minaker
 ## This file is intended for use with Octave.
@@ -14,6 +13,8 @@ the_system=mbd_system("Masses and Beam")
 ## General Public License for more details at www.gnu.org/copyleft/gpl.html.
 ##
 ##--------------------------------------------------------------------
+
+the_system=mbd_system("Masses and Beam")
 
 item=body("body one")
 item.mass=m1

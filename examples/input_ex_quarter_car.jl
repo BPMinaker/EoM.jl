@@ -1,5 +1,4 @@
 function input_ex_quarter_car(;mu=50,ms=500,ks=18000,kt=180000,cs=1500)
-the_system=mbd_system("Quarter Car Model")
 
 ## Copyright (C) 2017, Bruce Minaker
 ## input_ex_quarter_car.jl is free software; you can redistribute it and/or modify it
@@ -14,8 +13,12 @@ the_system=mbd_system("Quarter Car Model")
 ##
 ##--------------------------------------------------------------------
 
-## A 'quarter-car' model, two bodys, constrained to ground, allowing translation in the z axis only, with two point springs connecting them.  The point spring has stiffness and damping defined in translation along the z axis only.  An actuator connects the sprung mass to the ground as well, to provide input forces.  Note that the ground body is pre-defined.
-
+## A 'quarter-car' model, two bodys, constrained to ground, allowing translation
+## in the z axis only, with two point springs connecting them.  The point spring
+## has stiffness and damping defined in translation along the z axis only.  An
+## actuator connects the sprung mass to the ground as well, to provide input forces.
+##  Note that the ground body is pre-defined.
+the_system=mbd_system("Quarter Car Model")
 
 ## Add the unsprung mass, along the z-axis
 item=body("unsprung")

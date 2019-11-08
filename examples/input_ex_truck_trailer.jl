@@ -1,5 +1,4 @@
 function input_ex_truck_trailer(;u=10,a=1.289,b=2.885-1.289,cf=80000,cr=80000,m=16975/9.81,I=3508,d=2.7,e=2.5,h=0.5,ct=80000,mt=2000,It=3000)
-the_system=mbd_system("Truck Trailer")
 
 ## Copyright (C) 2017, Bruce Minaker
 ## input_ex_truck_trailer.jl is free software; you can redistribute it and/or modify it
@@ -14,16 +13,24 @@ the_system=mbd_system("Truck Trailer")
 ##
 ##--------------------------------------------------------------------
 
+## The classic truck and trailer model
+## a = front axle to truck cg
+## b = rear axle to truck cg
+## d = hitch to truck cg
+## e = hitch to trailer cg
+## h = trailer axle to trailer cg
+## m = truck mass
+## I = truck yaw inertia
+## mt = trailer mass
+## It = trailer yaw inertia
+## cf = front cornering stiffness (total)
+## cr = rear cornering stiffness (total)
+## ct = trailer cornering stiffness (total)
+the_system=mbd_system("Truck Trailer")
+
 if(u==0)
 	error("Speed must be non-zero.")
 end
-
-#a  ## front axle to truck cg
-#b  ## rear axle to truck cg
-#d  ## hitch to truck cg
-#e  ## hitch to trailer cg
-#h  ## trailer axle to trailer cg
-
 
 ## Add the truck at the origin
 item=body("truck")

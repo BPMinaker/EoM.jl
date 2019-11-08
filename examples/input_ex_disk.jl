@@ -1,5 +1,4 @@
 function input_ex_disk(;u=0.1,m=4,r=0.5)
-the_system=mbd_system("Rolling Disk")
 
 ## Copyright (C) 2017, Bruce Minaker
 ## input_ex_disk.jl is free software; you can redistribute it and/or modify it
@@ -16,6 +15,7 @@ the_system=mbd_system("Rolling Disk")
 
 ## The classic rolling disk problem
 ##  Schwab,A.L., Meijaard,J.P., Dynamics Of Flexible Multibody Systems With Non-Holonomic Constraints: A Finite Element Approach, Multibody System Dynamics 10: (2003) pp. 107-123
+the_system=mbd_system("Rolling Disk")
 
 # vcrit=sqrt(gr/3)
 

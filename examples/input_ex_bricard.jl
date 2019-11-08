@@ -1,5 +1,4 @@
 function input_ex_bricard(;g=9.81)
-the_system=mbd_system("Bricard mechanism")
 
 ## Copyright (C) 2017, Bruce Minaker
 ## input_ex_bricad.jl is free software; you can redistribute it and/or modify it
@@ -13,6 +12,8 @@ the_system=mbd_system("Bricard mechanism")
 ## General Public License for more details at www.gnu.org/copyleft/gpl.html.
 ##
 ##--------------------------------------------------------------------
+
+the_system=mbd_system("Bricard mechanism")
 
 p0=[0,0,0]
 p1=[1,0,0]
