@@ -1,6 +1,6 @@
 using LinearAlgebra
 
-function susp!(the_system;a=1.2,tw=1.5,kt=150000,ct=100,cs=2000,ks=30000,cf=30000,r=0.3,u=10.0,g=9.81,str="L ",front=true)
+function susp!(the_system;a=1.2,tw=1.5,cs=2000,ks=30000,cf=30000,r=0.3,u=10.0,g=9.81,str="L ",front=true)
 ## Copyright (C) 2019, Bruce Minaker
 ## susp.jl is free software, you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -244,62 +244,6 @@ item.body[1]=str*"Bell-crank"
 item.body[2]=str*"Anti-roll arm"
 item.location[1]=[a-0.1*sgn,0.25,r+0.2]
 item.location[2]=[a+0.05*sgn,0.25,r+0.2]
-push!(the_system.item,item)
-
-#### Tires (flex_points)
-
-item=flex_point(str*"Tire, vertical")
-item.body[1]=str*"Wheel+hub"
-item.body[2]="ground"
-item.location=[a,tw/2,0]
-item.stiffness=[kt,0]
-item.damping=[ct,0]
-item.forces=1
-item.moments=0
-item.axis=[0,0,1]
-item.rolling_axis=[0,1,0]
-push!(the_system.item,item)
-
-item=body(str*"Contact patch")
-item.location=[a,tw/2,0]
-push!(the_system.item,item)
-
-item=rigid_point(str*"Contact patch constraint")
-item.body[1]=str*"Contact patch"
-item.body[2]=str*"Wheel+hub"
-item.location=[a,tw/2,0]
-item.forces=2
-item.moments=3
-item.axis=[0,1,0]
-push!(the_system.item,item)
-
-item=flex_point(str*"Tire, sidewall")
-item.body[1]=str*"Wheel+hub"
-item.body[2]=str*"Contact patch"
-item.location=[a,tw/2,0]
-item.stiffness=[135000,0]
-item.forces=1
-item.moments=0
-item.axis=[0,1,0]
-push!(the_system.item,item)
-
-item=flex_point(str*"Tire, horizontal")
-item.body[1]=str*"Contact patch"
-item.body[2]="ground"
-item.location=[a,tw/2,0]
-item.damping=[cf/u,0]
-item.forces=2
-item.moments=0
-item.axis=[0,0,1]
-push!(the_system.item,item)
-
-item=actuator("u_\\text{$str}")
-item.body[1]=str*"Wheel+hub"
-item.body[2]="ground"
-item.location[1]=[a,tw/2,0]
-item.location[2]=[a,tw/2,-0.1]
-item.gain=kt
-item.rate_gain=ct
 push!(the_system.item,item)
 
 end ## Leave

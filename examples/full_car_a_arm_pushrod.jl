@@ -27,8 +27,11 @@ item.velocity=[u,0.0,0.0]
 push!(the_system.item,item)
 push!(the_system.item,weight(item,g))
 
-susp!(the_system,a=a,tw=tw,cf=cf,r=r,u=u,g=g,str="LF ",front=true)
-susp!(the_system,a=-b,tw=tw,cf=cr,r=r,u=u,g=g,str="LR ",front=false)
+susp!(the_system,a=a,tw=tw,r=r,u=u,g=g,str="LF ",front=true)
+tire!(the_system,a=a,tw=tw,cf=cf,u=u,g=g,str="LF ",front=true)
+
+susp!(the_system,a=-b,tw=tw,r=r,u=u,g=g,str="LR ",front=false)
+tire!(the_system,a=-b,tw=tw,cf=cr,u=u,g=g,str="LR ",front=false)
 
 item=spring("Anti-roll bar")
 item.body[1]="LF Anti-roll arm"
@@ -43,7 +46,7 @@ push!(the_system.item,item)
 ####% Reflect all LF or LR items in y axis
 mirror!(the_system)
 
-## Add sensors and actuators
+## Add sensors
 item=sensor("z_\\text{LFc}")
 item.body[1]="Chassis"
 item.body[2]="ground"
@@ -65,6 +68,35 @@ item.location[1]=[a,tw/2,r]
 item.location[2]=[a,tw/2,r-0.1]
 item.actuator="u_\\text{LF }"
 push!(the_system.item,item)
+
+
+## roll centre constraints
+
+# item=actuator("Z")
+# item.body[1]="Chassis"
+# item.body[2]="ground"
+# item.location[1]=[0,0,0.5]
+# item.location[2]=[0,0,0]
+# push!(the_system.item,item)
+# push!(the_system.item,item)
+# push!(the_system.item,item)
+# push!(the_system.item,item)
+#
+# item=rigid_point("LF RC")
+# item.body[1]="LF Wheel+hub"
+# item.body[2]="ground"
+# item.location=[a,tw/2,0]
+# item.forces=3
+# item.moments=0
+# push!(the_system.item,item)
+#
+# item=rigid_point("LR RC")
+# item.body[1]="LR Wheel+hub"
+# item.body[2]="ground"
+# item.location=[-b,tw/2,0]
+# item.forces=3
+# item.moments=0
+# push!(the_system.item,item)
 
 the_system
 
