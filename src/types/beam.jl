@@ -1,14 +1,8 @@
 export beam
 
 mutable struct beam
-	name::String
-	group::String
+	@add_generic_fields
 	location::Vector{Vector{Float64}}
-	body::Vector{String}
-	body_number::Vector{Int}
-	forces::Int
-	moments::Int
-	radius::Vector{Vector{Float64}}
 	stiffness::Float64
 	s_mtx::Array{Float64,2}
 	mpul::Float64
@@ -23,11 +17,11 @@ end
 beam(str::String)=beam(
 str,
 "beam",
-[zeros(3),zeros(3)],
 ["ground","ground"],
 zeros(2),
 2,
 2,
+[zeros(3),zeros(3)],
 [zeros(3),zeros(3)],
 0,
 zeros(0,0),

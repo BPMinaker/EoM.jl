@@ -3,15 +3,9 @@ export name
 export gain
 
 mutable struct sensor
-	name::String
-	group::String
+	@add_generic_fields
 	location::Vector{Vector{Float64}}
-	body::Vector{String}
-	body_number::Vector{Int}
-	forces::Int
-	moments::Int
 	twist::Bool
-	radius::Vector{Vector{Float64}}
 	gain::Float64
 	order::Int  ## [1 - position, 2- velocity, 3- acceleration ]
 	frame::Int  ## [ 0 - local, 1 - global]
@@ -26,13 +20,13 @@ end
 sensor(str::String)=sensor(
 str,
 "sensor",
-[zeros(3),zeros(3)],
 ["ground","ground"],
 zeros(2),
 0,
 0,
-false,
 [zeros(3),zeros(3)],
+[zeros(3),zeros(3)],
+false,
 1,
 1,
 1,

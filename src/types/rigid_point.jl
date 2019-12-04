@@ -1,16 +1,10 @@
 export rigid_point
 
 mutable struct rigid_point
-	name::String
-	group::String
+	@add_generic_fields
 	location::Vector{Float64}
-	body::Vector{String}
-	body_number::Vector{Int}
-	forces::Int
-	moments::Int
 	axis::Vector{Float64}
 	rolling_axis::Vector{Float64}
-	radius::Vector{Vector{Float64}}
 	preload::Vector{Float64}
 	unit::Vector{Float64}
 	rolling_unit::Vector{Float64}
@@ -21,14 +15,14 @@ end
 rigid_point(str::String)=rigid_point(
 str,
 "rigid_point",
-zeros(3),
 ["ground","ground"],
 zeros(2),
 0,
 0,
+[zeros(3),zeros(3)],
 zeros(3),
 zeros(3),
-[zeros(3), zeros(3)],
+zeros(3),
 Vector{Float64}(undef,0),
 zeros(3),
 zeros(3),

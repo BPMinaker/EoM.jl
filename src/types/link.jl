@@ -1,15 +1,9 @@
 export link
 
 mutable struct link
-	name::String
-	group::String
+	@add_generic_fields
 	location::Vector{Vector{Float64}}
-	body::Vector{String}
-	body_number::Vector{Int}
-	forces::Int
-	moments::Int
 	twist::Bool
-	radius::Vector{Vector{Float64}}
 	preload::Float64
 	length::Float64
 	unit::Vector{Float64}
@@ -20,13 +14,13 @@ end
 link(str::String)=link(
 str,
 "link",
-[zeros(3),zeros(3)],
 ["ground","ground"],
 zeros(2),
 0,
 0,
-false,
 [zeros(3),zeros(3)],
+[zeros(3),zeros(3)],
+false,
 NaN,
 0,
 zeros(3),

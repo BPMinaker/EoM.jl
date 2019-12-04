@@ -1,16 +1,10 @@
 export flex_point
 
 mutable struct flex_point
-	name::String
-	group::String
+	@add_generic_fields
 	location::Vector{Float64}
-	body::Vector{String}
-	body_number::Vector{Int}
-	forces::Int
-	moments::Int
 	axis::Vector{Float64}
 	rolling_axis::Vector{Float64}
-	radius::Vector{Vector{Float64}}
 	stiffness::Vector{Float64}
 	s_mtx::Array{Float64,2}
 	damping::Vector{Float64}
@@ -25,14 +19,14 @@ end
 flex_point(str::String)=flex_point(
 str,
 "flex_point",
-zeros(3),
 ["ground","ground"],
 zeros(2),
 0,
 0,
-zeros(3),
-zeros(3),
 [zeros(3),zeros(3)],
+zeros(3),
+zeros(3),
+zeros(3),
 zeros(2),
 zeros(0,0),
 zeros(2),

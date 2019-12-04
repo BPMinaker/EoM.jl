@@ -1,16 +1,10 @@
 export nh_point
 
 mutable struct nh_point
-	name::String
-	group::String
+	@add_generic_fields
 	location::Vector{Float64}
-	body::Vector{String}
-	body_number::Vector{Int}
-	forces::Int
-	moments::Int
 	axis::Vector{Float64}
 	rolling_axis::Vector{Float64}
-	radius::Vector{Vector{Float64}}
 	unit::Vector{Float64}
 	rolling_unit::Vector{Float64}
 	nu::Array{Float64,2}
@@ -21,14 +15,14 @@ end
 nh_point(str::String)=nh_point(
 str,
 "nh_point",
-zeros(3),
 ["ground","ground"],
 zeros(2),
 0,
 0,
-zeros(3),
-zeros(3),
 [zeros(3),zeros(3)],
+zeros(3),
+zeros(3),
+zeros(3),
 zeros(3),
 zeros(3),
 zeros(3,2),

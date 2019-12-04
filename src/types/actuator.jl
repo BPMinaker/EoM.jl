@@ -4,15 +4,9 @@ export gain
 export rate_gain
 
 mutable struct actuator
-	name::String
-	group::String
+	@add_generic_fields
 	location::Vector{Vector{Float64}}
-	body::Vector{String}
-	body_number::Vector{Int}
-	forces::Int
-	moments::Int
 	twist::Bool
-	radius::Vector{Vector{Float64}}
 	gain::Float64
 	rate_gain::Float64
 	length::Float64
@@ -24,13 +18,13 @@ end
 actuator(str::String)=actuator(
 str,
 "actuator",
-[zeros(3),zeros(3)],
 ["ground","ground"],
 zeros(2),
 0,
 0,
-false,
 [zeros(3),zeros(3)],
+[zeros(3),zeros(3)],
+false,
 1,
 0,
 0,

@@ -1,15 +1,9 @@
 export spring
 
 mutable struct spring
-	name::String
-	group::String
+	@add_generic_fields
 	location::Vector{Vector{Float64}}
-	body::Vector{String}
-	body_number::Vector{Int}
-	forces::Int
-	moments::Int
 	twist::Bool
-	radius::Vector{Vector{Float64}}
 	stiffness::Float64
 	damping::Float64
 	preload::Float64
@@ -23,13 +17,13 @@ end
 spring(str::String)=spring(
 str,
 "spring",
-[zeros(3),zeros(3)],
 ["ground","ground"],
 zeros(2),
 0,
 0,
-false,
 [zeros(3),zeros(3)],
+[zeros(3),zeros(3)],
+false,
 0,
 0,
 NaN,
