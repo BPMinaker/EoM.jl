@@ -52,12 +52,19 @@ item.location[1]=[0.05,0,1]
 item.location[2]=[0.05,0,0]
 push!(the_system.item,item)
 
-item=sensor("kx")
+item=sensor("x")
 item.body[1]="block"
 item.body[2]="ground"
 item.location[1]=[0,0.05,1]
 item.location[2]=[0,0.05,0]
-item.gain=k
+push!(the_system.item,item)
+
+item=sensor("\\dot{x}")
+item.body[1]="block"
+item.body[2]="ground"
+item.location[1]=[0,0.05,1]
+item.location[2]=[0,0.05,0]
+item.order=2
 push!(the_system.item,item)
 
 the_system
