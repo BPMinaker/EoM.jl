@@ -87,7 +87,7 @@ push!(the_system.item,item)
 
 ## Constrain chassis in the forward direction
 ## The left/right symmetry of the chassis tells us that the lateral and longitudinal motions are decoupled anyway
-item=nh_point("speed")
+item=rigid_point("speed")
 item.body[1]="chassis"
 item.body[2]="ground"
 item.location=[0,0,0]
