@@ -13,6 +13,7 @@ export full_ss
 export write_output
 export weave_output
 export lsim
+export splsim
 
 export skew
 export mbd_system
