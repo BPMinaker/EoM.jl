@@ -86,6 +86,7 @@ include("syst_props.jl")
 include("mirror.jl")
 include("thin_rod.jl")
 include("lsim.jl")
+include("splsim.jl")
 include("eom_structs.jl")
 
 end  # end module
