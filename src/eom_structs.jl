@@ -57,6 +57,7 @@ zeros(0,0))
 
 mutable struct mbd_system
 	name::String
+	vpt::Float64
 	item::Vector{Any}
 	bodys::Vector{body}
 	links::Vector{link}
@@ -71,7 +72,7 @@ mutable struct mbd_system
 end
 
 mbd_system(str::String="Unnamed System")=mbd_system(
-str,
+str,0,
 Vector{Any}(undef,0),
 Vector{body}(undef,0),
 Vector{link}(undef,0),
@@ -84,18 +85,7 @@ Vector{load}(undef,0),
 Vector{sensor}(undef,0),
 Vector{actuator}(undef,0))
 
-mutable struct mbd_eom
-	vpt::Float64
-	system::mbd_system
-	data::eom_data
-end
-
-mbd_eom()=mbd_eom(
-0,
-mbd_system(),
-eom_data())
-
-function vpt(obj::mbd_eom)
+function vpt(obj::mbd_system)
 	obj.vpt
 end
 
@@ -169,4 +159,20 @@ zeros(0,0))
 
 function e_val(obj::analysis)
 	obj.e_val
+end
+
+function omega_n(obj::analysis)
+	obj.omega_n
+end
+
+function zeta(obj::analysis)
+	obj.zeta
+end
+
+function tau(obj::analysis)
+	obj.tau
+end
+
+function lambda(obj::analysis)
+	obj.lambda
 end

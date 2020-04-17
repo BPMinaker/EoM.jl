@@ -19,7 +19,7 @@ the_system=mbd_system("Rolling Disk")
 
 # vcrit=sqrt(gr/3)
 
-## Add the wheel
+# Add the wheel
 item=body("wheel")
 item.mass=m
 item.moments_of_inertia=[0.25*m*r^2,0.5*m*r^2,0.25*m*r^2]
@@ -30,7 +30,7 @@ item.angular_velocity=[0,u/r,0]
 push!(the_system.item,item)
 push!(the_system.item,weight(item))
 
-## Add ground contact, vertical and longitudinal forces
+# Add ground contact, vertical and longitudinal forces
 item=rigid_point("contact")
 item.body[1]="wheel"
 item.body[2]="ground"
@@ -41,7 +41,7 @@ item.axis=[0,1,0]
 item.rolling_axis=[0,1,0]
 push!(the_system.item,item)
 
-## Add ground contact, lateral
+# Add ground contact, lateral
 item=nh_point("rolling")
 item.body[1]="wheel"
 item.body[2]="ground"
@@ -51,7 +51,7 @@ item.moments=0
 item.axis=[0,1,0]
 push!(the_system.item,item)
 
-## Add constant speed
+# Add constant speed
 item=nh_point("constant speed")
 item.body[1]="wheel"
 item.body[2]="ground"
@@ -61,30 +61,20 @@ item.moments=0
 item.axis=[1,0,0]
 push!(the_system.item,item)
 
-## Add some inputs and outputs
+# Add some inputs and outputs
 item=sensor("\\phi")
 item.body[1]="wheel"
 item.body[2]="ground";
 item.location[1]=[0,0,r]
 item.location[2]=[0.1,0,r]
 item.twist=1
-item.order=1
 push!(the_system.item,item)
 
-item=sensor("r")
-item.body[1]="wheel"
-item.body[2]="ground";
-item.location[1]=[0,0,r]
-item.location[2]=[0,0,0]
-item.twist=1
-item.order=2
-push!(the_system.item,item)
-
-item=actuator("N")
+item=actuator("L")
 item.body[1]="wheel"
 item.body[2]="ground"
 item.location[1]=[0,0,r]
-item.location[2]=[0,0,0]
+item.location[2]=[0.1,0,r]
 item.twist=1
 push!(the_system.item,item)
 

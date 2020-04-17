@@ -11,6 +11,7 @@ mutable struct sensor
 	frame::Int  ## [ 0 - local, 1 - global]
 	actuator::String
 	actuator_number::Int
+	actuator_gain::Float64
  	length::Float64
 	unit::Vector{Float64}
 	nu::Array{Float64,2}
@@ -32,6 +33,7 @@ false,
 1,
 "ground",
 0,
+-1,
 0,
 zeros(3),
 zeros(3,2),

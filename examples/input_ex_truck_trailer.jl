@@ -1,4 +1,4 @@
-function input_ex_truck_trailer(;u=10,a=1.289,b=2.885-1.289,cf=80000,cr=80000,m=16975/9.81,I=3508,d=2.7,e=2.5,h=0.5,ct=80000,mt=2000,It=3000)
+function input_ex_truck_trailer(;u=10,a=1.289,b=2.885-1.289,cf=80000,cr=80000,m=16975/9.81,I=3508,d=2.7,e=2.7,h=0.3,ct=80000,mt=2000,It=3000)
 
 ## Copyright (C) 2017, Bruce Minaker
 ## input_ex_truck_trailer.jl is free software; you can redistribute it and/or modify it
@@ -112,7 +112,7 @@ item.moments=0
 item.axis=[1,0,0]
 push!(the_system.item,item)
 
-item=actuator("\\delta_\\text{f}")
+item=actuator("δ_f")
 item.body[1]="truck"
 item.body[2]="ground"
 item.location[1]=[a,0,0]
@@ -120,34 +120,36 @@ item.location[2]=[a,0.1,0]
 item.gain=cf
 push!(the_system.item,item)
 
-item=sensor("\\gamma")
-item.body[1]="truck"
-item.body[2]="trailer"
-item.location[1]=[-d,0,0]
-item.location[2]=[-d,0,0.1]
-item.twist=1
-push!(the_system.item,item)
-
-item=sensor("r(a+b)/u")
+item=sensor("α_u")
 item.body[1]="truck"
 item.body[2]="ground"
 item.location[1]=[0,0,0]
 item.location[2]=[0,0,0.1]
-item.twist=1
-item.order=2
-item.gain=(a+b)/u
+item.twist=1 # angular
+item.order=2 # velocity
+item.gain=-(a+b)/u
+item.actuator="δ_f"
+item.actuator_gain=1
 push!(the_system.item,item)
 
-item=sensor("\\beta")
+item=sensor("β")
 item.body[1]="truck"
 item.body[2]="ground"
 item.location[1]=[0,0,0]
 item.location[2]=[0,0.1,0]
-item.twist=0
-item.order=2
-item.frame=0
+item.order=2 # velocity
+item.frame=0 # local frame
 item.gain=1/u
 push!(the_system.item,item)
+
+item=sensor("γ")
+item.body[1]="truck"
+item.body[2]="trailer"
+item.location[1]=[-d,0,0]
+item.location[2]=[-d,0,0.1]
+item.twist=1 # angular
+push!(the_system.item,item)
+
 
 ## Note that the y location will not reach steady state with constant delta
 ## input, so adding the sensor will give an error if the steady state gain

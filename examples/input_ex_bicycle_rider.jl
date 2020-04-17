@@ -1,4 +1,4 @@
-function input_ex_bicycle_rider(;u=0.1)
+function input_ex_bicycle_rider(;u=0.1,m=85,h=-0.9,g=-9.81)
 
 ## Copyright (C) 2017, Bruce Minaker
 ## input_ex_bicycle_rider.jl is free software; you can redistribute it and/or modify it
@@ -17,19 +17,19 @@ function input_ex_bicycle_rider(;u=0.1)
 ##  Meijaard, J.P., Papadopoulos, J.M., Ruina, A., Schwab, A.L., linearised dynamics equations for the balance and steer of a bicycle: a benchmark and review, Proc. Roy. Soc. A., Volume 463, Number 2084, 2007
 the_system=mbd_system("Rigid Rider Bicycle")
 
-g=-9.81
+# notice -ve value of g due to upside down z axis
 rake=pi/10
 
 item=body("frame")
-item.mass=85
+item.mass=m
 item.moments_of_inertia=[9.2,11,2.8]
 item.products_of_inertia=[0,0,-2.4]
-item.location=[0.3,0,-0.9]
+item.location=[0.3,0,h]
 item.velocity=[u,0,0]
 push!(the_system.item,item)
 push!(the_system.item,weight(item,g))
 
-item=body("fork")  ## The front fork, same velocities as the frame
+item=body("fork") # front fork, same velocities as the frame
 item.mass=4
 item.moments_of_inertia=[0.05892,0.06,0.00708]
 item.products_of_inertia=[0,0,0.00756]
@@ -38,7 +38,7 @@ item.velocity=[u,0,0]
 push!(the_system.item,item)
 push!(the_system.item,weight(item,g))
 
-item=body("front-wheel")  ## The front-wheel, with non-zero angular velocity
+item=body("front-wheel") # front-wheel, with non-zero angular velocity
 item.mass=3
 item.moments_of_inertia=[0.1405,0.28,0.1405]
 item.products_of_inertia=[0,0,0]
@@ -48,7 +48,7 @@ item.angular_velocity=[0,-u/0.35,0]
 push!(the_system.item,item)
 push!(the_system.item,weight(item,g))
 
-item=body("rear-wheel")  ## The rear-wheel, also with non-zero angular velocity
+item=body("rear-wheel") # rear-wheel, also with non-zero angular velocity
 item.mass=2
 item.moments_of_inertia=[0.0603,0.12,0.0603]
 item.products_of_inertia=[0,0,0]
@@ -58,7 +58,7 @@ item.angular_velocity=[0,-u/0.3,0]
 push!(the_system.item,item)
 push!(the_system.item,weight(item,g))
 
-item=rigid_point("head")   ;  ## The steering head bearing, connects the frame and fork
+item=rigid_point("head") # steering head bearing, connects the frame and fork
 item.body[1]="frame"
 item.body[2]="fork"
 item.location=[1.1-0.8*sin(rake),0,-0.8*cos(rake)]
@@ -67,7 +67,7 @@ item.moments=2
 item.axis=[sin(rake),0,cos(rake)]
 push!(the_system.item,item)
 
-item=rigid_point("rear axle")  ## Rear axle rigid item
+item=rigid_point("rear axle") # rear axle rigid item
 item.body[1]="frame"
 item.body[2]="rear-wheel"
 item.location=[0,0,-0.3]
@@ -76,7 +76,7 @@ item.moments=2
 item.axis=[0,1,0]
 push!(the_system.item,item)
 
-item=rigid_point("front axle")  ## Front axle rigid item
+item=rigid_point("front axle") # front axle rigid item
 item.body[1]="fork"
 item.body[2]="front-wheel"
 item.location=[1.02,0,-0.35]
@@ -85,7 +85,7 @@ item.moments=2
 item.axis=[0,1,0]
 push!(the_system.item,item)
 
-item=rigid_point("rear road")  ## Rear wheel touches the ground - holonomic constraint in vertical and longitudinal
+item=rigid_point("rear road") # rear wheel touches the ground - holonomic constraint in vertical and longitudinal
 item.body[1]="rear-wheel"
 item.body[2]="ground"
 item.location=[0,0,0]
@@ -94,7 +94,7 @@ item.moments=0
 item.axis=[0,1,0]
 push!(the_system.item,item)
 
-item=rigid_point("front road")  ## Front wheel touches the ground - holonomic constraint in vertical and longitudinal
+item=rigid_point("front road") # front wheel touches the ground - holonomic constraint in vertical and longitudinal
 item.body[1]="front-wheel"
 item.body[2]="ground"
 item.location=[1.02,0,0]
@@ -103,7 +103,7 @@ item.moments=0
 item.axis=[0,1,0]
 push!(the_system.item,item)
 
-item=nh_point("front tire")  ## Front wheel touches the ground - nonholonomic constraint in lateral (i.e. displacement ok, but not slip)
+item=nh_point("front tire") # front wheel touches the ground - nonholonomic constraint in lateral (i.e. displacement ok, but not slip)
 item.body[1]="front-wheel"
 item.body[2]="ground"
 item.location=[1.02,0,0]
@@ -112,7 +112,7 @@ item.moments=0
 item.axis=[0,1,0]
 push!(the_system.item,item)
 
-item=nh_point("rear tire")  ## Rear wheel touches the ground - nonholonomic constraint in lateral (i.e. displacement ok, but not slip)
+item=nh_point("rear tire") # rear wheel touches the ground - nonholonomic constraint in lateral (i.e. displacement ok, but not slip)
 item.body[1]="rear-wheel"
 item.body[2]="ground"
 item.location=[0,0,0]
@@ -121,29 +121,20 @@ item.moments=0
 item.axis=[0,1,0]
 push!(the_system.item,item)
 
-## Constrain the speed to constant,
-item=rigid_point("speed")  ## This could be nonholonomic also, I suppose, but that would just give another zero root
+# constrain the speed to constant
+item=rigid_point("speed") # this could be nonholonomic also, I suppose, but that would just give another zero root
 item.body[1]="frame"
 item.body[2]="ground"
-item.location=[0.3,0,-0.9]
+item.location=[0.3,0,h]
 item.forces=1
 item.moments=0
 item.axis=[1,0,0]
 push!(the_system.item,item)
 
-
-item=sensor("\\phi")   ## Roll angle sensor
-item.body[1]="frame"
-item.body[2]="ground"
-item.location[1]=[0.3,0,-0.9]
-item.location[2]=[0.1,0,-0.9]
-item.twist=1
-push!(the_system.item,item)
-
 location1=[1.1-0.8*sin(rake),0,-0.8*cos(rake)]
 location2=location1+0.25*[sin(rake),0,cos(rake)]
 
-item=sensor("\\delta")
+item=actuator("m_{\\delta}") # steer torque is the input
 item.body[1]="frame"
 item.body[2]="fork"
 item.location[1]=location1
@@ -151,7 +142,7 @@ item.location[2]=location2
 item.twist=1
 push!(the_system.item,item)
 
-item=actuator("m_{\\delta}")  ## The steer torque is the input
+item=sensor("\\delta") # steer angle is one output
 item.body[1]="frame"
 item.body[2]="fork"
 item.location[1]=location1
@@ -159,13 +150,13 @@ item.location[2]=location2
 item.twist=1
 push!(the_system.item,item)
 
-# item=sensor("\\psi")   ## Yaw angle sensor
-# item.body[1]="frame"
-# item.body[2]="ground"
-# item.location[1]=[0.3,0,-0.9]
-# item.location[2]=[0.3,0,-0.7]
-# item.twist=1
-# push!(the_system.item,item)
+item=sensor("\\phi")  # roll angle is one output
+item.body[1]="frame"
+item.body[2]="ground"
+item.location[1]=[0.3,0,h]
+item.location[2]=[0.2,0,h]
+item.twist=1 #angular
+push!(the_system.item,item)
 
 the_system
 

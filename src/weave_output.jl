@@ -1,4 +1,4 @@
-function weave_output(the_list,results;verbose=false,folder="output")
+function weave_output(systems,results;verbose=false,folder="output")
 ## Copyright (C) 2019, Bruce Minaker
 ## weave_output.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -57,10 +57,10 @@ end
 for i=1:nvpts
 
 	for j=1:length(results[i].mode_vals)
-		println(mode_f,"{",j,"} ",the_list[i].vpt," ",real(results[i].mode_vals[j])  ," ",imag(results[i].mode_vals[j]))  ## Write the number, the speed, then the eigenvalue
-		for k=1:length(the_list[i].system.bodys)-1
+		println(mode_f,"{",j,"} ",systems[i].vpt," ",real(results[i].mode_vals[j])  ," ",imag(results[i].mode_vals[j]))  ## Write the number, the speed, then the eigenvalue
+		for k=1:length(systems[i].bodys)-1
 			for m=1:6
-				println(centre_f,"{",j,"} {",the_list[i].system.bodys[k].name,"} ",the_list[i].vpt," ",real(results[i].centre[6*k-6+m,j])," ",imag(results[i].centre[6*k-6+m,j]))  ## Write the number, the speed ...
+				println(centre_f,"{",j,"} {",systems[i].bodys[k].name,"} ",systems[i].vpt," ",real(results[i].centre[6*k-6+m,j])," ",imag(results[i].centre[6*k-6+m,j]))  ## Write the number, the speed ...
 			end
 			println(centre_f,"")
 		end
@@ -71,13 +71,13 @@ for i=1:nvpts
 	for j=1:length(results[i].e_val)
 		realpt=real(results[i].e_val[j])
 		imagpt=imag(results[i].e_val[j])
-		println(eigen_f,"{",j,"} ",the_list[i].vpt," ",realpt," ",imagpt," ",realpt/2/pi," ",imagpt/2/pi," ",results[i].omega_n[j]," ",results[i].zeta[j]," ",results[i].tau[j]," ",results[i].lambda[j])  ## Write the number, the speed, then the eigenvalue
+		println(eigen_f,"{",j,"} ",systems[i].vpt," ",realpt," ",imagpt," ",realpt/2/pi," ",imagpt/2/pi," ",results[i].omega_n[j]," ",results[i].zeta[j]," ",results[i].tau[j]," ",results[i].lambda[j])  ## Write the number, the speed, then the eigenvalue
 	end
 	println(eigen_f,"")
 end
 
-input_names=EoM.name.(the_list[1].system.actuators)
-output_names=EoM.name.(the_list[1].system.sensors)
+input_names=EoM.name.(systems[1].actuators)
+output_names=EoM.name.(systems[1].sensors)
 
 if(nin*nout>0 && nin*nout<16)
 	for i=1:nvpts
@@ -91,7 +91,7 @@ if(nin*nout>0 && nin*nout<16)
 			end
 		else
 			## Each row starts with vpoint, followed by first column, written as a row, then next column, as a row
-			print(sstf_f,the_list[i].vpt," ")
+			print(sstf_f,systems[i].vpt," ")
 			for k in vec(results[i].ss_resp[:,:])
 				print(sstf_f,k," ")
 			end
@@ -121,7 +121,7 @@ if(nin*nout>0 && nin*nout<16)
 
 		for j=1:length(results[i].w) ## Loop over frequency range
 			## Each row starts with freq in Hz, then speed
-			print(bode_f,results[i].w[j]/2/pi," ",the_list[i].vpt," ")
+			print(bode_f,results[i].w[j]/2/pi," ",systems[i].vpt," ")
 			## Followed by first mag column, written as a row, then next column, as a row
 			for k in vec(20*log10.(mag[:,:,j]))
 				print(bode_f,k," ")

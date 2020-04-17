@@ -1,4 +1,4 @@
-function input_ex_beam(;m1=10.0,m2=10.0,EI=100.0)
+function input_ex_beam(;m1=10.0,m2=10.0,m3=10.0,EI=100.0)
 
 ## Copyright (C) 2017, Bruce Minaker
 ## This file is intended for use with Octave.
@@ -36,6 +36,7 @@ item.body[2]="body two"
 item.location[1]=[0,0,0]
 item.location[2]=[1,0,0]
 item.stiffness=EI
+item.mpul=m3
 push!(the_system.item,item)
 
 item=rigid_point("pin one")
@@ -48,7 +49,7 @@ item.axis=[0,1,0]
 push!(the_system.item,item)
 
 
-item=actuator("servo one")
+item=actuator("M")
 item.body[1]="ground"
 item.body[2]="body two"
 item.location[1]=[1,-0.5,0]
@@ -58,7 +59,7 @@ item.gain=1
 push!(the_system.item,item)
 
 
-item=sensor("sensor one")
+item=sensor("\\theta")
 item.body[1]="ground"
 item.body[2]="body two"
 item.location[1]=[1,-0.5,0]

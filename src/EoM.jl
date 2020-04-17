@@ -7,13 +7,16 @@ using Dates
 using DelimitedFiles
 
 export build_examples
+export setup
 export run_eom
 export analyze
 export full_ss
 export write_output
 export weave_output
+export write_html
 export lsim
 export splsim
+export random_road
 
 export skew
 export mbd_system
@@ -21,6 +24,11 @@ export thin_rod
 export mirror!
 
 export e_val
+export omega_n
+export zeta
+export tau
+export lambda
+export vpt
 
 macro def(name,definition)
 	return quote
@@ -81,12 +89,14 @@ include("full_ss.jl")
 include("dss2ss.jl")
 include("write_output.jl")
 include("weave_output.jl")
+include("write_html.jl")
 include("load_defln.jl")
 include("syst_props.jl")
 include("mirror.jl")
 include("thin_rod.jl")
 include("lsim.jl")
 include("splsim.jl")
+include("random_road.jl")
 include("eom_structs.jl")
 
 end  # end module

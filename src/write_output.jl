@@ -1,4 +1,4 @@
-function write_output(the_list,eoms,results;verbose=false,dir_raw="unformatted",dir_time="")
+function write_output(systems,eoms,results;verbose=false,folder="output",data=systems[1].name)
 ## Copyright (C) 2017, Bruce Minaker
 ## write_output.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -13,7 +13,8 @@ function write_output(the_list,eoms,results;verbose=false,dir_raw="unformatted",
 ##--------------------------------------------------------------------
 
 verbose && println("Writing output...")
-dir_output=setup(dir_raw,dir_time)
+dir_date,dir_time=setup(folder=folder,data=data)
+dir_data=joinpath(dir_date,dir_time)
 
 cmplx=0  ## Creates variable for number of oscillatory modes
 dmpd=0  ## Creates variable for number of non-oscillatory modes
@@ -28,29 +29,16 @@ nvpts=length(results)
 
 ## Initialize output strings
 
-eigen_f=open(joinpath(dir_output,"eigen.out"),"w")
-println(eigen_f,"###### Eigenvalues\nnum speed real imag realhz imaghz")
+eigen_f=open(joinpath(dir_data,"eigen.out"),"w")
+println(eigen_f,"###### Eigenvalues\nnum speed real imag realhz imaghz nfreq zeta tau lambda")
 
-freq_f=open(joinpath(dir_output,"freq.out"),"w")
-println(freq_f,"###### Natural Frequency\nnum speed nfreq zeta tau lambda")
+mode_f=open(joinpath(dir_data,"eigen_modes.out"),"w")
+println(mode_f,"###### Eigenvalues\nnum speed real imag")
 
-centre_f=open(joinpath(dir_output,"centre.out"),"w")
-#strs.mode=["###### Modes $nn\n"]
+centre_f=open(joinpath(dir_data,"centre.out"),"w")
 println(centre_f,"###### Rotation centre, Axis of rotation\n num name speed r ri")
 
-bode_f=open(joinpath(dir_output,"bode.out"),"w")
-println(bode_f,"###### Bode Mag Phase")
-print(bode_f,"frequency speed")
-
-for i=1:nin*nout
- 	print(bode_f," m$i")
-end
-for i=1:nin*nout
-	print(bode_f," p$i")
-end
-println(bode_f,"")
-
-sstf_f=open(joinpath(dir_output,"sstf.out"),"w")
+sstf_f=open(joinpath(dir_data,"sstf.out"),"w")
 println(sstf_f,"###### Steady State Transfer Function")
 if (nvpts>1)
 	print(sstf_f,"speed")
@@ -60,37 +48,37 @@ if (nvpts>1)
 	println(sstf_f,"")
 end
 
-hsv_f=open(joinpath(dir_output,"hsv.out"),"w")
-println(hsv_f,"###### Hankel SVD\nnum speed hsv")
+#hsv_f=open(joinpath(dir_output,"hsv.out"),"w")
+#println(hsv_f,"###### Hankel SVD\nnum speed hsv")
 
 for i=1:nvpts
-	for j=1:length(results[i].e_val)
-		realpt=real(results[i].e_val[j])
-		imagpt=imag(results[i].e_val[j])
 
-		println(eigen_f,"{",j,"} ",the_list[i].vpt," ",realpt," ",imagpt," ",realpt/2/pi," ",imagpt/2/pi)  ## Write the number, the speed, then the eigenvalue
-		println(freq_f,"{",j,"} ",the_list[i].vpt," ",results[i].omega_n[j]," ",results[i].zeta[j]," ",results[i].tau[j]," ",results[i].lambda[j])  ## Write nat freq, etc.
-
-		for k=1:length(the_list[i].system.bodys)-1
+	for j=1:length(results[i].mode_vals)
+		println(mode_f,"{",j,"} ",systems[i].vpt," ",real(results[i].mode_vals[j])  ," ",imag(results[i].mode_vals[j]))  ## Write the number, the speed, then the eigenvalue
+		for k=1:length(systems[i].bodys)-1
 			for m=1:6
-				println(centre_f,"{",j,"} {",the_list[i].system.bodys[k].name,"} ",the_list[i].vpt," ",real(results[i].centre[6*k-6+m,j])," ",imag(results[i].centre[6*k-6+m,j]))  ## Write the number, the speed ...
+				println(centre_f,"{",j,"} {",systems[i].bodys[k].name,"} ",systems[i].vpt," ",real(results[i].centre[6*k-6+m,j])," ",imag(results[i].centre[6*k-6+m,j]))  ## Write the number, the speed ...
 			end
 			println(centre_f,"")
 		end
 		println(centre_f,"")
 	end
-	println(eigen_f,"")
-	println(freq_f,"")
-end
+	println(mode_f,"")
 
-input_names=EoM.name.(the_list[1].system.actuators)
-output_names=EoM.name.(the_list[1].system.sensors)
+	for j=1:length(results[i].e_val)
+		realpt=real(results[i].e_val[j])
+		imagpt=imag(results[i].e_val[j])
+		println(eigen_f,"{",j,"} ",systems[i].vpt," ",realpt," ",imagpt," ",realpt/2/pi," ",imagpt/2/pi," ",results[i].omega_n[j]," ",results[i].zeta[j]," ",results[i].tau[j]," ",results[i].lambda[j])  ## Write the number, the speed, then the eigenvalue
+	end
+	println(eigen_f,"")
+end
+input_names=EoM.name.(systems[1].actuators)
+output_names=EoM.name.(systems[1].sensors)
 
 if(nin*nout>0 && nin*nout<16)
 	for i=1:nvpts
 		if(nvpts==1)
 			println(sstf_f,"num outputtoinput gain")
-
 			for j=1:nout
 				for k=1:nin
 					print(sstf_f,"{",(j-1)*nin+k,"} ")
@@ -99,12 +87,24 @@ if(nin*nout>0 && nin*nout<16)
 			end
 		else
 			## Each row starts with vpoint, followed by first column, written as a row, then next column, as a row
-			print(sstf_f,the_list[i].vpt," ")
+			print(sstf_f,systems[i].vpt," ")
 			for k in vec(results[i].ss_resp[:,:])
 				print(sstf_f,k," ")
 			end
 			println(sstf_f,"")
 		end
+
+		bode_f=open(joinpath(dir_data,"bode_$i.out"),"w")
+		println(bode_f,"###### Bode Mag Phase")
+		print(bode_f,"frequency speed")
+
+		for i=1:nin*nout
+		 	print(bode_f," m$i")
+		end
+		for i=1:nin*nout
+			print(bode_f," p$i")
+		end
+		println(bode_f,"")
 
 		mag=abs.(results[i].freq_resp).+eps(1.0)
 		phs=angle.(results[i].freq_resp)  ## Search for where angle changes by almost 1 rotation
@@ -117,7 +117,7 @@ if(nin*nout>0 && nin*nout<16)
 
 		for j=1:length(results[i].w) ## Loop over frequency range
 			## Each row starts with freq in Hz, then speed
-			print(bode_f,results[i].w[j]/2/pi," ",the_list[i].vpt," ")
+			print(bode_f,results[i].w[j]/2/pi," ",systems[i].vpt," ")
 			## Followed by first mag column, written as a row, then next column, as a row
 			for k in vec(20*log10.(mag[:,:,j]))
 				print(bode_f,k," ")
@@ -127,25 +127,23 @@ if(nin*nout>0 && nin*nout<16)
 			end
 			println(bode_f,"")
 		end
-		println(bode_f,"")
-# #		strs.zeros=[strs.zeros sprintf('%4.12e ',real(result{i}.math.zros),imag(result{i}.math.zros))];
+		close(bode_f)
 
-		for j=1:length(results[i].hsv)
-			println(hsv_f,"{",j,"} ",the_list[i].vpt," ",results[i].hsv[j])  ## Write the vpoint (e.g. speed), then the hankel_sv
-		end
-		println(hsv_f,"")
+		#for j=1:length(results[i].hsv)
+		#	println(hsv_f,"{",j,"} ",the_list[i].vpt," ",results[i].hsv[j])  ## Write the vpoint (e.g. speed), then the hankel_sv
+		#end
+		#println(hsv_f,"")
 	end
 end
 
-close(bode_f)
 close(sstf_f)
 close(eigen_f)
-close(freq_f)
+close(mode_f)
 close(centre_f)
-close(hsv_f)
+#close(hsv_f)
 
-load_defln(the_list[1].system,dir_output)
-syst_props(the_list[1].system,dir_output)
+load_defln(systems[1],dir_data)
+syst_props(systems[1],dir_data)
 
 str="list_in=\""
 for i in input_names
@@ -177,25 +175,24 @@ else
 	end
 end
 
-out=joinpath(dir_output,"plots.gp")
+out=joinpath(dir_data,"plots.gp")
 open(out,"w") do file
 	write(file,str)
 end
 
-dss_path=joinpath(dir_output,dir_raw,"dss")
-ss_path=joinpath(dir_output,dir_raw,"ss")
-#jordan_path=joinpath(dir_output,dir_raw,"jordan")
+dss_path=joinpath(dir_data,"dss")
+ss_path=joinpath(dir_data,"ss")
 
-writedlm(joinpath(dss_path,"A.out"),eoms[1].A)
-writedlm(joinpath(dss_path,"B.out"),eoms[1].B)
-writedlm(joinpath(dss_path,"C.out"),eoms[1].C)
-writedlm(joinpath(dss_path,"D.out"),eoms[1].D)
-writedlm(joinpath(dss_path,"E.out"),eoms[1].E)
+writedlm(joinpath(dss_path,"A.out"),eoms[end].A)
+writedlm(joinpath(dss_path,"B.out"),eoms[end].B)
+writedlm(joinpath(dss_path,"C.out"),eoms[end].C)
+writedlm(joinpath(dss_path,"D.out"),eoms[end].D)
+writedlm(joinpath(dss_path,"E.out"),eoms[end].E)
 
-writedlm(joinpath(ss_path,"A.out"),results[1].ss_eqns.A)
-writedlm(joinpath(ss_path,"B.out"),results[1].ss_eqns.B)
-writedlm(joinpath(ss_path,"C.out"),results[1].ss_eqns.C)
-writedlm(joinpath(ss_path,"D.out"),results[1].ss_eqns.D)
+writedlm(joinpath(ss_path,"A.out"),results[end].ss_eqns.A)
+writedlm(joinpath(ss_path,"B.out"),results[end].ss_eqns.B)
+writedlm(joinpath(ss_path,"C.out"),results[end].ss_eqns.C)
+writedlm(joinpath(ss_path,"D.out"),results[end].ss_eqns.D)
 
 # sys=[results[1].ss_eqns.A results[1].ss_eqns.B; results[1].ss_eqns.C results[1].ss_eqns.D]
 # sys=(abs.(sys).>=1e-9).*sys
@@ -210,20 +207,20 @@ writedlm(joinpath(ss_path,"D.out"),results[1].ss_eqns.D)
 # sys=(abs.(sys).>=1e-9).*sys
 # writedlm(joinpath(jordan_path,"ABCD.out"),sys)
 
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"mass.tex"),the_list[1].data.mass)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"s_stiff.tex"),the_list[1].data.stiffness)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"t_stiff.tex"),the_list[1].data.tangent_stiffness)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"l_stiff.tex"),the_list[1].data.load_stiffness)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"stiff.tex"),the_list[1].data.stiffness+the_list[1].data.load_stiffness+the_list[1].data.tangent_stiffness)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"damping.tex"),the_list[1].data.load_stiffness)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"velocity.tex"),the_list[1].data.velocity)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"momentum.tex"),the_list[1].data.momentum)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"constraint.tex"),the_list[1].data.constraint)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"nh_constraint.tex"),the_list[1].data.nh_constraint)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"input.tex"),the_list[1].data.input)
-write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"output.tex"),the_list[1].data.output)
+# write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"mass.tex"),the_list[1].data.mass)
+# write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"s_stiff.tex"),the_list[1].data.stiffness)
+# write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"t_stiff.tex"),the_list[1].data.tangent_stiffness)
+# write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"l_stiff.tex"),the_list[1].data.load_stiffness)
+# write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"stiff.tex"),the_list[1].data.stiffness+the_list[1].data.load_stiffness+the_list[1].data.tangent_stiffness)
+# write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"damping.tex"),the_list[1].data.load_stiffness)
+# write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"velocity.tex"),the_list[1].data.velocity)
+# write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"momentum.tex"),the_list[1].data.momentum)
+# write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"constraint.tex"),the_list[1].data.constraint)
+# write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"nh_constraint.tex"),the_list[1].data.nh_constraint)
+# write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"input.tex"),the_list[1].data.input)
+# write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"output.tex"),the_list[1].data.output)
 
-dir_output
+dir_date,dir_time
 
 end ## Leave
 
@@ -260,48 +257,3 @@ function write_mtx_ptrn(file_name,mtx)
 		write(handle,str)
 	end
 end
-
-
-#
-# omegan=abs(results[i].e_val[j])
-# zeta=-realpt/omegan
-# lambda=2*pi/abs(imagpt)
-# tau=-1/realpt
-#
-# if abs(realpt)<1e-10
-# 	tau=Inf
-# 	zeta=0
-# end
-#
-# if abs(imagpt)<1e-10
-# 	lambda=NaN
-# 	omegan=NaN
-# 	zeta=NaN
-# end
-
-#		eigen*="{$j} $(the_list[i].vpt) "*@sprintf("%.12e ",realpt)*@sprintf("%.12e ",imagpt)*@sprintf("%.12e ",realpt/2/pi)*@sprintf("%.12e ",imagpt/2/pi)*"\n"  ## Write the number, the speed, then the eigenvalue
-#		freq*="{$j} $(the_list[i].vpt) "*@sprintf("%.12e ",omegan/2/pi)*@sprintf("%.12e ",zeta)*@sprintf("%.12e ",tau)*@sprintf("%.12e ",lambda)*"\n"  ## Write nat freq, etc.
-
-# writedlm_ptrn(eoms[1].Am,joinpath(dir_output,dir_raw,"Amp.out"))
-# writedlm_ptrn(eoms[1].Bm,joinpath(dir_output,dir_raw,"Bmp.out"))
-# writedlm_ptrn(eoms[1].Cm,joinpath(dir_output,dir_raw,"Cmp.out"))
-# writedlm_ptrn(eoms[1].Dm,joinpath(dir_output,dir_raw,"Dmp.out"))
-#
-# writedlm_ptrn([eoms[1].Am eoms[1].Bm; eoms[1].Cm eoms[1].Dm],joinpath(dir_output,dir_raw,"ABCDmp.out"))
-
-# mtx=eoms[1].stiffness+eoms[1].tangent_stiffness+eoms[1].load_stiffness
-# r,c,v=findnz(mtx)
-# writedlm(joinpath(pwd(),dir_output,dir_raw,"stiffness_matrix.out"),[r c v])
-
-#writedlm(joinpath(pwd(),dir_output,dir_raw,"M.out"),result[1].M)
-#writedlm(joinpath(pwd(),dir_output,dir_raw,"KC.out"),result[1].KC)
-#writedlm(joinpath(pwd(),dir_output,dir_raw,"J.out"),result[1].right_jacobian)
-
-# writedlm(joinpath(pwd(),dir_output,dir_raw,"mass.out"),result[1].mass)
-# writedlm(joinpath(pwd(),dir_output,dir_raw,"input.out"),result[1].input)
-# writedlm(joinpath(pwd(),dir_output,dir_raw,"output.out"),result[1].output)
-# writedlm(joinpath(pwd(),dir_output,dir_raw,"stiff.out"),result[1].stiffness)
-# writedlm(joinpath(pwd(),dir_output,dir_raw,"tstiff.out"),result[1].tangent_stiffness)
-# writedlm(joinpath(pwd(),dir_output,dir_raw,"lstiff.out"),result[1].load_stiffness)
-# writedlm(joinpath(pwd(),dir_output,dir_raw,"momentum.out"),result[1].momentum)
-# writedlm(joinpath(pwd(),dir_output,dir_raw,"constraint.out"),result[1].constraint)

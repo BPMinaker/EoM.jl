@@ -63,8 +63,8 @@ for i=1:nvpts
 	result[i].zeta[idx].=0
 
 	idx=abs.(imag.(result[i].e_val)).<1e-10
-	result[i].lambda[idx].=NaN
-	result[i].omega_n[idx].=NaN
+	result[i].lambda[idx].=Inf
+	result[i].omega_n[idx].=0
 	result[i].zeta[idx].=NaN
 
 	t=abs.(result[i].e_val)

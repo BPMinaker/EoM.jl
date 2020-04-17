@@ -168,8 +168,6 @@ item.body[1]="front unsprung"
 item.actuator="front bump"
 item.location[1]=[0.1,0,0.3]
 item.location[2]=[0.1,0,0]
-item.twist=0
-item.gain=1
 push!(the_system.item,item)
 
 the_system

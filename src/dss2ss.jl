@@ -82,6 +82,10 @@ BKC=B*K*C
 nk=norm(BKC)
 BKC*=na/nk
 valk=eigvals(A+BKC)  ## find eigs of A+BKC
+#println("val")
+#display(val)
+#println("valk")
+#display(valk)
 
 n=length(val)  ## find matching values in A, A+BKC
 idx=fill(true,n)  ## we keep all vecs
@@ -89,12 +93,15 @@ for i=1:n
 	for j=1:n
 		if abs(val[i]-valk[j])<1e-5  ## remove the ones that match
 			idx[i]=false
+			valk[j]=NaN
+			break
 		end
 	end
 end
 # println("idx",idx)
 
 vectr=vectr[:,idx]  ## keep only those vecs that are minimal
+# note that this is wrong!!!! if we have repeated oscillatory roots!!!!!
 vectl=vectl[:,idx]
 val=val[idx]  ## keep only the min e-vals
 ud=ud[idx]

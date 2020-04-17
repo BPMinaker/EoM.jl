@@ -16,13 +16,13 @@ function input_ex_smd(;m=1.0,c=0.1,k=10.0)
 ## A classic spring mass damper problem.
 the_system=mbd_system("Spring Mass Damper")
 
-## Add the body
+# Add the body
 item=body("block")
 item.mass=m
 item.location=[0,0,1]
 push!(the_system.item,item)
 
-## Constrain the body to one translation in z, and no rotations
+# Constrain the body to one translation in z, and no rotations
 item=rigid_point("slider 1")
 item.body[1]="block"
 item.body[2]="ground"
@@ -32,7 +32,7 @@ item.moments=3
 item.axis=[0,0,1]
 push!(the_system.item,item)
 
-## Add a flex_point, with damping, to connect our body to ground, aligned with z-axis
+# Add a flex_point, with damping, to connect our body to ground, aligned with z-axis
 item=flex_point("spring 1")
 item.body[1]="block"
 item.body[2]="ground"
@@ -44,7 +44,7 @@ item.moments=0
 item.axis=[0,0,1]
 push!(the_system.item,item)
 
-## The actuator is a 'line item' and defined by two locations, location[1] attaches to body[1]...
+# The actuator is a 'line item' and defined by two locations, location[1] attaches to body[1]...
 item=actuator("f")
 item.body[1]="block"
 item.body[2]="ground"
@@ -52,14 +52,14 @@ item.location[1]=[0.05,0,1]
 item.location[2]=[0.05,0,0]
 push!(the_system.item,item)
 
-item=sensor("x")
+item=sensor("z")
 item.body[1]="block"
 item.body[2]="ground"
 item.location[1]=[0,0.05,1]
 item.location[2]=[0,0.05,0]
 push!(the_system.item,item)
 
-item=sensor("\\dot{x}")
+item=sensor("\\dot{z}")
 item.body[1]="block"
 item.body[2]="ground"
 item.location[1]=[0,0.05,1]

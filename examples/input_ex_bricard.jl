@@ -104,7 +104,7 @@ item.axis=[0,1,0]
 push!(the_system.item,item)
 
 ## The actuator is a 'line item' and defined by two locations, location[1] attaches to body[1]...
-item=actuator("Actuator 1")
+item=actuator("N")
 item.body[1]="Rod 1"
 item.body[2]="ground"
 item.location[1]=p0
@@ -112,7 +112,7 @@ item.location[2]=p0+[0,0,0.1]
 item.twist=true
 push!(the_system.item,item)
 
-item=sensor("sensor 1")
+item=sensor("\\psi")
 item.body[1]="Rod 1"
 item.body[2]="ground"
 item.location[1]=p0
