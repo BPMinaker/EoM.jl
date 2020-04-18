@@ -87,7 +87,9 @@ if nvpts==1
 	d=hcat(lambda.(results)...)
 	title=["No." "ω_n [Hz]" "ζ" "τ [s]" "λ [s]"]
 	values=[a b c d]
-	println(output_f,html_table([title; 1:1:length(a) values]))
+	println(output_f,html_table([title;1:1:length(a) round.(values,digits=6)]))
+	println(output_f,"<h2>Rotation centres of first body</h2>")
+	println(output_f,html_table(round.([results[1].mode_vals';results[1].centre[1:6,1:end]],digits=6)))
 else
 	p=plot(xlabel="Speed [m/s]",ylabel="Eigenvalue [1/s]",size=(600,300))
 	plot!(p,v,sr'[:,1],seriestype=:scatter,label="Real")
@@ -97,7 +99,7 @@ else
 # save the figure
 	path=joinpath(dir_data,"eigen.html")
 	savefig(p,path)
-# write the link to the figure into the main file	
+# write the link to the figure into the main file
 	path=joinpath(dir_time,"eigen.html")
 	println(output_f,"<iframe src=\"$path\" width=625 height=325 frameborder=0 ></iframe>")
 	println(output_f,"")
@@ -126,7 +128,7 @@ if(nin*nout>0 && nin*nout<16)
 	# save the figure
 					path=joinpath(dir_data,"sstf_$(i)_$(j).html")
 					savefig(p,path)
-	# write the link to the figure into the main file	
+	# write the link to the figure into the main file
 					path=joinpath(dir_time,"sstf_$(i)_$(j).html")
 					println(output_f,"<iframe src=\"$path\" width=625 height=325 frameborder=0 ></iframe>")
 					println(output_f,"")
@@ -136,18 +138,18 @@ if(nin*nout>0 && nin*nout<16)
 	end
 # if only one vpt, make a table of the gains
 	if nvpts==1
-		println(output_f,html_table(["Labels" "Gain"; labels gain]))
+		println(output_f,html_table(["Labels" "Gain"; labels round.(gain,digits=6)]))
 	end
 
 	println(output_f,"<h2>Bode plots</h2>")
 # pick out up to four representative vpts from the list
 	l=unique(Int.(round.((nvpts-1).*[1,3,5,7]/8 .+1)))
-# loop pver outputs and inputs and selected vpts	
+# loop pver outputs and inputs and selected vpts
 	for i=1:nout
 		for j=1:nin
 			n=(i-1)*nin+j
 			if findnext(bode .==n,1) == nothing
-# make empty plots of magnitude and phase 
+# make empty plots of magnitude and phase
 				p1=plot(xlabel="",ylabel="|$(output_names[i])|/|$(input_names[j])| [dB]",xscale=:log10,legend=:top)
 				p2=plot(xlabel="Frequency [Hz]",ylabel="∠ $(output_names[i])/$(input_names[j]) [deg]",xscale=:log10,ylims=(-180,180),yticks=-180:60:180)
 # fill in for each selected vpt
@@ -170,7 +172,7 @@ if(nin*nout>0 && nin*nout<16)
 # save the figure
 				path=joinpath(dir_data,"bode_$(i)_$(j).html")
 				savefig(p,path)
-# write the link to the figure into the main file	
+# write the link to the figure into the main file
 				path=joinpath(dir_time,"bode_$(i)_$(j).html")
 				println(output_f,"<iframe src=\"$path\" width=625 height=475 frameborder=0></iframe>")
 				println(output_f,"")
@@ -187,7 +189,7 @@ for i=1:n
 # save the figure
 	path=joinpath(dir_data,"plot_$(i).html")
 	savefig(plots[i],path)
-# write the link to the figure into the main file	
+# write the link to the figure into the main file
 	path=joinpath(dir_time,"plot_$(i).html")
 	println(output_f,"<iframe src=\"$path\" width=625 height=425 frameborder=0></iframe>")
 	println(output_f,"")
