@@ -1,5 +1,4 @@
 using Plots
-plotly()
 
 function write_html(systems,results,dirs,plots...;filename="result",ss=[0],bode=[0],verbose=false)
 ## Copyright (C) 2020, Bruce Minaker
@@ -14,6 +13,8 @@ function write_html(systems,results,dirs,plots...;filename="result",ss=[0],bode=
 ## General Public License for more details at www.gnu.org/copyleft/gpl.html.
 ##
 ##--------------------------------------------------------------------
+
+plotly()
 
 verbose && println("Writing output...")
 # set up the paths
@@ -156,8 +157,12 @@ if(nin*nout>0 && nin*nout<16)
 					phs=180/pi*angle.(results[k].freq_resp[i,j,:])
 # set wrap arounds in phase to Inf to avoid jumps in plot
 					phs[findall(abs.(diff(phs)).>180)].=Inf
-
-					p1=plot!(p1,w,mag,lw=2,label="u=$(v[k]) m/s")
+					if length(l)==1
+						lb=""
+					else
+						lb="u=$(v[k]) m/s"
+					end
+					p1=plot!(p1,w,mag,lw=2,label=lb)
 					p2=plot!(p2,w,phs,lw=2,label="")
 # merge two subplots
 					p=plot(p1,p2,layout=grid(2,1,heights=[0.66,0.33]),size=(600,450))

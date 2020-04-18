@@ -15,7 +15,7 @@ function input_ex_full_car(;u=0,a=1.189,b=2.885-1.189,tf=1.595,tr=1.631,kf=17000
 
 the_system=mbd_system("Full Car Model")
 
-## Add one body representing the chassis
+# add one body representing the chassis
 item=body("chassis")
 item.mass=m
 item.moments_of_inertia=[Ix,Iy,0]  ## Only the Iy term matters here
@@ -53,17 +53,15 @@ item.velocity=[u,0,0]
 push!(the_system.item,item)
 push!(the_system.item,weight(item))
 
-
-
-## Front suspension
+# front suspension
 item=flex_point("left front spring")
 item.body[1]="chassis"
 item.body[2]="left front unsprung"
-item.location=[a,tf/2,0.25]  ## Front axle "a" m ahead of cg
+item.location=[a,tf/2,0.25] # front axle "a" m ahead of cg
 item.forces=1
 item.moments=0
-item.axis=[0,0,1]  ## Spring acts in z direction
-item.stiffness=[kf,0]  ## Linear stiffness "kf" N/m; (torsional stiffness zero, not a torsion spring so has no effect
+item.axis=[0,0,1] # spring acts in z direction
+item.stiffness=[kf,0] # linear stiffness "kf" N/m; (torsional stiffness zero, not a torsion spring so has no effect
 item.damping=[cf,0]
 push!(the_system.item,item)
 
@@ -78,8 +76,7 @@ item.stiffness=[kf,0]  ## Linear stiffness "kf" N/m; (torsional stiffness zero, 
 item.damping=[cf,0]
 push!(the_system.item,item)
 
-
-## Rear suspension
+# rear suspension
 item=flex_point("left rear spring")
 item.body[1]="chassis"
 item.body[2]="left rear unsprung"
@@ -91,20 +88,18 @@ item.stiffness=[kr,0]  ## Linear stiffness "kr" N/m; (torsional stiffness zero, 
 item.damping=[cr,0]
 push!(the_system.item,item)
 
-
 item=flex_point("right rear spring")
 item.body[1]="chassis"
 item.body[2]="right rear unsprung"
 item.location=[-b,-tr/2,0.25]  ## Front axle "a" m ahead of cg
 item.forces=1
 item.moments=0
-item.axis=[0,0,1]  ## Spring acts in z direction
-item.stiffness=[kr,0]  ## Linear stiffness "kr" N/m; (torsional stiffness zero, not a torsion spring so has no effect
+item.axis=[0,0,1]  # spring acts in z direction
+item.stiffness=[kr,0]  # linear stiffness "kr" N/m; (torsional stiffness zero, not a torsion spring so has no effect
 item.damping=[cr,0]
 push!(the_system.item,item)
 
-
-
+# tires
 item=flex_point("left front tire")
 item.body[1]="left front unsprung"
 item.body[2]="ground"
@@ -115,7 +110,6 @@ item.forces=1
 item.moments=0
 item.axis=[0,0,1]
 push!(the_system.item,item)
-
 
 item=flex_point("right front tire")
 item.body[1]="right front unsprung"
@@ -128,7 +122,6 @@ item.moments=0
 item.axis=[0,0,1]
 push!(the_system.item,item)
 
-
 item=flex_point("left rear tire")
 item.body[1]="left rear unsprung"
 item.body[2]="ground"
@@ -139,7 +132,6 @@ item.forces=1
 item.moments=0
 item.axis=[0,0,1]
 push!(the_system.item,item)
-
 
 item=flex_point("right rear tire")
 item.body[1]="right rear unsprung"
@@ -152,9 +144,7 @@ item.moments=0
 item.axis=[0,0,1]
 push!(the_system.item,item)
 
-
-
-
+# suspension constraints
 item=rigid_point("left front susp")
 item.body[1]="left front unsprung"
 item.body[2]="chassis"
@@ -191,9 +181,7 @@ item.moments=3
 item.axis=[0,0,1]
 push!(the_system.item,item)
 
-
-
-## Constrain to linear motion in z direction (bounce)
+# constrain to linear motion in z direction (bounce)
 item=rigid_point("road frc")
 item.body[1]="chassis"
 item.body[2]="ground"
@@ -203,19 +191,18 @@ item.moments=0
 item.axis=[0,0,1]
 push!(the_system.item,item)
 
-
+# constrain to rotational motion around x and y axes (roll and pitch)
 item=rigid_point("road mmt")
 item.body[1]="chassis"
 item.body[2]="ground"
 item.location=[0,0,0.25]
-item.forces=0  ## Constrain to rotational motion around y axis (pitch)
-item.moments=1  ## Reset forces, moments axis, all other properties are the same
+item.forces=0
+item.moments=1
 item.axis=[0,0,1]
 push!(the_system.item,item)
 
-
-## Force motion
-item=actuator("left front bump")
+# force motion
+item=actuator("u_lf")
 item.body[1]="left front unsprung"
 item.body[2]="ground"
 item.location[1]=[a,tf/2,0.25]
@@ -223,34 +210,31 @@ item.location[2]=[a,tf/2,0]
 item.gain=kt
 push!(the_system.item,item)
 
-
-## Measure the bounce and pitch
-item=sensor("\$z_\\text{G}\$")
+# measure the bounce, pitch, and roll
+item=sensor("z_G")
 item.body[1]="chassis"
 item.body[2]="ground"
 item.location[1]=[0,0,0.25]
 item.location[2]=[0,0,0]
 push!(the_system.item,item)
 
-
-item=sensor("\$\\theta\$")
+item=sensor("θ(a+b)")
 item.body[1]="chassis"
 item.body[2]="ground"
 item.location[1]=[0,0,0.25]
 item.location[2]=[0,0.25,0.25]
-item.gain=180/pi;  ## deg/rad
-item.twist=1;
+item.gain=a+b
+item.twist=1
 push!(the_system.item,item)
 
-item=sensor("\$\\phi\$")
+item=sensor("ϕ(t_f)")
 item.body[1]="chassis"
 item.body[2]="ground"
 item.location[1]=[0,0,0.25]
 item.location[2]=[0.25,0,0.25]
-item.gain=180/pi;  ## deg/rad
-item.twist=1;
+item.gain=tf
+item.twist=1
 push!(the_system.item,item)
-
 
 the_system
 

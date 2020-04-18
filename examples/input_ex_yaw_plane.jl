@@ -96,17 +96,14 @@ item.moments=0
 item.axis=[1,0,0]
 push!(the_system.item,item)
 
-# Measure the understeer angle in rad
-item=sensor("α_u")
+# Measure the yaw rate in rad/s
+item=sensor("r")
 item.body[1]="chassis"
 item.body[2]="ground"
 item.location[1]=[0,0,0]
 item.location[2]=[0,0,0.1]
 item.twist=1 # angular
 item.order=2 # velocity
-item.gain=-(a+b)/u
-item.actuator="δ_f"
-item.actuator_gain=1
 push!(the_system.item,item)
 
 # Measure the body slip angle in rad
@@ -118,6 +115,19 @@ item.location[2]=[0,0.1,0]
 item.order=2 # velocity
 item.frame=0 # local frame
 item.gain=1/u
+push!(the_system.item,item)
+
+# Measure the understeer angle in rad
+item=sensor("α_u")
+item.body[1]="chassis"
+item.body[2]="ground"
+item.location[1]=[0,0,0]
+item.location[2]=[0,0,0.1]
+item.twist=1 # angular
+item.order=2 # velocity
+item.gain=-(a+b)/u
+item.actuator="δ_f"
+item.actuator_gain=1
 push!(the_system.item,item)
 
 # Measure the lateral acceleration in g
