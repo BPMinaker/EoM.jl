@@ -33,7 +33,7 @@ str_open="<!doctype html>
     <style>
     table {
       border-collapse: collapse;
-      width: 50%;
+      width: 75%;
     }
     td, th {
       border: 1px solid #dddddd;
@@ -89,7 +89,9 @@ if nvpts==1
 	values=[a b c d]
 	println(output_f,html_table([title;1:1:length(a) round.(values,digits=6)]))
 	println(output_f,"<h2>Rotation centres of first body</h2>")
-	println(output_f,html_table(round.([results[1].mode_vals';results[1].centre[1:6,1:end]],digits=6)))
+
+	temp=round.([results[1].mode_vals (results[1].centre[1:6,1:end])'],digits=6)
+	println(output_f,html_table( [["Eigenvalue" "x" "y" "z" "u_x" "u_y" "u_z"];temp]))
 else
 	p=plot(xlabel="Speed [m/s]",ylabel="Eigenvalue [1/s]",size=(600,300))
 	plot!(p,v,sr'[:,1],seriestype=:scatter,label="Real")
