@@ -26,7 +26,7 @@ if(u==0)
 	error("Speed must be non-zero!")
 end
 
-# Add one rigid body
+# add one rigid body
 item=body("chassis")
 item.mass=m
 item.moments_of_inertia=[0,0,I]
@@ -35,7 +35,7 @@ item.location=[0,0,0]
 item.velocity=[u,0,0]
 push!(the_system.item,item)
 
-# Add a damping, to connect our body to ground, aligned with y-axis (front tire)
+# add a damping, to connect our body to ground, aligned with y-axis (front tire)
 item=flex_point("front tire")
 item.body[1]="chassis"
 item.body[2]="ground"
@@ -46,7 +46,7 @@ item.axis=[0,1,0]
 item.damping=[cf/u,0]
 push!(the_system.item,item)
 
-# Rear tire
+# rear tire
 item=flex_point("rear tire")
 item.body[1]="chassis"
 item.body[2]="ground"
@@ -57,7 +57,7 @@ item.axis=[0,1,0]
 item.damping=[cr/u,0]
 push!(the_system.item,item)
 
-# Add an actuator to apply the steering force
+# add an actuator to apply the steering force
 item=actuator("δ_f")
 item.body[1]="chassis"
 item.body[2]="ground"
@@ -66,7 +66,7 @@ item.location[2]=[a,0.1,0]
 item.gain=cf
 push!(the_system.item,item)
 
-# Rear wheel steer, off by default
+# rear wheel steer, off by default
 item=actuator("δ_r")
 item.body[1]="chassis"
 item.body[2]="ground"
@@ -75,7 +75,7 @@ item.location[2]=[-b,-0.1,0]
 item.gain=cr
 #push!(the_system.item,item)
 
-# Constrain to planar motion
+# constrain to planar motion
 item=rigid_point("road")
 item.body[1]="chassis"
 item.body[2]="ground"
@@ -85,8 +85,9 @@ item.moments=2
 item.axis=[0,0,1]
 push!(the_system.item,item)
 
-# Constrain chassis in the forward direction
-# The left/right symmetry of the chassis tells us that the lateral and longitudinal motions are decoupled anyway
+# constrain chassis in the forward direction
+# the left/right symmetry of the chassis tells us that the lateral and longitudinal motions are decoupled anyway
+# could use nhpoint instead of rigid here, but just gives another zero eigenvalue, which causes grief elsewhere due to repeated zero roots
 item=rigid_point("speed")
 item.body[1]="chassis"
 item.body[2]="ground"
@@ -96,7 +97,7 @@ item.moments=0
 item.axis=[1,0,0]
 push!(the_system.item,item)
 
-# Measure the yaw rate in rad/s
+# measure the yaw rate in rad/s
 item=sensor("r")
 item.body[1]="chassis"
 item.body[2]="ground"
@@ -106,7 +107,7 @@ item.twist=1 # angular
 item.order=2 # velocity
 push!(the_system.item,item)
 
-# Measure the body slip angle in rad
+# measure the body slip angle in rad
 item=sensor("β")
 item.body[1]="chassis"
 item.body[2]="ground"
@@ -117,7 +118,7 @@ item.frame=0 # local frame
 item.gain=1/u
 push!(the_system.item,item)
 
-# Measure the understeer angle in rad
+# measure the understeer angle in rad
 item=sensor("α_u")
 item.body[1]="chassis"
 item.body[2]="ground"
@@ -130,7 +131,7 @@ item.actuator="δ_f"
 item.actuator_gain=1
 push!(the_system.item,item)
 
-# Measure the lateral acceleration in g
+# measure the lateral acceleration in g
 item=sensor("a_y")
 item.body[1]="chassis"
 item.body[2]="ground"
@@ -140,17 +141,14 @@ item.order=3 # acceleration
 item.gain=1/9.81
 push!(the_system.item,item)
 
-
-# Note that the y location will not reach steady state with constant delta
-# input, so adding the sensor will give an error if the steady state gain
-# is computed.  It will work fine when a time history is computed.
+# note that the y location will not reach steady state with constant delta input, so adding the sensor will give an error if the steady state gain is computed, but is included so that a time history can be computed
 item=sensor("y_f")
 item.body[1]="chassis"
 item.body[2]="ground"
-item.location[1]=[a,0,0]
-item.location[2]=[a,0.1,0]
+item.location[1]=[0,0,0]
+item.location[2]=[0,0.1,0]
 push!(the_system.item,item)
 
 the_system
 
-end ## Leave
+end

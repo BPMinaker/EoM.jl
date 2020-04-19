@@ -70,7 +70,7 @@ item.body[1]="front unsprung"
 item.body[2]="ground"
 item.stiffness=[kt,0]
 item.damping=[0,0]
-item.location=[a,0,0.15]
+item.location=[a,0,0]
 item.forces=1
 item.moments=0
 item.axis=[0,0,1]
@@ -81,7 +81,7 @@ item.body[1]="rear unsprung"
 item.body[2]="ground"
 item.stiffness=[kt,0]
 item.damping=[0,0]
-item.location=[-b,0,0.15]
+item.location=[-b,0,0]
 item.forces=1
 item.moments=0
 item.axis=[0,0,1]
@@ -128,7 +128,7 @@ push!(the_system.item,item)
 item=actuator("u_f")
 item.body[1]="front unsprung"
 item.body[2]="ground"
-item.location[1]=[a,0,0.25]
+item.location[1]=[a,0,0.1]
 item.location[2]=[a,0,0]
 item.gain=kt
 push!(the_system.item,item)
@@ -154,8 +154,8 @@ item=sensor("z_2-u_f")
 item.body[1]="front unsprung"
 item.body[2]="ground"
 item.actuator="u_f"
-item.location[1]=[0.1,0,0.3]
-item.location[2]=[0.1,0,0]
+item.location[1]=[a,0,0.1]
+item.location[2]=[a,0,0]
 push!(the_system.item,item)
 
 the_system

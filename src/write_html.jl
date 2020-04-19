@@ -1,6 +1,6 @@
 using Plots
 
-function write_html(systems,results,dirs,plots...;filename="result",ss=[0],bode=[0],verbose=false)
+function write_html(systems,results,plots...;folder="output",filename="result",ss=1:1:length(systems[1].sensors),bode=1:1:length(systems[1].sensors),verbose=false)
 ## Copyright (C) 2020, Bruce Minaker
 ## write_md.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@ plotly()
 
 verbose && println("Writing output...")
 # set up the paths
+dirs=setup(folder=folder,data=systems[1].name)
 dir_date=dirs[1]
 dir_time=dirs[2]
 dir_data=joinpath(dir_date,dir_time)
@@ -116,7 +117,7 @@ if(nin*nout>0 && nin*nout<16)
 	for i=1:nout
 		for j=1:nin
 			n=(i-1)*nin+j
-			if findnext(ss .==n,1) == nothing
+			if findnext(ss .==n,1) != nothing
 				x=zeros(nvpts)
 				for k=1:nvpts
 					x[k]=results[k].ss_resp[i,j]
@@ -148,34 +149,32 @@ if(nin*nout>0 && nin*nout<16)
 	l=unique(Int.(round.((nvpts-1).*[1,3,5,7]/8 .+1)))
 	if length(l)==1
 		for i=1:nin
-			if findnext(bode .==i,1) == nothing
-				# fill in for each selected vpt
-				w=results[l[1]].w/2/pi
-				mag=20*log10.(abs.(results[l[1]].freq_resp[:,i,:]).+eps(1.0))
-				phs=180/pi*angle.(results[l[1]].freq_resp[:,i,:])
-				# set wrap arounds in phase to Inf to avoid jumps in plot
-				phs[findall(abs.(diff(phs,dims=2)).>180)].=Inf
-				lb=hcat(output_names...)
-				lb.*="/"*input_names[i]
-				p1=plot(w,mag',lw=2,label=lb,xlabel="",ylabel="Gain [dB]",xscale=:log10,ylims=(-60,Inf))
-				p2=plot(w,phs',lw=2,label="",xlabel="Frequency [Hz]",ylabel="Phase [deg]",xscale=:log10,ylims=(-180,180),yticks=-180:60:180)
-				# merge two subplots
-				p=plot(p1,p2,layout=grid(2,1,heights=[0.66,0.33]),size=(600,450))
-				# save the figure
-				path=joinpath(dir_data,"bode_$i.html")
-				savefig(p,path)
-				# write the link to the figure into the main file
-				path=joinpath(dir_time,"bode_$i.html")
-				println(output_f,"<iframe src=\"$path\" width=625 height=475 frameborder=0></iframe>")
-				println(output_f,"")
-			end
+			# fill in for each selected vpt
+			w=results[l[1]].w/2/pi
+			mag=20*log10.(abs.(results[l[1]].freq_resp[bode,i,:]).+eps(1.0))
+			phs=180/pi*angle.(results[l[1]].freq_resp[bode,i,:])
+			# set wrap arounds in phase to Inf to avoid jumps in plot
+			phs[findall(abs.(diff(phs,dims=2)).>180)].=Inf
+			lb=hcat(output_names[bode]...)
+			lb.*="/"*input_names[i]
+			p1=plot(w,mag',lw=2,label=lb,xlabel="",ylabel="Gain [dB]",xscale=:log10,ylims=(-60,Inf))
+			p2=plot(w,phs',lw=2,label="",xlabel="Frequency [Hz]",ylabel="Phase [deg]",xscale=:log10,ylims=(-180,180),yticks=-180:60:180)
+			# merge two subplots
+			p=plot(p1,p2,layout=grid(2,1,heights=[0.66,0.33]),size=(600,450))
+			# save the figure
+			path=joinpath(dir_data,"bode_$i.html")
+			savefig(p,path)
+			# write the link to the figure into the main file
+			path=joinpath(dir_time,"bode_$i.html")
+			println(output_f,"<iframe src=\"$path\" width=625 height=475 frameborder=0></iframe>")
+			println(output_f,"")
 		end
 	else
 		# loop pver outputs and inputs and selected vpts
 		for i=1:nout
 			for j=1:nin
 				n=(i-1)*nin+j
-				if findnext(bode .==n,1) == nothing
+				if findnext(bode .==n,1) != nothing
 					# make empty plots of magnitude and phase
 					p1=plot(xlabel="",ylabel="|$(output_names[i])|/|$(input_names[j])| [dB]",xscale=:log10,legend=:top)
 					p2=plot(xlabel="Frequency [Hz]",ylabel="∠ $(output_names[i])/$(input_names[j]) [deg]",xscale=:log10,ylims=(-180,180),yticks=-180:60:180)
@@ -226,8 +225,6 @@ end
 # print the end and close the output
 println(output_f,str_close)
 close(output_f)
-
-dir_date,dir_time
 
 end
 
