@@ -98,10 +98,10 @@ else
 	plot!(p,v,si'[:,1],seriestype=:scatter,label="Imaginary")
 	plot!(p,v,sr',seriestype=:scatter,mc=RGB(0/255,154/255,250/255),label="")
 	plot!(p,v,si',seriestype=:scatter,mc=RGB(227/255,111/255,71/255),label="")
-# save the figure
+	# save the figure
 	path=joinpath(dir_data,"eigen.html")
 	savefig(p,path)
-# write the link to the figure into the main file
+	# write the link to the figure into the main file
 	path=joinpath(dir_time,"eigen.html")
 	println(output_f,"<iframe src=\"$path\" width=625 height=325 frameborder=0 ></iframe>")
 	println(output_f,"")
@@ -112,7 +112,7 @@ if(nin*nout>0 && nin*nout<16)
 	println(output_f,"<h2>Steady state gains</h2>")
 	labels=[]
 	gain=[]
-# loop over outputs and inputs and vpts
+	# loop over outputs and inputs and vpts
 	for i=1:nout
 		for j=1:nin
 			n=(i-1)*nin+j
@@ -124,13 +124,13 @@ if(nin*nout>0 && nin*nout<16)
 				push!(gain,x[1])
 				lb="$(output_names[i])/$(input_names[j])"
 				push!(labels,lb)
-	# if many vpts, make a plot vs velocity
+				# if many vpts, make a plot vs velocity
 				if nvpts>1
 					p=plot(v,x,lw=2,xlabel="Speed [m/s]",ylabel=lb,label="",size=(600,300))
-	# save the figure
+					# save the figure
 					path=joinpath(dir_data,"sstf_$(i)_$(j).html")
 					savefig(p,path)
-	# write the link to the figure into the main file
+					# write the link to the figure into the main file
 					path=joinpath(dir_time,"sstf_$(i)_$(j).html")
 					println(output_f,"<iframe src=\"$path\" width=625 height=325 frameborder=0 ></iframe>")
 					println(output_f,"")
@@ -138,46 +138,72 @@ if(nin*nout>0 && nin*nout<16)
 			end
 		end
 	end
-# if only one vpt, make a table of the gains
+	# if only one vpt, make a table of the gains
 	if nvpts==1
 		println(output_f,html_table(["Labels" "Gain"; labels round.(gain,digits=6)]))
 	end
 
 	println(output_f,"<h2>Bode plots</h2>")
-# pick out up to four representative vpts from the list
+	# pick out up to four representative vpts from the list
 	l=unique(Int.(round.((nvpts-1).*[1,3,5,7]/8 .+1)))
-# loop pver outputs and inputs and selected vpts
-	for i=1:nout
-		for j=1:nin
-			n=(i-1)*nin+j
-			if findnext(bode .==n,1) == nothing
-# make empty plots of magnitude and phase
-				p1=plot(xlabel="",ylabel="|$(output_names[i])|/|$(input_names[j])| [dB]",xscale=:log10,legend=:top)
-				p2=plot(xlabel="Frequency [Hz]",ylabel="∠ $(output_names[i])/$(input_names[j]) [deg]",xscale=:log10,ylims=(-180,180),yticks=-180:60:180)
-# fill in for each selected vpt
-				for k in l
-					w=results[k].w/2/pi
-					mag=20*log10.(abs.(results[k].freq_resp[i,j,:]).+eps(1.0))
-					phs=180/pi*angle.(results[k].freq_resp[i,j,:])
-# set wrap arounds in phase to Inf to avoid jumps in plot
-					phs[findall(abs.(diff(phs)).>180)].=Inf
-					if length(l)==1
-						lb=""
-					else
-						lb="u=$(v[k]) m/s"
-					end
-					p1=plot!(p1,w,mag,lw=2,label=lb)
-					p2=plot!(p2,w,phs,lw=2,label="")
-# merge two subplots
-					p=plot(p1,p2,layout=grid(2,1,heights=[0.66,0.33]),size=(600,450))
-				end
-# save the figure
-				path=joinpath(dir_data,"bode_$(i)_$(j).html")
+	if length(l)==1
+		for i=1:nin
+			if findnext(bode .==i,1) == nothing
+				# fill in for each selected vpt
+				w=results[l[1]].w/2/pi
+				mag=20*log10.(abs.(results[l[1]].freq_resp[:,i,:]).+eps(1.0))
+				phs=180/pi*angle.(results[l[1]].freq_resp[:,i,:])
+				# set wrap arounds in phase to Inf to avoid jumps in plot
+				phs[findall(abs.(diff(phs,dims=2)).>180)].=Inf
+				lb=hcat(output_names...)
+				lb.*="/"*input_names[i]
+				p1=plot(w,mag',lw=2,label=lb,xlabel="",ylabel="Gain [dB]",xscale=:log10,ylims=(-60,Inf))
+				p2=plot(w,phs',lw=2,label="",xlabel="Frequency [Hz]",ylabel="Phase [deg]",xscale=:log10,ylims=(-180,180),yticks=-180:60:180)
+				# merge two subplots
+				p=plot(p1,p2,layout=grid(2,1,heights=[0.66,0.33]),size=(600,450))
+				# save the figure
+				path=joinpath(dir_data,"bode_$i.html")
 				savefig(p,path)
-# write the link to the figure into the main file
-				path=joinpath(dir_time,"bode_$(i)_$(j).html")
+				# write the link to the figure into the main file
+				path=joinpath(dir_time,"bode_$i.html")
 				println(output_f,"<iframe src=\"$path\" width=625 height=475 frameborder=0></iframe>")
 				println(output_f,"")
+			end
+		end
+	else
+		# loop pver outputs and inputs and selected vpts
+		for i=1:nout
+			for j=1:nin
+				n=(i-1)*nin+j
+				if findnext(bode .==n,1) == nothing
+					# make empty plots of magnitude and phase
+					p1=plot(xlabel="",ylabel="|$(output_names[i])|/|$(input_names[j])| [dB]",xscale=:log10,legend=:top)
+					p2=plot(xlabel="Frequency [Hz]",ylabel="∠ $(output_names[i])/$(input_names[j]) [deg]",xscale=:log10,ylims=(-180,180),yticks=-180:60:180)
+					# fill in for each selected vpt
+					for k in l
+						w=results[k].w/2/pi
+						mag=20*log10.(abs.(results[k].freq_resp[i,j,:]).+eps(1.0))
+						phs=180/pi*angle.(results[k].freq_resp[i,j,:])
+						# set wrap arounds in phase to Inf to avoid jumps in plot
+						phs[findall(abs.(diff(phs)).>180)].=Inf
+						if length(l)==1
+							lb=""
+						else
+							lb="u=$(v[k]) m/s"
+						end
+						p1=plot!(p1,w,mag,lw=2,label=lb)
+						p2=plot!(p2,w,phs,lw=2,label="")
+						# merge two subplots
+						p=plot(p1,p2,layout=grid(2,1,heights=[0.66,0.33]),size=(600,450))
+					end
+					# save the figure
+					path=joinpath(dir_data,"bode_$(i)_$(j).html")
+					savefig(p,path)
+					# write the link to the figure into the main file
+					path=joinpath(dir_time,"bode_$(i)_$(j).html")
+					println(output_f,"<iframe src=\"$path\" width=625 height=475 frameborder=0></iframe>")
+					println(output_f,"")
+				end
 			end
 		end
 	end

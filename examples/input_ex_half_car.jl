@@ -133,7 +133,7 @@ item.location[2]=[a,0,0]
 item.gain=kt
 push!(the_system.item,item)
 
-# measure the bounce and pitch
+# measure the bounce
 item=sensor("z_G")
 item.body[1]="chassis"
 item.body[2]="ground"
@@ -141,18 +141,18 @@ item.location[1]=[0,0,0.25]
 item.location[2]=[0,0,0]
 push!(the_system.item,item)
 
-item=sensor("θ(a+b)")
+# suspension travel
+item=sensor("z_f")
 item.body[1]="chassis"
-item.body[2]="ground"
-item.location[1]=[0,0,0.25]
-item.location[2]=[0,0.25,0.25]
-item.gain=a+b;
-item.twist=1;
+item.body[2]="front unsprung"
+item.location[1]=[a,0,0.25]
+item.location[2]=[a,0,0.1]
 push!(the_system.item,item)
 
 # add measure between ground and unsprung mass
-item=sensor("z_2-z_0")
+item=sensor("z_2-u_f")
 item.body[1]="front unsprung"
+item.body[2]="ground"
 item.actuator="u_f"
 item.location[1]=[0.1,0,0.3]
 item.location[2]=[0.1,0,0]
