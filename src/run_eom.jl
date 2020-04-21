@@ -14,27 +14,31 @@ function run_eom(sysin::Function;vpts=[],verbose=false,diagnose=false)
 ##--------------------------------------------------------------------
 
 m=length(vpts)
-n=max(1,m)
 
 # create empty system holders
-the_system=Vector{mbd_system}(undef,n) 
-the_eqns=Vector{dss_data}(undef,n)
-the_data=Vector{eom_data}(undef,n)
+#the_system=Vector{mbd_system}(undef,n)
 
 verbose && println("Calling system function...")
-
-for i=1:n
-	if m>0
-		the_system[i]=sysin(vpts[i])
-		the_system[i].vpt=vpts[i]
-	else
-		the_system[i]=sysin()
-	end
-	verbose && (i<2) && println("Running analysis of $(the_system[1].name) ...")
-	verbose && (i<2) && println("Found $(length(the_system[1].item)) items...")
-	sort_system!(the_system[i],(i<2)*verbose)  ## Sort all the input structs
-	the_eqns[i],the_data[i]=generate_eom(the_system[i],(i<2)*verbose)
+if m>1
+	the_system=sysin.(vpts) # build all the input structs
+	setfield!.(the_system,:vpt,vpts)
+elseif m==1
+	the_system=[sysin(vpts)]
+	the_system[1].vpt=vpts[1]
+elseif m==0
+	the_system=[sysin()]
+else
+	error("vpts error.")
 end
+
+verbose && println("Running analysis of $(the_system[1].name) ...")
+verbose && println("Found $(length(the_system[1].item)) items...")
+
+sort_system!.(the_system) # sort all the input structs
+
+out=generate_eom.(the_system)
+the_eqns=first.(out)
+the_data=last.(out)
 
 if ~diagnose
 	return the_system,the_eqns
