@@ -136,25 +136,25 @@ while i<=m  ## for each eigenvalue
 	end
 end
 
+#display(round.(vectl'*A*vectr-diagm(-1=>ld,0=>md,1=>ud),digits=5))
 if norm(round.(vectl'*vectr,digits=3)-I) < 1e-3
 	verbose && println("Decomposition appears ok...")
+	A=diagm(-1=>ld,0=>md,1=>ud)
+	B=vectl'*B
+	C=C*vectr
+
+	b=norm(B)
+	c=norm(C)
+	B*=(c/b)^0.5
+	C*=(b/c)^0.5
+
+	#B=round.(B,digits=9)
+	#C=round.(C,digits=9)
+	verbose && println("System is now of dimension ",m,".")
+else
+	verbose && println("Decomposition failed...")
 end
 
-#display(round.(vectl'*A*vectr-diagm(-1=>ld,0=>md,1=>ud),digits=5))
-
-A=diagm(-1=>ld,0=>md,1=>ud)
-B=vectl'*B
-C=C*vectr
-
-b=norm(B)
-c=norm(C)
-B*=(c/b)^0.5
-C*=(b/c)^0.5
-
-B=round.(B,digits=9)
-C=round.(C,digits=9)
-
-verbose && println("System is now of dimension ",m,".")
 ss_eqns=ss_data(A,B,C,D)
 
 ss_eqns,val

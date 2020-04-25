@@ -34,9 +34,12 @@ end
 verbose && println("Running analysis of $(the_system[1].name) ...")
 verbose && println("Found $(length(the_system[1].item)) items...")
 
-sort_system!.(the_system) # sort all the input structs
+n=max(1,m)
+verb=Bool.(zeros(n))
+verb[1]=verbose
 
-out=generate_eom.(the_system)
+sort_system!.(the_system,verb) # sort all the input structs
+out=generate_eom.(the_system,verb)
 the_eqns=first.(out)
 the_data=last.(out)
 
