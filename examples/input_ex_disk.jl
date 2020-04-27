@@ -62,7 +62,7 @@ item.axis=[1,0,0]
 push!(the_system.item,item)
 
 # Add some inputs and outputs
-item=sensor("\\phi")
+item=sensor("ϕ")
 item.body[1]="wheel"
 item.body[2]="ground";
 item.location[1]=[0,0,r]

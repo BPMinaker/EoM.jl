@@ -59,13 +59,13 @@ item.gain=1
 push!(the_system.item,item)
 
 
-item=sensor("\\theta")
+item=sensor("EIθ")
 item.body[1]="ground"
 item.body[2]="body two"
 item.location[1]=[1,-0.5,0]
 item.location[2]=[1,0,0]
 item.twist=1
-item.gain=1
+item.gain=EI
 push!(the_system.item,item)
 
 the_system
