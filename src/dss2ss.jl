@@ -56,6 +56,8 @@ sl=check_vecs!(vall,vectl,copy(A'),left=true,verbose=verbose)
 #display(vall)
 #display(round.(vectl,digits=9))
 
+verbose && println("Finding right eigenvectors...")
+
 val,vectr=eigen(A)  ## find the right eigenvectors using A
 val,vectr=group_vals(val,vectr)
 
@@ -91,7 +93,7 @@ n=length(val)  ## find matching values in A, A+BKC
 idx=fill(true,n)  ## we keep all vecs
 for i=1:n
 	for j=1:n
-		if abs(val[i]-valk[j])<1e-5  ## remove the ones that match
+		if isapprox(val[i],valk[j],atol=1e-5)  ## remove the ones that match
 			idx[i]=false
 			valk[j]=NaN
 			break

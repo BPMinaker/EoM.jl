@@ -61,13 +61,13 @@ item.moments=0
 item.axis=[0,0,1]
 push!(the_system.item,item)
 
-#= item=actuator("u_\\text{$str}")
+item=actuator("u_$str")
 item.body[1]=str*"Wheel+hub"
 item.body[2]="ground"
 item.location[1]=[a,tw/2,0]
 item.location[2]=[a,tw/2,-0.1]
 item.gain=kt
 item.rate_gain=ct
-push!(the_system.item,item) =#
+push!(the_system.item,item)
 
 end ## Leave

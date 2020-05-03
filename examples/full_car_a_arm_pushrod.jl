@@ -44,8 +44,8 @@ item.twist=1
 push!(the_system.item,item)
 
 
-## roll centre constraints
-
+# roll centre constraints
+#=
 item=rigid_point("LF RC")
 item.body[1]="LF Wheel+hub"
 item.body[2]="ground"
@@ -61,39 +61,37 @@ item.location=[-b,tw/2,0]
 item.forces=3
 item.moments=0
 push!(the_system.item,item)
-
+=#
 
 ####% Reflect all LF or LR items in y axis
 mirror!(the_system)
 
 
-
-
-#= ## Add sensors
-item=sensor("z_\\text{LFc}")
+# add sensors
+item=sensor("z_LFc")
 item.body[1]="Chassis"
 item.body[2]="ground"
 item.location[1]=[a,tw/2,r]
 item.location[2]=[a,tw/2,r-0.1]
 push!(the_system.item,item)
 
-item=sensor("z_\\text{LFc}-z_\\text{LF}")
+item=sensor("z_LFc-z_LF")
 item.body[1]="Chassis"
 item.body[2]="LF Wheel+hub"
 item.location[1]=[a,tw/2,r]
 item.location[2]=[a,tw/2,r-0.1]
 push!(the_system.item,item)
 
-item=sensor("z_\\text{LF}-u_\\text{LF}")
+item=sensor("z_LF-u_LF")
 item.body[1]="LF Wheel+hub"
 item.body[2]="ground"
 item.location[1]=[a,tw/2,r]
 item.location[2]=[a,tw/2,r-0.1]
-item.actuator="u_\\text{LF }"
-push!(the_system.item,item) =#
+item.actuator="u_LF "
+push!(the_system.item,item)
 
 
-
+#=
 item=actuator("L")
 item.body[1]="Chassis"
 item.body[2]="ground"
@@ -103,7 +101,7 @@ item.twist=1
 item.gain=1000
 push!(the_system.item,item)
 
-item=sensor("\\phi")
+item=sensor("ϕ")
 item.body[1]="Chassis"
 item.body[2]="ground"
 item.location[1]=[0,0,0.5]
@@ -111,6 +109,7 @@ item.location[2]=[0.1,0,0.5]
 item.twist=1
 item.gain=180/pi
 push!(the_system.item,item)
+=#
 
 the_system
 
