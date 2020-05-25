@@ -164,10 +164,11 @@ ss_eqns,val
 end
 
 function group_vals(val,vect)
-	p=sortperm(round.(val,digits=5),by=x->(isreal(x),real(x)>0,abs(round(x,digits=5)),real(x),-imag(x)))
+	#display(val)
+	p=sortperm(round.(val,digits=5),by=x->(isreal(x),real(x)>0,abs(x),real(x),abs(imag(x)),-imag(x)))
 	val=val[p]
-	vect=vect[:,p]
 #	display(val)
+	vect=vect[:,p]
 	n=length(val)
 	temp=diff(round.(val,digits=5))
 	p=vcat(0,findall(temp.!=0),n)

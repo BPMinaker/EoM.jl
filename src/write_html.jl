@@ -1,6 +1,6 @@
 using Plots
 
-function write_html(systems,results,plots...;folder="output",filename="result",ss=1:1:length(systems[1].sensors),bode=1:1:length(systems[1].sensors),verbose=false)
+function write_html(systems,results,plots...;folder="output",filename="result",ss=1:1:length(systems[1].sensors)*length(systems[1].actuators),bode=1:1:length(systems[1].sensors),verbose=false)
 ## Copyright (C) 2020, Bruce Minaker
 ## write_md.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -82,17 +82,13 @@ si[si .==0] .=NaN
 
 # for one velocity, chart of calcs from eigenvalues, otherwise plot eigenvalues
 if nvpts==1
-	a=hcat(omega_n.(results)...)
-	b=hcat(zeta.(results)...)
-	c=hcat(tau.(results)...)
+	a=hcat(tau.(results)...)
+	b=hcat(omega_n.(results)...)
+	c=hcat(zeta.(results)...)
 	d=hcat(lambda.(results)...)
-	title=["No." "ω_n [Hz]" "ζ" "τ [s]" "λ [s]"]
+	title=["No." "τ [s]" "ω_n [Hz]" "ζ" "λ [s]"]
 	values=[a b c d]
 	println(output_f,html_table([title;1:1:length(a) round.(values,digits=6)]))
-	println(output_f,"<h2>Rotation centres of first body</h2>")
-
-	temp=round.([results[1].mode_vals (results[1].centre[1:6,1:end])'],digits=6)
-	println(output_f,html_table( [["Eigenvalue" "x" "y" "z" "u_x" "u_y" "u_z"];temp]))
 else
 	p=plot(xlabel="Speed [m/s]",ylabel="Eigenvalue [1/s]",size=(600,300))
 	plot!(p,v,sr'[:,1],seriestype=:scatter,label="Real")
@@ -139,6 +135,7 @@ if(nin*nout>0 && nin*nout<16)
 			end
 		end
 	end
+
 	# if only one vpt, make a table of the gains
 	if nvpts==1
 		println(output_f,html_table(["Labels" "Gain"; labels round.(gain,digits=6)]))
@@ -220,6 +217,13 @@ for i=1:n
 	path=joinpath(dir_time,"plot_$(i).html")
 	println(output_f,"<iframe src=\"$path\" width=625 height=425 frameborder=0></iframe>")
 	println(output_f,"")
+end
+
+# print instant centre of body 1
+if nvpts==1
+	println(output_f,"<h2>Rotation centres of first body</h2>")
+	temp=round.([results[1].mode_vals (results[1].centre[1:6,1:end])'],digits=6)
+	println(output_f,html_table( [["Eigenvalue" "x" "y" "z" "u_x" "u_y" "u_z"];temp]))
 end
 
 # print the end and close the output

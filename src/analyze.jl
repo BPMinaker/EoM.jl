@@ -24,10 +24,15 @@ for i=1:nvpts
 
 	result[i]=analysis()
 	F=eigen(dss_eqns[i].A,dss_eqns[i].E) # find the eigen
-	vect=F.vectors[:,isfinite.(F.values)]
-	result[i].mode_vals=F.values[isfinite.(F.values)] # discard modes with Inf or Nan vals
+	tmp_vect=F.vectors[:,isfinite.(F.values)]
+	tmp_vals=F.values[isfinite.(F.values)] # discard modes with Inf or Nan vals
 
-	result[i].modes=dss_eqns[i].phys*vect # convert vector to physical coordinates
+	p=sortperm(round.(tmp_vals,digits=5),by=x->(isreal(x),real(x)>0,abs(x),real(x),abs(imag(x)),-imag(x)))
+	
+	result[i].mode_vals=tmp_vals[p]
+	tmp_vect=tmp_vect[:,p]
+
+	result[i].modes=dss_eqns[i].phys*tmp_vect # convert vector to physical coordinates
 	nb=div(size(result[i].modes,1),6)
 	nm=size(result[i].modes,2)
 
