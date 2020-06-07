@@ -40,6 +40,7 @@ function Base.show(io::IO, obj::spring)
 	println(io,"Bodies: ",obj.body)
 	println(io,"Stiffness: ",obj.stiffness)
 	println(io,"Damping: ",obj.damping)
+	println(io,"Preload: ",obj.preload)
 end
 
 function name(obj::spring)

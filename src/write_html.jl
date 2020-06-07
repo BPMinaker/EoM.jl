@@ -62,47 +62,14 @@ nin=length(input_names)
 nout=length(output_names)
 nvpts=length(results)
 
+# get vpts
+v=vpt.(systems)
+
 # open the base html file to write, and start filling it
 output_f=open(joinpath(dir_date,filename*".html"),"w")
 println(output_f,str_open)
 println(output_f,"<h1>EoM Analysis results</h1>")
 println(output_f,"<p>Here are the results of the analysis of: $(systems[1].name)</p>")
-
-# start eigenvalues
-println(output_f,"<h2>Eigenvalues</h2>")
-# get vpts
-v=vpt.(systems)
-# get eigenvalues, break into real and imaginary
-s=hcat(e_val.(results)...)
-sr=real.(s)
-si=imag(s)
-# don't plot exactly zeros, as real roots have lots of zero imaginary parts
-sr[sr .==0] .=NaN
-si[si .==0] .=NaN
-
-# for one velocity, chart of calcs from eigenvalues, otherwise plot eigenvalues
-if nvpts==1
-	a=hcat(tau.(results)...)
-	b=hcat(omega_n.(results)...)
-	c=hcat(zeta.(results)...)
-	d=hcat(lambda.(results)...)
-	title=["No." "τ [s]" "ω_n [Hz]" "ζ" "λ [s]"]
-	values=[a b c d]
-	println(output_f,html_table([title;1:1:length(a) round.(values,digits=6)]))
-else
-	p=plot(xlabel="Speed [m/s]",ylabel="Eigenvalue [1/s]",size=(600,300))
-	plot!(p,v,sr'[:,1],seriestype=:scatter,label="Real")
-	plot!(p,v,si'[:,1],seriestype=:scatter,label="Imaginary")
-	plot!(p,v,sr',seriestype=:scatter,mc=RGB(0/255,154/255,250/255),label="")
-	plot!(p,v,si',seriestype=:scatter,mc=RGB(227/255,111/255,71/255),label="")
-	# save the figure
-	path=joinpath(dir_data,"eigen.html")
-	savefig(p,path)
-	# write the link to the figure into the main file
-	path=joinpath(dir_time,"eigen.html")
-	println(output_f,"<iframe src=\"$path\" width=625 height=325 frameborder=0 ></iframe>")
-	println(output_f,"")
-end
 
 # if there are too many inputs and outputs, skip
 if(nin*nout>0 && nin*nout<16)
@@ -140,7 +107,45 @@ if(nin*nout>0 && nin*nout<16)
 	if nvpts==1
 		println(output_f,html_table(["Labels" "Gain"; labels round.(gain,digits=6)]))
 	end
+end
 
+# start eigenvalues
+println(output_f,"<h2>Eigenvalues</h2>")
+
+# get eigenvalues, break into real and imaginary
+s=hcat(e_val.(results)...)
+sr=real.(s)
+si=imag(s)
+# don't plot exactly zeros, as real roots have lots of zero imaginary parts
+sr[sr .==0] .=NaN
+si[si .==0] .=NaN
+
+# for one velocity, chart of calcs from eigenvalues, otherwise plot eigenvalues
+if nvpts==1
+	a=hcat(tau.(results)...)
+	b=hcat(omega_n.(results)...)
+	c=hcat(zeta.(results)...)
+	d=hcat(lambda.(results)...)
+	title=["No." "τ [s]" "ω_n [Hz]" "ζ" "λ [s]"]
+	values=[a b c d]
+	println(output_f,html_table([title;1:1:length(a) round.(values,digits=6)]))
+else
+	p=plot(xlabel="Speed [m/s]",ylabel="Eigenvalue [1/s]",size=(600,300))
+	plot!(p,v,sr'[:,1],seriestype=:scatter,label="Real")
+	plot!(p,v,si'[:,1],seriestype=:scatter,label="Imaginary")
+	plot!(p,v,sr',seriestype=:scatter,mc=RGB(0/255,154/255,250/255),label="")
+	plot!(p,v,si',seriestype=:scatter,mc=RGB(227/255,111/255,71/255),label="")
+	# save the figure
+	path=joinpath(dir_data,"eigen.html")
+	savefig(p,path)
+	# write the link to the figure into the main file
+	path=joinpath(dir_time,"eigen.html")
+	println(output_f,"<iframe src=\"$path\" width=625 height=325 frameborder=0 ></iframe>")
+	println(output_f,"")
+end
+
+# if there are too many inputs and outputs, skip
+if(nin*nout>0 && nin*nout<16)
 	println(output_f,"<h2>Bode plots</h2>")
 	# pick out up to four representative vpts from the list
 	l=unique(Int.(round.((nvpts-1).*[1,3,5,7]/8 .+1)))

@@ -28,7 +28,6 @@ for i=1:nvpts
 	tmp_vals=F.values[isfinite.(F.values)] # discard modes with Inf or Nan vals
 
 	p=sortperm(round.(tmp_vals,digits=5),by=x->(isreal(x),real(x)>0,abs(x),real(x),abs(imag(x)),-imag(x)))
-	
 	result[i].mode_vals=tmp_vals[p]
 	tmp_vect=tmp_vect[:,p]
 
@@ -71,7 +70,7 @@ for i=1:nvpts
 	result[i].zeta[idx].=NaN
 
 	t=abs.(result[i].e_val)
-	lower[i]=minimum(t[t.>1e-6])
+	lower[i]=minimum([t[t.>1e-6];1e-6])
 	upper[i]=maximum(t)
 end
 

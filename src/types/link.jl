@@ -32,6 +32,7 @@ function Base.show(io::IO, obj::link)
 	println(io,"Name: ",obj.name)
 	println(io,"Location: ",obj.location)
 	println(io,"Bodies: ",obj.body)
+	println(io,"Preload: ",obj.preload)
 end
 
 function name(obj::link)
