@@ -103,7 +103,10 @@ item.moments=2
 item.axis=[0,0,1]
 push!(the_system.item,item)
 
-item=nh_point("speed")
+# constrain chassis in the forward direction
+# the left/right symmetry of the chassis tells us that the lateral and longitudinal motions are decoupled anyway
+# could use nhpoint instead of rigid here, but just gives another zero eigenvalue, which causes grief elsewhere due to repeated zero roots
+item=rigid_point("speed")
 item.body[1]="truck"
 item.body[2]="ground"
 item.location=[0,0,0]
@@ -117,19 +120,18 @@ item.body[1]="truck"
 item.body[2]="ground"
 item.location[1]=[a,0,0]
 item.location[2]=[a,0.1,0]
-item.gain=cf
+item.gain=cr*pi/180
 push!(the_system.item,item)
 
-item=sensor("α_u")
+# measure the yaw rate
+item=sensor("r")
 item.body[1]="truck"
 item.body[2]="ground"
 item.location[1]=[0,0,0]
 item.location[2]=[0,0,0.1]
 item.twist=1 # angular
 item.order=2 # velocity
-item.gain=-(a+b)/u
-item.actuator="δ_f"
-item.actuator_gain=1
+item.gain=180/pi # radian to degree
 push!(the_system.item,item)
 
 item=sensor("β")
@@ -139,7 +141,20 @@ item.location[1]=[0,0,0]
 item.location[2]=[0,0.1,0]
 item.order=2 # velocity
 item.frame=0 # local frame
-item.gain=1/u
+item.gain=180/pi/u # radian to degree
+push!(the_system.item,item)
+
+# measure the understeer angle
+item=sensor("α_u")
+item.body[1]="truck"
+item.body[2]="ground"
+item.location[1]=[0,0,0]
+item.location[2]=[0,0,0.1]
+item.twist=1 # angular
+item.order=2 # velocity
+item.gain=-180*(a+b)/pi/u # radian to degree
+item.actuator="δ_f"
+item.actuator_gain=1 # input is already in degrees
 push!(the_system.item,item)
 
 item=sensor("γ")
@@ -148,18 +163,18 @@ item.body[2]="trailer"
 item.location[1]=[-d,0,0]
 item.location[2]=[-d,0,0.1]
 item.twist=1 # angular
+item.gain=180/pi # radian to degree
 push!(the_system.item,item)
 
-
-## Note that the y location will not reach steady state with constant delta
-## input, so adding the sensor will give an error if the steady state gain
-## is computed.  It will work fine when a time history is computed.
-# item=sensor("y_{\\text{f}}")
-# item.body[1]="truck"
-# item.body[2]="ground"
-# item.location[1]=[a,0,0]
-# item.location[2]=[a,0.1,0]
-# push!(the_system.item,item)
+# measure the lateral acceleration in g
+item=sensor("a_y")
+item.body[1]="truck"
+item.body[2]="ground"
+item.location[1]=[0,0,0]
+item.location[2]=[0,0.1,0]
+item.order=3 # acceleration
+item.gain=1/9.81 # g
+push!(the_system.item,item)
 
 the_system
 

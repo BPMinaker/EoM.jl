@@ -63,7 +63,7 @@ item.body[1]="chassis"
 item.body[2]="ground"
 item.location[1]=[a,0,0]
 item.location[2]=[a,0.1,0]
-item.gain=cf
+item.gain=cf*pi/180 # degree to radian
 push!(the_system.item,item)
 
 # rear wheel steer, off by default
@@ -72,7 +72,7 @@ item.body[1]="chassis"
 item.body[2]="ground"
 item.location[1]=[-b,0,0]
 item.location[2]=[-b,-0.1,0]
-item.gain=cr
+item.gain=cr*pi/180
 #push!(the_system.item,item)
 
 # constrain to planar motion
@@ -97,7 +97,7 @@ item.moments=0
 item.axis=[1,0,0]
 push!(the_system.item,item)
 
-# measure the yaw rate in rad/s
+# measure the yaw rate
 item=sensor("r")
 item.body[1]="chassis"
 item.body[2]="ground"
@@ -105,9 +105,10 @@ item.location[1]=[0,0,0]
 item.location[2]=[0,0,0.1]
 item.twist=1 # angular
 item.order=2 # velocity
+item.gain=180/pi # radian to degree
 push!(the_system.item,item)
 
-# measure the body slip angle in rad
+# measure the body slip angle
 item=sensor("β")
 item.body[1]="chassis"
 item.body[2]="ground"
@@ -115,10 +116,10 @@ item.location[1]=[0,0,0]
 item.location[2]=[0,0.1,0]
 item.order=2 # velocity
 item.frame=0 # local frame
-item.gain=1/u
+item.gain=180/pi/u # radian to degree
 push!(the_system.item,item)
 
-# measure the understeer angle in rad
+# measure the understeer angle
 item=sensor("α_u")
 item.body[1]="chassis"
 item.body[2]="ground"
@@ -126,9 +127,9 @@ item.location[1]=[0,0,0]
 item.location[2]=[0,0,0.1]
 item.twist=1 # angular
 item.order=2 # velocity
-item.gain=-(a+b)/u
+item.gain=-180*(a+b)/pi/u # radian to degree
 item.actuator="δ_f"
-item.actuator_gain=1
+item.actuator_gain=1 # input is already in degrees
 push!(the_system.item,item)
 
 # measure the lateral acceleration in g
@@ -138,11 +139,11 @@ item.body[2]="ground"
 item.location[1]=[0,0,0]
 item.location[2]=[0,0.1,0]
 item.order=3 # acceleration
-item.gain=1/9.81
+item.gain=1/9.81 # g
 push!(the_system.item,item)
 
 # note that the y location will not reach steady state with constant delta input, so adding the sensor will give an error if the steady state gain is computed, but is included so that a time history can be computed
-item=sensor("y_f")
+item=sensor("y")
 item.body[1]="chassis"
 item.body[2]="ground"
 item.location[1]=[0,0,0]

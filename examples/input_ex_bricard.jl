@@ -112,7 +112,7 @@ item.location[2]=p0+[0,0,0.1]
 item.twist=true
 push!(the_system.item,item)
 
-item=sensor("\\psi")
+item=sensor("ψ")
 item.body[1]="Rod 1"
 item.body[2]="ground"
 item.location[1]=p0
