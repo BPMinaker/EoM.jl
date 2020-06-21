@@ -58,6 +58,7 @@ end
 #include("rotate.jl")
 #include("run_eom_nl.jl")
 #include("xdot.jl")
+include("eom_structs.jl")
 
 include("run_eom.jl")
 include("setup.jl")
@@ -87,6 +88,7 @@ include("assemble_eom.jl")
 include("analyze.jl")
 include("full_ss.jl")
 include("dss2ss.jl")
+include("decompose.jl")
 include("write_output.jl")
 include("weave_output.jl")
 include("write_html.jl")
@@ -97,6 +99,5 @@ include("thin_rod.jl")
 include("lsim.jl")
 include("splsim.jl")
 include("random_road.jl")
-include("eom_structs.jl")
 
 end  # end module

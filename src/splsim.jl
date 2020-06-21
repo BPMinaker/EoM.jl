@@ -1,54 +1,67 @@
 using LinearAlgebra
 using SparseArrays
 
-function splsim(ss,u,t,x0=zeros(size(ss.A,2),1);verbose=false)
+function splsim(ss::EoM.ss_data,u,t::StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}},x0=zeros(size(ss.A,2),1))
 
-	n=length(t)
-	T=t[2]-t[1]
-	val,vec=eigen(ss.A)
+## Copyright (C) 2020, Bruce Minaker
+## splsim.jl is free software; you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2, or (at your option)
+## any later version.
+##
+## splsim.jl is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+## General Public License for more details at www.gnu.org/copyleft/gpl.html.
+##
+##--------------------------------------------------------------------
 
-	h=minimum(0.4./abs.(val.+eps(1.)))
-	T>h && println("Warning: step size may be too large")
+n=length(t)
+T=t[2]-t[1]
+val,vec=eigen(ss.A)
 
-	##Ad=exp(ss.A*T)
-	##Bd=ss.A\(Ad-I)*ss.B
+h=minimum(0.4./abs.(val.+eps(1.)))
+T>h && println("Warning: step size may be too large")
 
-	AT=ss.A*T
-	term1=zeros(size(ss.A))+I
-	term2=zeros(size(ss.A))+I
-	Ad=zeros(size(ss.A))+I
-	Bd=zeros(size(ss.A))+I
+##Ad=exp(ss.A*T)
+##Bd=ss.A\(Ad-I)*ss.B
 
-	for i=1:10
-		term1*=AT/i
-		term2*=AT/(i+1)
-		Ad+=term1
-		Bd+=term2
-	end
-	Bd*=ss.B*T
+AT=ss.A*T
+term1=zeros(size(ss.A))+I
+term2=zeros(size(ss.A))+I
+Ad=zeros(size(ss.A))+I
+Bd=zeros(size(ss.A))+I
 
-	Z=sparse([Ad Bd])
-	ZZ=sparse([ss.C ss.D])
+for i=1:10
+	term1*=AT/i
+	term2*=AT/(i+1)
+	Ad+=term1
+	Bd+=term2
+end
+Bd*=ss.B*T
 
-	ns=size(ss.A,2)
-	ni=size(ss.B,2)
-	no=size(ss.C,1)
-	xu=zeros(ns+ni,n)
+Z=sparse([Ad Bd])
+ZZ=sparse([ss.C ss.D])
 
-	xu[1:ns,1]=x0
-	xu[ns+1:ns+ni,:]=hcat(u...)
+ns=size(ss.A,2)
+ni=size(ss.B,2)
+no=size(ss.C,1)
+xu=zeros(ns+ni,n)
 
-	for i=2:n
-		xu[1:ns,i]=Z*xu[:,i-1]
-	end
-	temp=ZZ*xu
+xu[1:ns,1]=x0
+xu[ns+1:ns+ni,:]=hcat(u...)
 
-	y=fill(zeros(no),n)
-	for i=1:n
-		y[i]=temp[:,i]
-	end
+for i=2:n
+	xu[1:ns,i]=Z*xu[:,i-1]
+end
+temp=ZZ*xu
 
-	y
+y=fill(zeros(no),n)
+for i=1:n
+	y[i]=temp[:,i]
+end
+
+y
 
 end
 

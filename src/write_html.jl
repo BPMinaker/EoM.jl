@@ -1,13 +1,14 @@
 using Plots
 
-function write_html(systems,results,plots...;folder="output",filename="result",ss=1:1:length(systems[1].sensors)*length(systems[1].actuators),bode=1:1:length(systems[1].sensors),verbose=false)
+function write_html(systems,results,args...;folder="output",filename="result",ss=1:1:length(systems[1].sensors)*length(systems[1].actuators),bode=1:1:length(systems[1].sensors))
+
 ## Copyright (C) 2020, Bruce Minaker
-## write_md.jl is free software; you can redistribute it and/or modify it
+## write_html.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 2, or (at your option)
 ## any later version.
 ##
-## write_md.jl is distributed in the hope that it will be useful, but
+## write_html.jl is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ## General Public License for more details at www.gnu.org/copyleft/gpl.html.
@@ -16,7 +17,10 @@ function write_html(systems,results,plots...;folder="output",filename="result",s
 
 plotly()
 
+verbose=any(args.==:verbose)
 verbose && println("Writing output...")
+plots=args[findall(typeof.(args).==Plots.Plot{Plots.PlotlyBackend})]
+
 # set up the paths
 dirs=setup(folder=folder,data=systems[1].name)
 dir_date=dirs[1]
@@ -112,13 +116,14 @@ end
 # start eigenvalues
 println(output_f,"<h2>Eigenvalues</h2>")
 
-# get eigenvalues, break into real and imaginary
-s=hcat(e_val.(results)...)
-sr=real.(s)
-si=imag(s)
-# don't plot exactly zeros, as real roots have lots of zero imaginary parts
-sr[sr .==0] .=NaN
-si[si .==0] .=NaN
+# get eigenvalues
+m=maximum(length.(e_val.(results)))
+s=zeros(m,nvpts)*1im
+for i=1:nvpts
+	l=length(results[i].e_val)
+	s[1:l,i]=results[i].e_val
+end
+#s=hcat(e_val.(results)...)
 
 # for one velocity, chart of calcs from eigenvalues, otherwise plot eigenvalues
 if nvpts==1
@@ -126,10 +131,16 @@ if nvpts==1
 	b=hcat(omega_n.(results)...)
 	c=hcat(zeta.(results)...)
 	d=hcat(lambda.(results)...)
-	title=["No." "τ [s]" "ω_n [Hz]" "ζ" "λ [s]"]
-	values=[a b c d]
-	println(output_f,html_table([title;1:1:length(a) round.(values,digits=6)]))
+	title=["No." "σ±ωi [1/s]" "τ [s]" "ω_n [Hz]" "ζ" "λ [s]"]
+	println(output_f,html_table([title;1:1:length(a) round.([s a b c d],digits=6)]))
 else
+	# plto real and imaginary seperately
+	sr=real.(s)
+	si=imag(s)
+	# don't plot exactly zeros, as real roots have lots of zero imaginary parts
+	sr[sr .==0] .=NaN
+	si[si .==0] .=NaN
+
 	p=plot(xlabel="Speed [m/s]",ylabel="Eigenvalue [1/s]",size=(600,300))
 	plot!(p,v,sr'[:,1],seriestype=:scatter,label="Real")
 	plot!(p,v,si'[:,1],seriestype=:scatter,label="Imaginary")
@@ -155,12 +166,13 @@ if(nin*nout>0 && nin*nout<16)
 			w=results[l[1]].w/2/pi
 			mag=20*log10.(abs.(results[l[1]].freq_resp[bode,i,:]).+eps(1.0))
 			phs=180/pi*angle.(results[l[1]].freq_resp[bode,i,:])
+			phs[phs.>0].-=360
 			# set wrap arounds in phase to Inf to avoid jumps in plot
 			phs[findall(abs.(diff(phs,dims=2)).>180)].=Inf
 			lb=hcat(output_names[bode]...)
 			lb.*="/"*input_names[i]
 			p1=plot(w,mag',lw=2,label=lb,xlabel="",ylabel="Gain [dB]",xscale=:log10,ylims=(-60,Inf))
-			p2=plot(w,phs',lw=2,label="",xlabel="Frequency [Hz]",ylabel="Phase [deg]",xscale=:log10,ylims=(-180,180),yticks=-180:60:180)
+			p2=plot(w,phs',lw=2,label="",xlabel="Frequency [Hz]",ylabel="Phase [deg]",xscale=:log10,ylims=(-360,0),yticks=-360:60:0)
 			# merge two subplots
 			p=plot(p1,p2,layout=grid(2,1,heights=[0.66,0.33]),size=(600,450))
 			# save the figure
@@ -179,12 +191,13 @@ if(nin*nout>0 && nin*nout<16)
 				if findnext(bode .==n,1) != nothing
 					# make empty plots of magnitude and phase
 					p1=plot(xlabel="",ylabel="|$(output_names[i])|/|$(input_names[j])| [dB]",xscale=:log10,legend=:top)
-					p2=plot(xlabel="Frequency [Hz]",ylabel="∠ $(output_names[i])/$(input_names[j]) [deg]",xscale=:log10,ylims=(-180,180),yticks=-180:60:180)
+					p2=plot(xlabel="Frequency [Hz]",ylabel="∠ $(output_names[i])/$(input_names[j]) [deg]",xscale=:log10,ylims=(-360,0),yticks=-360:60:0)
 					# fill in for each selected vpt
 					for k in l
 						w=results[k].w/2/pi
 						mag=20*log10.(abs.(results[k].freq_resp[i,j,:]).+eps(1.0))
 						phs=180/pi*angle.(results[k].freq_resp[i,j,:])
+						phs[phs.>0].-=360
 						# set wrap arounds in phase to Inf to avoid jumps in plot
 						phs[findall(abs.(diff(phs)).>180)].=Inf
 						if length(l)==1
@@ -225,11 +238,11 @@ for i=1:n
 end
 
 # print instant centre of body 1
-if nvpts==1
-	println(output_f,"<h2>Rotation centres of first body</h2>")
-	temp=round.([results[1].mode_vals (results[1].centre[1:6,1:end])'],digits=6)
-	println(output_f,html_table( [["Eigenvalue" "x" "y" "z" "u_x" "u_y" "u_z"];temp]))
-end
+# if nvpts==1
+# 	println(output_f,"<h2>Rotation centres of first body</h2>")
+# 	temp=round.([results[1].mode_vals (results[1].centre[1:6,1:end])'],digits=6)
+# 	println(output_f,html_table( [["Eigenvalue" "x" "y" "z" "u_x" "u_y" "u_z"];temp]))
+# end
 
 # print the end and close the output
 println(output_f,str_close)
@@ -249,7 +262,11 @@ str*="</tr>\n</thead><tbody>\n"
 for i=2:n
 	str*="<tr>"
 	for j in mtx[i,:]
-		str*="<td>$j</td>"
+		if isa(j,String) || imag(j)!=0
+			str*="<td>$j</td>"
+		else
+			str*="<td>$(real(j))</td>"
+		end
 	end
 	str*="</tr>\n"
 end

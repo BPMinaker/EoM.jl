@@ -1,4 +1,4 @@
-function run_eom(sysin::Function;vpts=[],verbose=false,diagnose=false)
+function run_eom(sysin::Function,args...;vpts=[])
 
 ## Copyright (C) 2017, Bruce Minaker
 ## run_eom.jl is free software; you can redistribute it and/or modify it
@@ -13,11 +13,12 @@ function run_eom(sysin::Function;vpts=[],verbose=false,diagnose=false)
 ##
 ##--------------------------------------------------------------------
 
+verbose=any(args.==:verbose)
+diagnose=any(args.==:diagnose)
+
 m=length(vpts)
 
 # create empty system holders
-#the_system=Vector{mbd_system}(undef,n)
-
 verbose && println("Calling system function...")
 if m>1
 	the_system=sysin.(vpts) # build all the input structs

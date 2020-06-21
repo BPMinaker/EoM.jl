@@ -1,4 +1,19 @@
-function build_examples(;dir_examples="examples",verbose=false)
+function build_examples(args...;dir_examples="examples")
+
+## Copyright (C) 2020, Bruce Minaker
+## build_examples.jl is free software; you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2, or (at your option)
+## any later version.
+##
+## build_examples.jl is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+## General Public License for more details at www.gnu.org/copyleft/gpl.html.
+##
+##--------------------------------------------------------------------
+
+verbose=any(args.==:verbose)
 
 dir=joinpath(pwd(),dir_examples)
 if ~isdir(dir)  ## If no examples folder exists
