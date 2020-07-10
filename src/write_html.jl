@@ -72,7 +72,8 @@ v=vpt.(systems)
 # open the base html file to write, and start filling it
 output_f=open(joinpath(dir_date,filename*".html"),"w")
 println(output_f,str_open)
-println(output_f,"<h1>EoM Analysis results</h1>")
+println(output_f,"<img src=\"figures/eom_logo.png\" alt=\"Icon\" style=\"width:200px;\">")
+println(output_f,"<h1>Analysis results</h1>")
 println(output_f,"<p>Here are the results of the analysis of: $(systems[1].name)</p>")
 
 # if there are too many inputs and outputs, skip

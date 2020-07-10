@@ -28,6 +28,8 @@ end
 dir=joinpath(dir_date,"figures")
 if ~isdir(dir)  # if no figures folder exists
 	mkdir(dir)  # create new empty system folder
+	src=joinpath(dirname(dirname(pathof(EoM))),"images","eom_logo.png")  # get name of logo
+	cp(src,joinpath(dir,"eom_logo.png"))
 end
 
 dir=joinpath(dir_date,data)
