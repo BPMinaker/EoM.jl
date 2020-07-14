@@ -157,7 +157,7 @@ else
 end
 
 # if there are too many inputs and outputs, skip
-if(nin*nout>0 && nin*nout<16)
+if nin*nout>0 && nin*nout<16 && length(bode)>0 
 	println(output_f,"<h2>Bode plots</h2>")
 	# pick out up to four representative vpts from the list
 	l=unique(Int.(round.((nvpts-1).*[1,3,5,7]/8 .+1)))
