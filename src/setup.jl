@@ -13,7 +13,6 @@ function setup(;folder="output",data="data")
 ##
 ##--------------------------------------------------------------------
 
-
 if ~isdir(folder)  # if no output folder exists
 	mkdir(folder)  # create new empty output folder
 end
@@ -44,42 +43,6 @@ if ~isdir(dir_output)
 end
 dir_time=joinpath(data,tmstr)
 
-dir=joinpath(dir_output,"dss")
-if ~isdir(dir)
-	mkdir(dir)
-end
-
-dir=joinpath(dir_output,"ss")
-if ~isdir(dir)
-	mkdir(dir)
-end
-
 dir_date,dir_time
 
 end  ## Leave
-
-
-# if ~isfile(joinpath(folder,"eom.mark")) # check if we made this folder before
-#
-# 	# if not, use folder as base name
-# 	dir=folder
-# 	if ~isdir(dir)  # if no output folder exists
-# 		mkdir(dir)  # create new empty output folder
-# 	end
-# 	# record the date and time for the output filenames, ISO format
-# 	dtstr=Dates.format(now(),"yyyy-mm-dd")
-# 	dir=joinpath(dir,dtstr)
-# 	if ~isdir(dir)  # if no dated output folder exists
-# 		mkdir(dir)  # create new empty dated output folder
-# 	end
-# 	tmstr=Dates.format(now(),"HH-MM-SS-s")
-# 	dir_output=joinpath(dir,tmstr)
-# 	if ~isdir(dir_output)
-# 		mkdir(dir_output)  # create new empty timed output folder
-# 		touch(joinpath(dir_output,"eom.mark")) # mark it
-# 	else
-# 		println("Warning! Reusing exisiting output folder!")
-# 	end
-# else
-# 	dir_output=folder # if marked, reuse with new data sub folder
-# end

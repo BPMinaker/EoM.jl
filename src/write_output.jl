@@ -1,4 +1,4 @@
-function write_output(systems,eoms,results;verbose=false,folder="output",data=systems[1].name)
+function write_output(systems,eoms,results,args...;folder="output",data=systems[1].name)
 ## Copyright (C) 2017, Bruce Minaker
 ## write_output.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -12,6 +12,7 @@ function write_output(systems,eoms,results;verbose=false,folder="output",data=sy
 ##
 ##--------------------------------------------------------------------
 
+verbose=any(args.==:verbose)
 verbose && println("Writing output...")
 dir_date,dir_time=setup(folder=folder,data=data)
 dir_data=joinpath(dir_date,dir_time)
@@ -181,7 +182,10 @@ open(out,"w") do file
 end
 
 dss_path=joinpath(dir_data,"dss")
+~isdir(dss_path) && (mkdir(dss_path))
+
 ss_path=joinpath(dir_data,"ss")
+~isdir(ss_path) && (mkdir(ss_path))
 
 writedlm(joinpath(dss_path,"A.out"),eoms[end].A)
 writedlm(joinpath(dss_path,"B.out"),eoms[end].B)
