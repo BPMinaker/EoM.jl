@@ -27,11 +27,11 @@ item.velocity=[u,0.0,0.0]
 push!(the_system.item,item)
 push!(the_system.item,weight(item,g))
 
-susp!(the_system,a=a,tw=tw,r=r,u=u,g=g,str="LF ",front=true)
-tire!(the_system,a=a,tw=tw,cf=cf,u=u,g=g,str="LF ",front=true)
+susp!(the_system,str="LF ",front=true;a,tw,r,u,g)
+tire!(the_system,str="LF ",front=true;a,tw,cf,u,g)
 
-susp!(the_system,a=-b,tw=tw,r=1.2*r,u=u,g=g,str="LR ",front=false)
-tire!(the_system,a=-b,tw=tw,cf=cr,u=u,g=g,str="LR ",front=false)
+susp!(the_system,a=-b,str="LR ",front=false;tw,r,u,g)
+tire!(the_system,a=-b,cf=cr,str="LR ",front=false;tw,u,g)
 
 item=spring("Anti-roll bar")
 item.body[1]="LF Anti-roll arm"
