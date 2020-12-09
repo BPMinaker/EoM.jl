@@ -39,6 +39,14 @@ function name(obj::link)
 	obj.name
 end
 
+function ptr(obj::link)
+	6 * (obj.body_number[1] - 1), 6 * (obj.body_number[2] - 1)
+end
+
+function preload(obj::link)
+	obj.preload
+end
+
 function num_fm(obj::link)
 	obj.forces+obj.moments
 end

@@ -39,6 +39,10 @@ function name(obj::nh_point)
 	obj.name
 end
 
+function ptr(obj::nh_point)
+	6 * (obj.body_number[1] - 1), 6 * (obj.body_number[2] - 1)
+end
+
 function num_fm(obj::nh_point)
 	obj.forces+obj.moments
 end

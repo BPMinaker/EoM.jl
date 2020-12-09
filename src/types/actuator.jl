@@ -43,6 +43,10 @@ function name(obj::actuator)
 	obj.name
 end
 
+function ptr(obj::actuator)
+	6 * (obj.body_number[1] - 1), 6 * (obj.body_number[2] - 1)
+end
+
 function gain(obj::actuator)
 	obj.gain
 end

@@ -27,8 +27,7 @@ Vector{Float64}(undef,0),
 zeros(3),
 zeros(3),
 zeros(3,2),
-[zeros(2,2),
-zeros(2,2)])
+[zeros(2,2),zeros(2,2)])
 
 function Base.show(io::IO, obj::rigid_point)
 	println(io,"Rigid point:")
@@ -39,6 +38,10 @@ end
 
 function name(obj::rigid_point)
 	obj.name
+end
+
+function ptr(obj::rigid_point)
+	6 * (obj.body_number[1] - 1), 6 * (obj.body_number[2] - 1)
 end
 
 function num_fm(obj::rigid_point)

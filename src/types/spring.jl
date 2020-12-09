@@ -47,6 +47,10 @@ function name(obj::spring)
 	obj.name
 end
 
+function ptr(obj::spring)
+	6 * (obj.body_number[1] - 1), 6 * (obj.body_number[2] - 1)
+end
+
 function stiffness(obj::spring)
 	obj.stiffness
 end

@@ -50,6 +50,10 @@ function name(obj::sensor)
 	obj.name
 end
 
+function ptr(obj::sensor)
+	6 * (obj.body_number[1] - 1), 6 * (obj.body_number[2] - 1)
+end
+
 function gain(obj::sensor)
 	obj.gain
 end
