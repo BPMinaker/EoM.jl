@@ -259,6 +259,12 @@ function write_output(
     writedlm(joinpath(ss_path, "C.out"), results[end].ss_eqns.C)
     writedlm(joinpath(ss_path, "D.out"), results[end].ss_eqns.D)
 
+    dir_date, dir_time
+
+end ## Leave
+
+
+
     # sys=[results[1].ss_eqns.A results[1].ss_eqns.B; results[1].ss_eqns.C results[1].ss_eqns.D]
     # sys=(abs.(sys).>=1e-9).*sys
     # writedlm(joinpath(jordan_path,"ABCD.out"),sys)
@@ -285,40 +291,5 @@ function write_output(
     # write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"input.tex"),the_list[1].data.input)
     # write_mtx_ptrn(joinpath(pwd(),dir_output,dir_raw,"output.tex"),the_list[1].data.output)
 
-    dir_date, dir_time
 
-end ## Leave
 
-function write_mtx_ptrn(file_name, mtx)
-
-    n, m = size(mtx)
-
-    str = "\\begin{tikzpicture}[every left delimiter/.style={xshift=1ex},every right delimiter/.style={xshift=-1ex}]\n"
-    str *= "\\draw[help lines,xstep=6ex,ystep=1ex] (0ex,0ex) grid ($(m)ex,$(n)ex);\n"
-    str *= "\\matrix (name)[matrix anchor=south west,row sep={1ex,between origins},column sep={1ex,between origins},matrix of nodes,left delimiter={[},right delimiter={]},dot/.style={fill=black,circle,scale=0.2},empty/.style={fill=white,circle,scale=0.2}] at (-0.5ex,-0.5ex)\n"
-
-    str *= "{\n"
-    for i = 1:n
-        for j = 1:m
-            if j == m
-                cc = "\\\\"
-            else
-                cc = "&"
-            end
-            if abs(mtx[i, j]) > 1e-6
-                str *= "\\node[dot]{};" * cc
-            else
-                str *= "\\node[empty]{};" * cc
-            end
-        end
-        str *= "\n"
-    end
-    str *= "};\n"
-
-    str *= "\\node [left=0ex of name] {\$\\mathbf{A}=\$};\n"
-    str *= "\\end{tikzpicture}\n"
-
-    open(file_name, "w") do handle
-        write(handle, str)
-    end
-end
