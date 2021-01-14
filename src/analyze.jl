@@ -116,7 +116,7 @@ for i=1:nvpts
 	try
 		result[i].ss_resp=-C*(A\B)+D
 	catch
-		verbose && flag==false && println("No inverse exists, trying individual input outout pairs.")
+		verbose && flag==false && println("No inverse exists, trying individual input output pairs.")
 		flag=true
 
 		temp=dss2ss(dss_eqns[i],verbose && i<2 && :verbose)
