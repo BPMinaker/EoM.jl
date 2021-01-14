@@ -30,7 +30,7 @@ false,
 0,
 zeros(3),
 zeros(3,2),
-[zeros(2,2),zeros(2,2)])
+[zeros(1,3),zeros(1,3)])
 
 function Base.show(io::IO, obj::actuator)
 	println(io,"Actuator:")

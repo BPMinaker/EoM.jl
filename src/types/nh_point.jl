@@ -9,7 +9,6 @@ mutable struct nh_point
 	rolling_unit::Vector{Float64}
 	nu::Array{Float64,2}
 	b_mtx::Vector{Array{Float64,2}}
-
 end
 
 nh_point(str::String)=nh_point(
@@ -26,7 +25,7 @@ zeros(3),
 zeros(3),
 zeros(3),
 zeros(3,2),
-[zeros(2,2),zeros(2,2)])
+[zeros(3,3),zeros(3,3)])
 
 function Base.show(io::IO, obj::nh_point)
 	println(io,"Nonholonomic point:")

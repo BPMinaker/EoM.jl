@@ -11,7 +11,9 @@ mutable struct spring
 	length::Float64
 	unit::Vector{Float64}
 	nu::Array{Float64,2}
-	b_mtx::Vector{Array{Float64,2}}
+    b_mtx::Vector{Array{Float64,2}}
+    force::Vector{Float64}
+    moment::Vector{Float64}
 end
 
 spring(str::String)=spring(
@@ -31,7 +33,9 @@ NaN,
 0,
 zeros(3),
 zeros(3,2),
-[zeros(2,2),zeros(2,2)])
+[zeros(1,3),zeros(1,3)],
+zeros(3),
+zeros(3))
 
 function Base.show(io::IO, obj::spring)
 	println(io,"Spring:")

@@ -124,7 +124,7 @@ function elastic_connections!(the_system, data, verb)
     data.deflection = defln_mtx
     data.selection = slct_mtx
     data.preload = preload_vec
-    data.spring_stiffness = diag(stiff)
+    data.spring_stiffness = stiff
     data.subset_spring_stiffness = subset_spring_stiff
 
 end  ## Leave

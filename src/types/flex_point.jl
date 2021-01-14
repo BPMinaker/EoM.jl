@@ -13,7 +13,9 @@ mutable struct flex_point
 	unit::Vector{Float64}
 	rolling_unit::Vector{Float64}
 	nu::Array{Float64,2}
-	b_mtx::Vector{Array{Float64,2}}
+    b_mtx::Vector{Array{Float64,2}}
+    force::Vector{Float64}
+    moment::Vector{Float64}
 end
 
 flex_point(str::String)=flex_point(
@@ -35,7 +37,9 @@ Vector{Float64}(undef,0),
 zeros(3),
 zeros(3),
 zeros(3,2),
-[zeros(2,2),zeros(2,2)])
+[zeros(3,3),zeros(3,3)],
+zeros(3),
+zeros(3))
 
 function Base.show(io::IO, obj::flex_point)
 	println(io,"Flexible point:")

@@ -1,10 +1,11 @@
-#__precompile__()
+# __precompile__()
 
 module EoM
 
 using LinearAlgebra
 using Dates
 using DelimitedFiles
+using ForwardDiff
 
 export build_examples
 export setup
@@ -30,34 +31,34 @@ export tau
 export lambda
 export vpt
 
-macro def(name,definition)
-	return quote
-		macro $(esc(name))()
-			esc($(Expr(:quote,definition)))
-		end
-	end
+macro def(name, definition)
+    return quote
+        macro $(esc(name))()
+            esc($(Expr(:quote, definition)))
+        end
+    end
 end
 
 @def add_generic_fields begin
-	name::String
-	group::String
-	body::Vector{String}
-	body_number::Vector{Int}
-	forces::Int
-	moments::Int
-	radius::Vector{Vector{Float64}}
+    name::String
+    group::String
+    body::Vector{String}
+    body_number::Vector{Int}
+    forces::Int
+    moments::Int
+    radius::Vector{Vector{Float64}}
 end
 
-fldr=joinpath(dirname(pathof(EoM)),"types")
-types=readdir(fldr)
+fldr = joinpath(dirname(pathof(EoM)), "types")
+types = readdir(fldr)
 for i in types
-	include(joinpath(fldr,i))
+    include(joinpath(fldr, i))
 end
 
-#export run_eom_nl
-#include("rotate.jl")
-#include("run_eom_nl.jl")
-#include("xdot.jl")
+# export run_eom_nl
+# include("rotate.jl")
+# include("run_eom_nl.jl")
+# include("xdot.jl")
 include("eom_structs.jl")
 
 include("run_eom.jl")
@@ -71,6 +72,7 @@ include("item_init.jl")
 include("generate_eom.jl")
 include("force.jl")
 include("skew.jl")
+#include("phi.jl")
 include("elastic_connections.jl")
 include("rigid_constraints.jl")
 include("preload.jl")
@@ -89,11 +91,7 @@ include("analyze.jl")
 include("full_ss.jl")
 include("dss2ss.jl")
 include("decompose.jl")
-include("write_output.jl")
-include("weave_output.jl")
 include("write_html.jl")
-include("load_defln.jl")
-include("syst_props.jl")
 include("mirror.jl")
 include("thin_rod.jl")
 include("lsim.jl")

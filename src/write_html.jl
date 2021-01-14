@@ -109,15 +109,7 @@ str_close = "
                     push!(labels, lb)
                     # if many vpts, make a plot vs velocity
                     if nvpts > 1
-                        p = plot(
-                            v,
-                            x,
-                            lw = 2,
-                            xlabel = "Speed [m/s]",
-                            ylabel = lb,
-                            label = "",
-                            size = (600, 300),
-                        )
+                        p = plot(v, x, lw = 2, xlabel = "Speed [m/s]", ylabel = lb, label = "", size = (600, 300))
                         # save the figure
                         path = joinpath(dir_data, "sstf_$(i)_$(j).html")
                         savefig(p, path)
@@ -180,24 +172,14 @@ str_close = "
         si[si.==0] .= NaN
 
         p = plot(xlabel = "Speed [m/s]", ylabel = "Eigenvalue [1/s]", size = (600, 300))
-        plot!(p, v, sr'[:, 1], seriestype = :scatter, label = "Real")
-        plot!(p, v, si'[:, 1], seriestype = :scatter, label = "Imaginary")
-        plot!(
-            p,
-            v,
-            sr',
-            seriestype = :scatter,
-            mc = RGB(0 / 255, 154 / 255, 250 / 255),
-            label = "",
-        )
-        plot!(
-            p,
-            v,
-            si',
-            seriestype = :scatter,
-            mc = RGB(227 / 255, 111 / 255, 71 / 255),
-            label = "",
-        )
+        seriestype = :scatter
+        plot!(p, v, sr'[:, 1]; seriestype, label = "Real")
+        plot!(p, v, si'[:, 1]; seriestype, label = "Imaginary")
+        mc=RGB(0 / 255, 154 / 255, 250 / 255)
+        plot!(p, v, sr'; seriestype, mc, label = "")
+        mc=RGB(227 / 255, 111 / 255, 71 / 255)
+        plot!(p, v, si'; seriestype, mc, label = "",)
+
         # save the figure
         path = joinpath(dir_data, "eigen.html")
         savefig(p, path)
@@ -220,36 +202,13 @@ str_close = "
                 phs[phs.>0] .-= 360
                 # set wrap arounds in phase to Inf to avoid jumps in plot
                 phs[findall(abs.(diff(phs, dims = 2)) .> 180)] .= Inf
-                lb = hcat(output_names[bode]...)
-                lb .*= "/" * input_names[i]
-                p1 = plot(
-                    w,
-                    mag',
-                    lw = 2,
-                    label = lb,
-                    xlabel = "",
-                    ylabel = "Gain [dB]",
-                    xscale = :log10,
-                    ylims = (-60, Inf),
-                )
-                p2 = plot(
-                    w,
-                    phs',
-                    lw = 2,
-                    label = "",
-                    xlabel = "Frequency [Hz]",
-                    ylabel = "Phase [deg]",
-                    xscale = :log10,
-                    ylims = (-360, 0),
-                    yticks = -360:60:0,
-                )
+                label = hcat(output_names[bode]...)
+                label .*= "/" * input_names[i]
+                xscale = :log10
+                p1 = plot(w, mag'; lw = 2, label, xlabel = "", ylabel = "Gain [dB]", xscale, ylims = (-60, Inf))
+                p2 = plot(w, phs'; lw = 2, label, xlabel = "Frequency [Hz]", ylabel = "Phase [deg]", xscale, ylims = (-360, 0), yticks = -360:60:0)
                 # merge two subplots
-                p = plot(
-                    p1,
-                    p2,
-                    layout = grid(2, 1, heights = [0.66, 0.33]),
-                    size = (600, 450),
-                )
+                p = plot(p1, p2, layout = grid(2, 1, heights = [0.66, 0.33]), size = (600, 450))
                 # save the figure
                 path = joinpath(dir_data, "bode_$i.html")
                 savefig(p, path)
@@ -262,21 +221,13 @@ str_close = "
             for i = 1:nout
                 for j = 1:nin
                     n = (i - 1) * nin + j
-                    if findnext(bode .== n, 1) != nothing
+                    if !(findnext(bode .== n, 1) === nothing)
                         # make empty plots of magnitude and phase
-                        p1 = plot(
-                            xlabel = "",
-                            ylabel = "|$(output_names[i])|/|$(input_names[j])| [dB]",
-                            xscale = :log10,
-                            legend = :top,
-                        )
-                        p2 = plot(
-                            xlabel = "Frequency [Hz]",
-                            ylabel = "∠ $(output_names[i])/$(input_names[j]) [deg]",
-                            xscale = :log10,
-                            ylims = (-360, 0),
-                            yticks = -360:60:0,
-                        )
+                        xscale = :log10
+                        ylabel = "|$(output_names[i])|/|$(input_names[j])| [dB]"
+                        p1 = plot(; xlabel = "", ylabel, xscale, legend = :top)
+                        ylabel = "∠ $(output_names[i])/$(input_names[j]) [deg]"
+                        p2 = plot(; xlabel = "Frequency [Hz]", ylabel, xscale, ylims = (-360, 0), yticks = -360:60:0)
                         # fill in for each selected vpt
                         for k in l
                             w = results[k].w / 2 / pi
@@ -294,12 +245,7 @@ str_close = "
                             p1 = plot!(p1, w, mag, lw = 2, label = lb)
                             p2 = plot!(p2, w, phs, lw = 2, label = "")
                             # merge two subplots
-                            p = plot(
-                                p1,
-                                p2,
-                                layout = grid(2, 1, heights = [0.66, 0.33]),
-                                size = (600, 450),
-                            )
+                            p = plot(p1, p2, layout = grid(2, 1, heights = [0.66, 0.33]), size = (600, 450))
                         end
                         # save the figure
                         path = joinpath(dir_data, "bode_$(i)_$(j).html")
@@ -341,6 +287,30 @@ str_close = "
         println(output_f,"<div><iframe width=100% height=100% frameborder=0 src=\"$path\"></iframe></div>")
     end
 
+    # add the static preloads
+    println(output_f, "<h2>Preloads of first system</h2>")
+
+    temp=["Connector" "f_x" "f_y" "f_z" "m_x" "m_y" "m_z"]
+    for item in [systems[1].rigid_points; systems[1].flex_points; systems[1].springs; systems[1].links]
+        temp=vcat(temp, [item.name round.(item.force', digits=3) round.(item.moment', digits=3)])
+    end
+
+ #=    for item in the_system.beams
+        println(preload_f, "{$idx} {" * item.name * "} shear $(item.force[1][1]), $(item.force[1][2]), $(item.force[1][3]), $(norm(force[1]))")
+        println(preload_f, "{} {} moment $(item.moment[1][1]), $(item.moment[1][2]), $(item.moment[1][3]), $(norm(item.moment[1]))")
+        println(preload_f, "{} {} shear $(item.force[2][1]), $(item.force[2][2]), $(item.force[2][3]), $(norm(item.force[2]))")
+        println(preload_f, "{} {} moment $(item.moment[2][1]), $(item.moment[2][2]), $(item.moment[2][3]), $(norm(item.moment[2]))")
+        idx += 1
+    end =#
+
+    path = joinpath(dir_data, "preloads.html")
+    tmp2 = open(path, "w")
+    println(tmp2, str_open, html_table(temp), str_close)
+    close(tmp2)
+    # write the link to the table into the main file
+    path = joinpath(dir_time, "preloads.html")
+    println(output_f,"<div><iframe width=100% height=100% frameborder=0 src=\"$path\"></iframe></div>")
+    println(output_f,"<br/><br/><br/><br/><br/>")
     # print the end and close the output
     println(output_f, str_close)
     close(output_f)

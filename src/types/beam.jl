@@ -11,7 +11,9 @@ mutable struct beam
 	preload::Vector{Float64}
 	unit::Vector{Float64}
 	nu::Array{Float64,2}
-	b_mtx::Vector{Array{Float64,2}}
+    b_mtx::Vector{Array{Float64,2}}
+    force::Vector{Vector{Float64}}
+    moment::Vector{Vector{Float64}}
 end
 
 beam(str::String)=beam(
@@ -31,7 +33,9 @@ zeros(0,0),
 [NaN,NaN,NaN,NaN],
 zeros(3),
 zeros(3,2),
-[zeros(2,2),zeros(2,2)])
+[zeros(2,3),zeros(2,3)],
+[zeros(3),zeros(3)],
+[zeros(3),zeros(3)])
 
 function Base.show(io::IO, obj::beam)
 	println(io,"Beam:")
@@ -42,6 +46,10 @@ end
 
 function name(obj::beam)
 	obj.name
+end
+
+function ptr(obj::beam)
+	6 * (obj.body_number[1] - 1), 6 * (obj.body_number[2] - 1)
 end
 
 function num_fm(obj::beam)

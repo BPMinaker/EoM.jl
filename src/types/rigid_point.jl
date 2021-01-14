@@ -9,7 +9,9 @@ mutable struct rigid_point
 	unit::Vector{Float64}
 	rolling_unit::Vector{Float64}
 	nu::Array{Float64,2}
-	b_mtx::Vector{Array{Float64,2}}
+    b_mtx::Vector{Array{Float64,2}}
+    force::Vector{Float64}
+    moment::Vector{Float64}
 end
 
 rigid_point(str::String)=rigid_point(
@@ -27,7 +29,9 @@ Vector{Float64}(undef,0),
 zeros(3),
 zeros(3),
 zeros(3,2),
-[zeros(2,2),zeros(2,2)])
+[zeros(3,3),zeros(3,3)],
+zeros(3),
+zeros(3))
 
 function Base.show(io::IO, obj::rigid_point)
 	println(io,"Rigid point:")

@@ -1,4 +1,4 @@
-function item_init!(items, verb = false)
+function item_init!(items, verb=false)
     ## Copyright (C) 2017, Bruce Minaker
     ## item_init.jl is free software; you can redistribute it and/or modify it
     ## under the terms of the GNU General Public License as published by
@@ -13,6 +13,21 @@ function item_init!(items, verb = false)
     ##--------------------------------------------------------------------
 
     verb && println("Initializing...")
+
+    function build_b(item, field)
+        n = getfield(item, field)
+        if n == 3 ## For 3 forces, i.e. ball joint
+            return I + zeros(3, 3)
+        elseif n == 2 ## For 2 forces, i.e. cylindrical or pin joint
+            return item.nu'
+        elseif n == 1 ## For 1 force, i.e. planar
+            return item.unit'
+        elseif n == 0 ## For 0 forces
+            return zeros(0, 3)
+        else
+            error("Error.  Item is defined incorrectly.")
+        end
+    end
 
     for i in items
 
@@ -45,7 +60,7 @@ function item_init!(items, verb = false)
                 end
             end
 
-            ## If the item has two nodes
+        ## If the item has two nodes
         elseif isa(i, link) ||
                isa(i, spring) ||
                isa(i, beam) ||
@@ -56,34 +71,26 @@ function item_init!(items, verb = false)
             if i.length > 0
                 i.unit = temp / i.length  ## New entry 'unit' is the unit vector from location1 to location2
             end
-            if ~isa(i, beam)
-                i.forces = Int(~i.twist)
+            if !isa(i, beam)
+                i.forces = Int(!i.twist)
                 i.moments = Int(i.twist)
             end
-        elseif isa(i, body) || isa(i, load)
-        else
-            println("Something odd happened in initializing items...")
-            ## find the normal to the triangle, but use Newell method rather than null()
-            #ux=det([1 1 1;in(i).location(2:3,:)]);
-            #uy=det([in(i).location(1,:);1 1 1;in(i).location(3,:)]);
-            #uz=det([in(i).location(1:2,:);1 1 1]);
-            #in(i).unit=[ux;uy;uz]/norm([ux;uy;uz]);
-        end
+         end
 
         if !isa(i, body) && !isa(i, load)
             i.nu = nullspace(reshape(i.unit, 1, 3))  ## Find directions perp to beam axis
-            if ~(round(i.unit' * cross(i.nu[:, 1], i.nu[:, 2])) == 1)  ## Make sure it's right handed
+            if round(i.unit' * cross(i.nu[:, 1], i.nu[:, 2])) != 1  ## Make sure it's right handed
                 i.nu = circshift(i.nu, [0, 1])
             end
+            i.b_mtx[1] = build_b(i, :forces)
+            i.b_mtx[2] = build_b(i, :moments)
         end
-
-        ##i.r=[i.nu i.unit];  ## Build the rotation matrix
-        ## Find the locations in the new coordinate system, z is the same for all points in planar element
-        ##i.local=i.r'*i.location
+        
     end
+end ## Leave
 
 
-    for i in items
+#=     for i in items
         if !isa(i, body) && !isa(i, load)
             #	i.unit  ## Axis of constraint
             #	i.nu  ## Plane of constraint
@@ -112,7 +119,15 @@ function item_init!(items, verb = false)
                 error("Error.  Item is defined incorrectly.")
             end
         end
-    end
+    end =#
+
+
+
+    ## find the normal to the triangle, but use Newell method rather than null()
+    # ux=det([1 1 1;in(i).location(2:3,:)]);
+    # uy=det([in(i).location(1,:);1 1 1;in(i).location(3,:)]);
+    # uz=det([in(i).location(1:2,:);1 1 1]);
+    # in(i).unit=[ux;uy;uz]/norm([ux;uy;uz]);
 
     # if(ismember(type,{'triangle_3s','triangle_5s'}))
     # 	for i=1:length(in)
@@ -120,4 +135,8 @@ function item_init!(items, verb = false)
     # 	end
     # end
 
-end ## Leave
+    ##i.r=[i.nu i.unit];  ## Build the rotation matrix
+    ## Find the locations in the new coordinate system, z is the same for all points in planar element
+    ##i.local=i.r'*i.location
+
+

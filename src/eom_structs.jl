@@ -13,7 +13,7 @@ mutable struct eom_data
     lambda::Vector{Float64}  ## lagrange multipliers, internal preloads
     static::Vector{Float64}  ## static deflection
     selection::Array{Float64,2}  ## indicator of which springs preload is known in advance
-    spring_stiffness::Vector{Float64}  ## all flexible item stiffnesses
+    spring_stiffness::Array{Float64,2}  ## all flexible item stiffnesses
     subset_spring_stiffness::Vector{Float64}  ## stiffnesses of springs with known preload
     left_jacobian::Array{Float64,2}
     right_jacobian::Array{Float64,2}
@@ -42,7 +42,7 @@ eom_data() = eom_data(
     zeros(0),
     zeros(0),
     zeros(0, 0),
-    zeros(0),
+    zeros(0, 0),
     zeros(0),
     zeros(0, 0),
     zeros(0, 0),

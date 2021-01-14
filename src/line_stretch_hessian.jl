@@ -25,15 +25,13 @@ function line_stretch_hessian(items, num)
         t1 = [-su su * srs]
         t2 = [su -su * sre]
 
-        temp = zeros(3, 6 * num)
+        mtx[ptr_1 .+ (1:6), ptr_1 .+ (1:6)] += i.preload / i.length * t1' * t1
+        mtx[ptr_2 .+ (1:6), ptr_2 .+ (1:6)] += i.preload / i.length * t2' * t2
+        mtx[ptr_1 .+ (1:6), ptr_2 .+ (1:6)] += i.preload / i.length * t1' * t2
+        mtx[ptr_2 .+ (1:6), ptr_1 .+ (1:6)] += i.preload / i.length * t2' * t1
 
-        temp[:, ptr_1.+(1:6)] = t1
-        temp[:, ptr_2.+(1:6)] = t2
-        # this is inefficient  - should enter row and column
-        mtx += (temp' * temp * (i.preload / i.length))
-
-        mtx[ptr_1.+(1:6), ptr_1.+(4:6)] -= i.preload * t1'
-        mtx[ptr_2.+(1:6), ptr_2.+(4:6)] -= i.preload * t2'
+        mtx[ptr_1 .+ (1:6), ptr_1 .+ (4:6)] -= i.preload * t1'
+        mtx[ptr_2 .+ (1:6), ptr_2 .+ (4:6)] -= i.preload * t2'
 
     end
 

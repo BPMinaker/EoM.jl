@@ -84,9 +84,7 @@ function preload!(data, verb)
         static = -temp[q+1:q+r]
         lambda = [
             temp[1:q]
-            [diagm(data.spring_stiffness) * data.deflection data.selection' *
-                                                            diagm(data.subset_spring_stiffness)] *
-            temp[q+1:end]
+            [data.spring_stiffness * data.deflection data.selection' * diagm(data.subset_spring_stiffness)] * temp[q+1:end]
         ]
         sumf = test_mtx[1:r, :] * lambda + data.force
     end
