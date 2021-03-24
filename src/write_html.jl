@@ -96,12 +96,12 @@ str_close = "
         labels = []
         gain = []
         # loop over outputs and inputs and vpts
-        for i = 1:nout
-            for j = 1:nin
+        for i in 1:nout
+            for j in 1:nin
                 n = (i - 1) * nin + j
                 if findnext(ss .== n, 1) != nothing
                     x = zeros(nvpts)
-                    for k = 1:nvpts
+                    for k in 1:nvpts
                         x[k] = results[k].ss_resp[i, j]
                     end
                     push!(gain, x[1])
@@ -141,7 +141,7 @@ str_close = "
     # get eigenvalues
     m = maximum(length.(e_val.(results)))
     s = zeros(m, nvpts) * 1im
-    for i = 1:nvpts
+    for i in 1:nvpts
         l = length(results[i].e_val)
         s[1:l, i] = results[i].e_val
     end
@@ -164,22 +164,46 @@ str_close = "
         path = joinpath(dir_time, "eigen.html")
         println(output_f,"<div><iframe width=100% height=100% frameborder=0 src=\"$path\"></iframe></div>")
     else
-        # plto real and imaginary seperately
+
+        # sort all zero roots to top
+        sort!(s, dims = 1, by = abs)
+
+        # plot real and imaginary seperately
         sr = real.(s)
         si = imag(s)
-        # don't plot exactly zeros, as real roots have lots of zero imaginary parts
-        sr[sr.==0] .= NaN
-        si[si.==0] .= NaN
+
+        # eliminate all zero rows
+        tr = []
+        for i in 1:size(sr,1)
+            if any(sr[i,:] .!= 0)
+                push!(tr,i)
+            end
+        end
+        sr=sr[tr, :]
+        tr = []
+        for i in 1:size(si,1)
+            if any(si[i,:] .!= 0)
+                push!(tr,i)
+            end
+        end
+        si=si[tr, :]
+
+        # don't plot zeros - but can't have entire row of NaN
+        sr[sr .== 0] .= NaN
+        si[si .== 0] .= NaN
 
         p = plot(xlabel = "Speed [m/s]", ylabel = "Eigenvalue [1/s]", size = (600, 300))
         seriestype = :scatter
         plot!(p, v, sr'[:, 1]; seriestype, label = "Real")
         plot!(p, v, si'[:, 1]; seriestype, label = "Imaginary")
         mc=RGB(0 / 255, 154 / 255, 250 / 255)
-        plot!(p, v, sr'; seriestype, mc, label = "")
+        if size(sr,1) > 1
+            plot!(p, v, sr'[:,2:end]; seriestype, mc, label = "")
+        end
         mc=RGB(227 / 255, 111 / 255, 71 / 255)
-        plot!(p, v, si'; seriestype, mc, label = "",)
-
+        if size(si,1) > 1
+            plot!(p, v, si'[:,2:end]; seriestype, mc, label = "",)
+        end
         # save the figure
         path = joinpath(dir_data, "eigen.html")
         savefig(p, path)
@@ -194,7 +218,7 @@ str_close = "
         # pick out up to four representative vpts from the list
         l = unique(Int.(round.((nvpts - 1) .* [1, 3, 5, 7] / 8 .+ 1)))
         if length(l) == 1
-            for i = 1:nin
+            for i in 1:nin
                 # fill in for each selected vpt
                 w = results[l[1]].w / 2 / pi
                 mag = 20 * log10.(abs.(results[l[1]].freq_resp[bode, i, :]) .+ eps(1.0))
@@ -206,7 +230,7 @@ str_close = "
                 label .*= "/" * input_names[i]
                 xscale = :log10
                 p1 = plot(w, mag'; lw = 2, label, xlabel = "", ylabel = "Gain [dB]", xscale, ylims = (-60, Inf))
-                p2 = plot(w, phs'; lw = 2, label, xlabel = "Frequency [Hz]", ylabel = "Phase [deg]", xscale, ylims = (-360, 0), yticks = -360:60:0)
+                p2 = plot(w, phs'; lw = 2, label="", xlabel = "Frequency [Hz]", ylabel = "Phase [deg]", xscale, ylims = (-360, 0), yticks = -360:60:0)
                 # merge two subplots
                 p = plot(p1, p2, layout = grid(2, 1, heights = [0.66, 0.33]), size = (600, 450))
                 # save the figure
@@ -218,8 +242,8 @@ str_close = "
             end
         else
             # loop over outputs and inputs and selected vpts
-            for i = 1:nout
-                for j = 1:nin
+            for i in 1:nout
+                for j in 1:nin
                     n = (i - 1) * nin + j
                     if !(findnext(bode .== n, 1) === nothing)
                         # make empty plots of magnitude and phase
@@ -263,7 +287,7 @@ str_close = "
     if n > 0
         println(output_f, "<h2>Time history and other plots</h2>")
     end
-    for i = 1:n
+    for i in 1:n
         # save the figure
         path = joinpath(dir_data, "plot_$(i).html")
         savefig(plots[i], path)
@@ -326,10 +350,10 @@ function html_table(mtx)
         str *= "<th>$i</th>"
     end
     str *= "</tr>\n</thead><tbody>\n"
-    for i = 2:n
+    for i in 2:n
         str *= "<tr>"
         for j in mtx[i, :]
-            if isa(j, String) || imag(j) != 0
+            if j isa String || imag(j) != 0
                 str *= "<td>$j</td>"
             else
                 str *= "<td>$(real(j))</td>"
