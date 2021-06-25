@@ -45,7 +45,6 @@ function preload!(data, verb)
             println("Finding all forces of constraint and flexible item preloads...")
         end
         lambda = test_mtx \ [-data.force; data.preload]  ## lambda (constraint forces)=-inverse(test_mtx)*frcvec
-        verb && println("Finding deflections...")
 
         # [J    0 ]      {0}         satisfies constraints
         # [K  H'S'P]{x}={-f-J'lam}   elastic force due to motion and initial deflection = total applied force less rigid constraint force
@@ -53,10 +52,12 @@ function preload!(data, verb)
 
         temp_mtx = ind_test_mtx[:, q+1:end]
         try
+            verb && println("Finding deflections...")
             static =
                 temp_mtx \
                 [zeros(q, 1); -data.force - data.constraint' * lambda[1:q]; data.preload]
         catch
+            verb && println("Trouble with solution...using pseudo inverse!")
             static =
                 pinv(temp_mtx) *
                 [zeros(q, 1); -data.force - data.constraint' * lambda[1:q]; data.preload]

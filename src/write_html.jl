@@ -91,7 +91,7 @@ str_close = "
     println(output_f, "<p>Here are the results of the analysis of: $(systems[1].name)</p>")
 
     # if there are too many inputs and outputs, skip
-    if (nin * nout > 0 && nin * nout < 16)
+    if nin * nout > 0 && nin * nout < 16
         println(output_f, "<h2>Steady state gains</h2>")
         labels = []
         gain = []
@@ -99,7 +99,7 @@ str_close = "
         for i in 1:nout
             for j in 1:nin
                 n = (i - 1) * nin + j
-                if findnext(ss .== n, 1) != nothing
+                if findnext(ss .== n, 1) !== nothing
                     x = zeros(nvpts)
                     for k in 1:nvpts
                         x[k] = results[k].ss_resp[i, j]
@@ -213,7 +213,7 @@ str_close = "
     end
 
     # if there are too many inputs and outputs, skip
-    if nin * nout > 0 && nin * nout < 16 && length(bode) > 0
+    if nin * nout > 0  && length(bode) > 0 && nin * nout < 16
         println(output_f, "<h2>Bode plots</h2>")
         # pick out up to four representative vpts from the list
         l = unique(Int.(round.((nvpts - 1) .* [1, 3, 5, 7] / 8 .+ 1)))

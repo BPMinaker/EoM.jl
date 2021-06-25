@@ -37,10 +37,6 @@ function generate_eom(the_system, verbose = false)
     const_frc_deal!(the_system, data.lambda, verbose)
     defln_deal!(the_system, data.static, verbose)
 
-    #@time K_1,K_2=phi(the_system, data, verbose)
-    #display(round.(K_1 .+ eps(1e-6), digits = 3))
-    #display(round.(K_2 .+ eps(1e-6), digits = 3))
-
     ## Build the tangent stiffness matrix from the computed preloads
     tangent!(the_system, data, verbose)
 
@@ -55,3 +51,17 @@ function generate_eom(the_system, verbose = false)
 
     dss_eqns, data
 end
+
+    #t1 = @elapsed 
+    #t2 = @elapsed
+    #t3 = @elapsed K=phi(the_system, verbose)
+    #ee =  norm(K - (data.stiffness + data.tangent_stiffness))
+    #println("The norm matrix error is $ee.")
+    #println("The algebraic calc took $(round((t1+t2)*1000,digits=3)) milliseconds.")
+    #println("The automatic diff took $(round(t3*1000,digits=2)) milliseconds and $(round(t3/(t1+t2),digits=3)) times longer.")
+    #println("The matrix sparsity is $(100 * count(iszero.(K)) / size(K,1) / size(K,2))%.")
+    #if ee > 1e-4
+        #display(round.(K,digits=2))
+        #display(round.(data.stiffness + data.tangent_stiffness,digits=2))
+        #display(round.(K - data.stiffness - data.tangent_stiffness,digits=3))
+    #end

@@ -1,4 +1,3 @@
-using LinearAlgebra
 using SparseArrays
 
 function splsim(

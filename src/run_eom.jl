@@ -16,36 +16,32 @@ function run_eom(sysin::Function, args...; vpts = [])
     verbose = any(args .== :verbose)
     diagnose = any(args .== :diagnose)
 
-    m = length(vpts)
+    verbose && println("\nCalling system function: $sysin ...")
 
-    # create empty system holders
-    verbose && println("Calling system function...")
+    vpts isa Number && (vpts = [vpts])
+    n = length(vpts)
 
-    if m > 1
+    if n > 0
         the_system = sysin.(vpts) # build all the input structs
         setfield!.(the_system, :vpt, vpts)
-    elseif m == 1
-        the_system = [sysin(vpts)]
-        the_system[1].vpt = vpts[1]
-    elseif m == 0
-        the_system = [sysin()]
     else
-        error("vpts error.")
+        the_system = [sysin()]
+        n = 1
     end
 
-    verbose && println("Running analysis of $(the_system[1].name) ...")
+    verbose && println("Running analysis of system: $(the_system[1].name) ...")
     verbose && println("Found $(length(the_system[1].item)) items...")
 
-    n = max(1, m)
     verb = Bool.(zeros(n))
     verb[1] = verbose
 
     sort_system!.(the_system, verb) # sort all the input structs
     out = generate_eom.(the_system, verb)
+  
     the_eqns = first.(out)
     the_data = last.(out)
 
-    if ~diagnose
+     if !diagnose
         return the_system, the_eqns
     else
         return the_system, the_eqns, the_data

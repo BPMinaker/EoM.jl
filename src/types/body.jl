@@ -2,6 +2,7 @@ export body
 export name
 export location
 export weight
+export mass_mtx
 
 #export inertia_mtx
 #export lcn_orn

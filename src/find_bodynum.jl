@@ -11,31 +11,37 @@
     ##
     ##--------------------------------------------------------------------
 function find_bodynum!(item, names)
-    if ~(item isa body) && ~(item isa load)
-        item.body_number[1] = findnext(item.body[1] .== names, 1)
-        item.body_number[2] = findnext(item.body[2] .== names, 1)
-        if item.body_number[1] === nothing || item.body_number[2] === nothing
-            error("Item $(item.name) is attached to missing body!")
+    if !(item isa body) && !(item isa load)
+        for i in 1:2
+            j = findnext(item.body[i] .== names, 1)
+            if j === nothing
+                error("Item $(item.name) is attached to missing body!")
+            else
+                item.body_number[i] = j
+            end
         end
     end
 end
 
 function find_bodyframenum!(item, names)
-    item.body_number = findnext(item.body .== names, 1)
-    item.frame_number = findnext(item.frame .== names, 1)
-    if item.body_number === nothing
+    i = findnext(item.body .== names, 1)
+    j = findnext(item.frame .== names, 1)
+    if i === nothing
         error("Item $(item.name) is attached to a missing body!")
     end
-    if item.frame_number === nothing
+    if j === nothing
         error("Item $(item.name) is attached a missing frame!")
     end
+    item.body_number = i
+    item.frame_number = j
 end
 
 function find_actnum!(item, names)
-    if item.actuator != "ground"
-        item.actuator_number = findnext(item.actuator .== names, 1)
-        if item.actuator_number === nothing
+    if !(item.actuator == "ground")
+        i = findnext(item.actuator .== names, 1)
+        if i === nothing
             error("Item $(item.name) actuator not found!")
         end
+        item.actuator_number = i
     end
 end

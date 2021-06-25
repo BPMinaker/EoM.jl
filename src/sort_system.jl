@@ -23,7 +23,8 @@ function sort_system!(the_system, verbose = false)
     push!(the_system.item, body("ground"))  ## Ground body is added last (important!)
 
     ## Find the type of each item, and sort into named fields
-    locn(item) = getproperty(the_system,Symbol(string(typeof(item)) * "s"))
+    locn(item) = getproperty(the_system,Symbol(last(split(string(typeof(item)),'.')) * "s"))
+#    locn(item) = getproperty(the_system,Symbol(string(typeof(item)) * "s"))
     push!.(locn.(the_system.item), the_system.item)
 
     ## Find the body number from the name

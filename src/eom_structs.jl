@@ -58,7 +58,7 @@ eom_data() = eom_data(
 
 mutable struct mbd_system
     name::String
-    vpt::Float64
+    vpt::Number
     item::Vector{Any}
     bodys::Vector{body}
     links::Vector{link}

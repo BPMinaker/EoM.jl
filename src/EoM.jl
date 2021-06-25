@@ -55,10 +55,7 @@ for i in types
     include(joinpath(fldr, i))
 end
 
-# export run_eom_nl
-# include("rotate.jl")
-# include("run_eom_nl.jl")
-# include("xdot.jl")
+
 include("eom_structs.jl")
 
 include("run_eom.jl")
@@ -72,7 +69,6 @@ include("item_init.jl")
 include("generate_eom.jl")
 include("force.jl")
 include("skew.jl")
-#include("phi.jl")
 include("elastic_connections.jl")
 include("rigid_constraints.jl")
 include("preload.jl")
@@ -97,5 +93,7 @@ include("thin_rod.jl")
 include("lsim.jl")
 include("splsim.jl")
 include("random_road.jl")
+
+#include("phi.jl")
 
 end  # end module

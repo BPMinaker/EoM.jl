@@ -32,7 +32,7 @@ function item_init!(items, verb=false)
     for i in items
 
         ## If the item has one node
-        if isa(i, rigid_point) || isa(i, flex_point) || isa(i, nh_point)
+        if i isa rigid_point || i isa flex_point || i isa nh_point
             temp = norm(i.axis)
             if temp > 0
                 i.unit = i.axis / temp  ## Normalize any non-unit axis vectors
@@ -61,23 +61,19 @@ function item_init!(items, verb=false)
             end
 
         ## If the item has two nodes
-        elseif isa(i, link) ||
-               isa(i, spring) ||
-               isa(i, beam) ||
-               isa(i, sensor) ||
-               isa(i, actuator)
+        elseif i isa link || i isa spring || i isa beam || i isa sensor || i isa actuator
             temp = i.location[2] - i.location[1]  ## Tempvec = vector from location1 to location2
             i.length = norm(temp)  ## New entry 'length' is the magnitude of the vector from location1 to location2
             if i.length > 0
                 i.unit = temp / i.length  ## New entry 'unit' is the unit vector from location1 to location2
             end
-            if !isa(i, beam)
+            if !(i isa beam)
                 i.forces = Int(!i.twist)
                 i.moments = Int(i.twist)
             end
          end
 
-        if !isa(i, body) && !isa(i, load)
+        if !(i isa body) && !(i isa load)
             i.nu = nullspace(reshape(i.unit, 1, 3))  ## Find directions perp to beam axis
             if round(i.unit' * cross(i.nu[:, 1], i.nu[:, 2])) != 1  ## Make sure it's right handed
                 i.nu = circshift(i.nu, [0, 1])
@@ -88,40 +84,6 @@ function item_init!(items, verb=false)
         
     end
 end ## Leave
-
-
-#=     for i in items
-        if !isa(i, body) && !isa(i, load)
-            #	i.unit  ## Axis of constraint
-            #	i.nu  ## Plane of constraint
-
-            if i.forces == 3 ## For 3 forces, i.e. ball joint
-                i.b_mtx[1] = I + zeros(3,3)
-            elseif i.forces == 2 ## For 2 forces, i.e. cylindrical or pin joint
-                i.b_mtx[1] = i.nu'
-            elseif i.forces == 1 ## For 1 force, i.e. planar
-                i.b_mtx[1] = i.unit'
-            elseif i.forces == 0 ## For 0 forces
-                i.b_mtx[1] = zeros(0, 3)
-            else
-                error("Error.  Item is defined incorrectly.")
-            end
-
-            if i.moments == 3 ## For 3 moments, i.e. no rotational degrees of freedom
-                i.b_mtx[2] = I + zeros(3,3)
-            elseif i.moments == 2 ## For 2 moments, i.e. 1 rotational degree of freedom, i.e. Cylindrical joint
-                i.b_mtx[2] = i.nu'
-            elseif i.moments == 1 ## For 1 moment, i.e. 2 rotational degrees of freedom, i.e. U-joint
-                i.b_mtx[2] = i.unit'
-            elseif i.moments == 0 ## For 0 moments, i.e. sherical joint
-                i.b_mtx[2] = zeros(0, 3)
-            else
-                error("Error.  Item is defined incorrectly.")
-            end
-        end
-    end =#
-
-
 
     ## find the normal to the triangle, but use Newell method rather than null()
     # ux=det([1 1 1;in(i).location(2:3,:)]);

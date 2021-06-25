@@ -53,19 +53,19 @@ function assemble_eom!(data, column, verb)
     C = zeros(nout, 2 * dim + nin)
 
     for i = 1:nout
-        if (column[i] == 1) ## p
+        if column[i] == 1 ## p
             mask = [I zeros(dim, dim + nin)]
 
-        elseif (column[i] == 2)  ## w
+        elseif column[i] == 2  ## w
             mask = [zeros(dim, dim) I zeros(dim, nin)]
 
-        elseif (column[i] == 3)  ## p dot
+        elseif column[i] == 3  ## p dot
             mask = -data.KC[1:dim, :]
 
-        elseif (column[i] == 4)  ## w dot
+        elseif column[i] == 4  ## w dot
             mask = -pinv(data.M[dim+1:2*dim, dim+1:2*dim]) * data.KC[dim+1:2*dim, :]
 
-        elseif (column[i] == 5) ## p dot dot
+        elseif column[i] == 5 ## p dot dot
             mask =
                 [data.velocity^2 -data.velocity zeros(dim, nin)] -
                 pinv(data.M[dim+1:2*dim, dim+1:2*dim]) * data.KC[dim+1:2*dim, :]
@@ -73,7 +73,7 @@ function assemble_eom!(data, column, verb)
             error("Matrix size error")
         end
 
-        C[i, :] = data.output[i:i, :] * mask  ## Note transpose here -- behaviour different than Matlab/Octave
+        C[i, :] = data.output[i:i, :] * mask  ## Note notation here, [i:i,:] = row, [i,:] = row'
     end
 
     C *= r_orth

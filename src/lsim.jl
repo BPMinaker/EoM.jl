@@ -1,5 +1,3 @@
-using LinearAlgebra
-
 function lsim(ss, u, t, x0 = zeros(size(ss.A, 2), 1); verbose = false)
 
     n = length(t)
