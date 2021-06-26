@@ -98,13 +98,11 @@ include("random_road.jl")
 
 #include("phi.jl")
 
-function my_round(x)
-
-    if abs(x) < 1e-7
-        return 0.0
-    else
-        return round(x,sigdigits=4)
-    end
+function my_round(x; dig = 4, lim = 1e-7)
+    x = round(x,sigdigits=dig)
+    abs(real(x)) < lim  && (x = 0 + imag(x)im )
+    abs(imag(x)) < lim  && (x = real(x))
+    x
 end
 
 end  # end module

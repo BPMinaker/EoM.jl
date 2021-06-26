@@ -120,9 +120,6 @@ function write_html(
                         f = open(path, "r")
                         println(output_f, read(f, String))
                         close(f)
-                        #                        # write the link to the figure into the main file
-                        #                        path = joinpath(dir_time, "sstf_$(i)_$(j).html")
-                        #                        println(output_f,"<iframe src=\"$path\" width=625 height=325 frameborder=0></iframe>")
                     end
                 end
             end
@@ -137,9 +134,6 @@ function write_html(
             temp = open(path, "w")
             println(temp, str_open, str, str_close)
             close(temp)
-            #            # write the link to the figure into the main file
-            #            path = joinpath(dir_time, "sstf.html")
-            #            println(output_f,"<div><iframe width=100% height=100% frameborder=0 src=\"$path\"></iframe></div>")
         end
     end
 
@@ -169,10 +163,7 @@ function write_html(
         temp = open(path, "w")
         println(temp, str_open, str, str_close)
         close(temp)
-        #        path = joinpath(dir_time, "eigen.html")
-        #        println(output_f,"<div><iframe width=100% height=100% frameborder=0 src=\"$path\"></iframe></div>")
     else
-
         # sort all zero roots to top
         sort!(s, dims = 1, by = abs)
 
@@ -218,9 +209,6 @@ function write_html(
         f = open(path, "r")
         println(output_f, read(f, String))
         close(f)
-        #        # write the link to the figure into the main file
-        #        path = joinpath(dir_time, "eigen.html")
-        #        println(output_f,"<iframe src=\"$path\" width=625 height=325 frameborder=0></iframe>")
     end
 
     # if there are too many inputs and outputs, skip
@@ -274,9 +262,6 @@ function write_html(
                 f = open(path, "r")
                 println(output_f, read(f, String))
                 close(f)
-                #                # write the link to the figure into the main file
-                #                path = joinpath(dir_time, "bode_$i.html")
-                #                println(output_f,"<iframe src=\"$path\" width=625 height=475 frameborder=0></iframe>")
             end
         else
             # loop over outputs and inputs and selected vpts
@@ -326,9 +311,6 @@ function write_html(
                         f = open(path, "r")
                         println(output_f, read(f, String))
                         close(f)
-                        #                        # write the link to the figure into the main file
-                        #                        path = joinpath(dir_time, "bode_$(i)_$(j).html")
-                        #                        println(output_f,"<iframe src=\"$path\" width=625 height=475 frameborder=0></iframe>")
                     end
                 end
             end
@@ -346,9 +328,6 @@ function write_html(
         f = open(path, "r")
         println(output_f, read(f, String))
         close(f)
-        #        # write the link to the figure into the main file
-        #        path = joinpath(dir_time, "plot_$(i).html")
-        #        println(output_f,"<iframe src=\"$path\" width=625 height=425 frameborder=0></iframe>")
     end
 
     # print instant centre of body 1
@@ -363,9 +342,6 @@ function write_html(
         tmp2 = open(path, "w")
         println(tmp2, str_open, str, str_close)
         close(tmp2)
-        #        # write the link to the figure into the main file
-        #        path = joinpath(dir_time, "centres.html")
-        #        println(output_f,"<div><iframe width=100% height=100% frameborder=0 src=\"$path\"></iframe></div>")
     end
 
     # add the static preloads
@@ -399,14 +375,9 @@ function write_html(
     tmp2 = open(path, "w")
     println(tmp2, str_open, str, str_close)
     close(tmp2)
-    # write the link to the table into the main file
-    #    path = joinpath(dir_time, "preloads.html")
-    #    println(output_f,"<div><iframe width=100% height=100% frameborder=0 src=\"$path\"></iframe></div>")
-    #    println(output_f,"<br/><br/><br/><br/><br/>")
     # print the end and close the output
     println(output_f, str_close)
     close(output_f)
-
 end
 
 function html_table(mtx)
