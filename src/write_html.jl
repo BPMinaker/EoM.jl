@@ -55,13 +55,6 @@ function write_html(
         tr:nth-child(even) {
         background-color: #dddddd;
         }
-        div {
-        overflow: hidden;
-        resize: vertical;
-        height: 425px;
-        min-height: 50px;
-        max-height: 
-        }
         </style>
     </head>
     <body>
