@@ -31,6 +31,8 @@ export tau
 export lambda
 export vpt
 
+export my_round
+
 macro def(name, definition)
     return quote
         macro $(esc(name))()
@@ -95,5 +97,14 @@ include("splsim.jl")
 include("random_road.jl")
 
 #include("phi.jl")
+
+function my_round(x)
+
+    if abs(x) < 1e-7
+        return 0.0
+    else
+        return round(x,sigdigits=4)
+    end
+end
 
 end  # end module
