@@ -1,7 +1,7 @@
 name = "EoM"
 uuid = "25d7ee20-f19a-11e8-093a-7b526cbd2d90"
 authors = ["BPMinaker <bminaker@uwindsor.ca>"]
-version = "0.1.0"
+version = "1.0.0"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"

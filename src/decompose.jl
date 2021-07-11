@@ -1,4 +1,4 @@
-function decompose(ss_eqns, args...)
+function decompose(ss_eqns::EoM.ss_data, args...)
 
     ## Copyright (C) 2020, Bruce Minaker
     ## decompose.jl is free software; you can redistribute it and/or modify it
@@ -78,7 +78,7 @@ function decompose(ss_eqns, args...)
     idx = fill(true, n)  ## we keep all vecs
     for i = 1:n
         for j = 1:n
-            if isapprox(val[i], valk[j], atol = 1e-5)  ## remove the ones that match
+            if isapprox(val[i], valk[j], atol = 1e-4)  ## remove the ones that match
                 idx[i] = false
                 valk[j] = NaN
                 break
@@ -145,7 +145,6 @@ function decompose(ss_eqns, args...)
     ss_eqns = ss_data(A, B, C, D)
 
     ss_eqns, val
-
 end
 
 function group_vals(val, vect)
@@ -189,7 +188,6 @@ function group_vals(val, vect)
     vect = vect[:, q]
 
     val, vect
-
 end
 
 

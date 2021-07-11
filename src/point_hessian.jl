@@ -90,7 +90,7 @@ function point_hessian(items, num)
         ## Capture change in direction of moment also
         ## If moments==0 or moments==3, then no terms appear, unless rolling
 
-        if (norm(ra) == 1) ## Rolling contact -- ignore effect of constraint moments on tangent stiffness -- correct???
+        if norm(ra) == 1 ## Rolling contact -- ignore effect of constraint moments on tangent stiffness -- correct???
             ff = -ff1' * (ra * ra')
 
             row = ptr_1 .+ (4:6)

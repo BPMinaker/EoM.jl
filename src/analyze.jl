@@ -1,4 +1,4 @@
-function analyze(dss_eqns, args...;decomp=true)
+function analyze(dss_eqns::Vector{EoM.dss_data}, args...; decomp = true)
 ## Copyright (C) 2017, Bruce Minaker
 ## analyze.jl is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by

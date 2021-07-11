@@ -1,13 +1,15 @@
 using Plots
 
 function write_html(
-    systems,
-    results,
+    systems::Vector{mbd_system},
+    results::Vector{EoM.analysis},
     args...;
+    plots = [],
     folder = "output",
     filename = systems[1].name,
     ss = 1:1:length(systems[1].sensors)*length(systems[1].actuators),
     bode = 1:1:length(systems[1].sensors),
+    vpt_name = ["u" "Speed" "m/s"]
 )
 
     ## Copyright (C) 2020, Bruce Minaker
@@ -27,7 +29,7 @@ function write_html(
 
     verbose = any(args .== :verbose)
     verbose && println("Writing output...")
-    plots = args[findall(isa.(args, Plots.Plot{Plots.PlotlyBackend}))]
+#    plots = args[findall(isa.(args, Plots.Plot{Plots.PlotlyBackend}))]
 
     # set up the paths
     dirs = setup(folder = folder, data = systems[1].name)
@@ -87,7 +89,7 @@ function write_html(
     println(output_f, "<p>Here are the results of the analysis of: $(systems[1].name)</p>")
 
     # if there are too many inputs and outputs, skip
-    if nin * nout > 0 && nin * nout < 16
+    if nin * nout > 0 && nin * nout < 16 && length(ss) > 0
         println(output_f, "<h2>Steady state gains</h2>")
         labels = []
         gain = []
@@ -97,8 +99,8 @@ function write_html(
                 n = (i - 1) * nin + j
                 if findnext(ss .== n, 1) !== nothing
                     x = zeros(nvpts)
-                    for k = 1:nvpts
-                        x[k] = results[k].ss_resp[i, j]
+                    for k in 1:nvpts
+                        x[k] = my_round(results[k].ss_resp[i, j])
                     end
                     push!(gain, x[1])
                     lb = "$(output_names[i])/$(input_names[j])"
@@ -109,7 +111,7 @@ function write_html(
                             v,
                             x,
                             lw = 2,
-                            xlabel = "Speed [m/s]",
+                            xlabel = vpt_name[2]*" ["*vpt_name[3]*"]" ,
                             ylabel = lb,
                             label = "",
                             size = (600, 300),
@@ -169,7 +171,7 @@ function write_html(
 
         # plot real and imaginary seperately
         sr = real.(s)
-        si = imag(s)
+        si = imag.(s)
 
         # eliminate all zero rows
         tr = []
@@ -191,10 +193,15 @@ function write_html(
         sr[sr.==0] .= NaN
         si[si.==0] .= NaN
 
-        p = plot(xlabel = "Speed [m/s]", ylabel = "Eigenvalue [1/s]", size = (600, 300))
         seriestype = :scatter
-        plot!(p, v, sr'[:, 1]; seriestype, label = "Real")
-        plot!(p, v, si'[:, 1]; seriestype, label = "Imaginary")
+
+        p = plot(xlabel =  vpt_name[2]*" ["*vpt_name[3]*"]", ylabel = "Eigenvalue [1/s]", size = (600, 300))
+        if size(sr,1) > 0
+            plot!(p, v, sr[1,:]; seriestype, label = "Real")
+        end
+        if size(si,1) > 0
+            plot!(p, v, si[1,:]; seriestype, label = "Imaginary")
+        end
         mc = RGB(0 / 255, 154 / 255, 250 / 255)
         if size(sr, 1) > 1
             plot!(p, v, sr'[:, 2:end]; seriestype, mc, label = "")
@@ -209,6 +216,58 @@ function write_html(
         f = open(path, "r")
         println(output_f, read(f, String))
         close(f)
+
+        b = unique.(omega_n.(results))
+        nf = maximum(unique(length.(b)))
+        
+        for i in 1:length(b)
+            if length(b[i]) < nf
+                append!(b[i], zeros(nf-length(b[i]))*NaN) 
+            end
+        end
+        b = hcat(b...)
+        b[b.==0] .= NaN
+
+        p = plot(xlabel =  vpt_name[2]*" ["*vpt_name[3]*"]", ylabel = "Natural frequency [Hz]", size = (600, 300))
+        mc = RGB(0 / 255, 154 / 255, 250 / 255)
+        if size(b,1) > 0
+            plot!(p, v, b'; seriestype, mc, label = "")
+        end
+        # save the figure
+        path = joinpath(dir_data, "freq.html")
+        savefig(p, path)
+        f = open(path, "r")
+        println(output_f, read(f, String))
+        close(f)
+
+        c = unique.(zeta.(results))
+        nf = maximum(unique(length.(c)))
+        
+        for i in 1:length(c)
+            if length(c[i]) < nf
+                append!(c[i], zeros(nf-length(c[i]))*NaN) 
+            end
+        end
+        c = hcat(c...)
+        c[c.==0] .= NaN
+
+        p = plot(xlabel =  vpt_name[2]*" ["*vpt_name[3]*"]", ylabel = "Damping ratio", size = (600, 300))
+        mc = RGB(0 / 255, 154 / 255, 250 / 255)
+        if size(b,1) > 0
+            plot!(p, v, c'; seriestype, mc, label = "")
+        end
+        # save the figure
+        path = joinpath(dir_data, "damping.html")
+        savefig(p, path)
+        f = open(path, "r")
+        println(output_f, read(f, String))
+        close(f)
+
+
+
+
+
+
     end
 
     # if there are too many inputs and outputs, skip
@@ -268,7 +327,7 @@ function write_html(
             for i in 1:nout
                 for j in 1:nin
                     n = (i - 1) * nin + j
-                    if !(findnext(bode .== n, 1) === nothing)
+                    if !(findnext(bode .== i, 1) === nothing)
                         # make empty plots of magnitude and phase
                         xscale = :log10
                         ylabel = "|$(output_names[i])|/|$(input_names[j])| [dB]"
@@ -293,7 +352,7 @@ function write_html(
                             if length(l) == 1
                                 lb = ""
                             else
-                                lb = "u=$(v[k]) m/s"
+                                lb = vpt_name[1]*"=$(my_round(v[k])) "*vpt_name[3]
                             end
                             p1 = plot!(p1, w, mag, lw = 2, label = lb)
                             p2 = plot!(p2, w, phs, lw = 2, label = "")
