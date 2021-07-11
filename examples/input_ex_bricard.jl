@@ -1,4 +1,4 @@
-function input_ex_bricard(;g=9.81)
+function input_ex_bricard(;l=0.2,m=1.0,g=9.81)
 
 ## Copyright (C) 2017, Bruce Minaker
 ## input_ex_bricad.jl is free software; you can redistribute it and/or modify it
@@ -16,36 +16,36 @@ function input_ex_bricard(;g=9.81)
 the_system=mbd_system("Bricard mechanism")
 
 p0=[0,0,0]
-p1=[1,0,0]
-p2=[0.5,0,-3^0.5/2]
-p3=[0,0,-3^0.5]
-p4=[-0.5,0,-3^0.5/2]
-p5=[-1,0,0]
+p1=[l,0,0]
+p2=[l/2,0,-3^0.5*l/2]
+p3=[0,0,-3^0.5*l]
+p4=[-l/2,0,-3^0.5*l/2]
+p5=[-l,0,0]
 
-p1*=0.2
-p2*=0.2
-p3*=0.2
-p4*=0.2
-p5*=0.2
+# p1*=0.2
+# p2*=0.2
+# p3*=0.2
+# p4*=0.2
+# p5*=0.2
 
 
-item=thin_rod("Rod 1",[p0 p1],1)
+item=thin_rod("Rod 1",[p0 p1],m)
 push!(the_system.item,item)
 push!(the_system.item,weight(item,g))
 
-item=thin_rod("Rod 2",[p1 p2],1)
+item=thin_rod("Rod 2",[p1 p2],m)
 push!(the_system.item,item)
 push!(the_system.item,weight(item,g))
 
-item=thin_rod("Rod 3",[p2 p3],1)
+item=thin_rod("Rod 3",[p2 p3],m)
 push!(the_system.item,item)
 push!(the_system.item,weight(item,g))
 
-item=thin_rod("Rod 4",[p3 p4],1)
+item=thin_rod("Rod 4",[p3 p4],m)
 push!(the_system.item,item)
 push!(the_system.item,weight(item,g))
 
-item=thin_rod("Rod 5",[p4 p5],1)
+item=thin_rod("Rod 5",[p4 p5],m)
 push!(the_system.item,item)
 push!(the_system.item,weight(item,g))
 
@@ -112,12 +112,13 @@ item.location[2]=p0+[0,0,0.1]
 item.twist=true
 push!(the_system.item,item)
 
-item=sensor("ψ")
+item=sensor("mglψ")
 item.body[1]="Rod 1"
 item.body[2]="ground"
 item.location[1]=p0
 item.location[2]=p0+[0,0,0.1]
 item.twist=true
+item.gain=m*g*l
 push!(the_system.item,item)
 
 the_system

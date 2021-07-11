@@ -150,6 +150,15 @@ item.location[1]=[0,0,0]
 item.location[2]=[0,0.1,0]
 push!(the_system.item,item)
 
+# also won't reach steady state with constant delta input
+item=sensor("θ")
+item.body[1]="chassis"
+item.body[2]="ground"
+item.location[1]=[0,0,0]
+item.location[2]=[0,0,0.1]
+item.twist=1 # angular
+push!(the_system.item,item)
+
 the_system
 
 end

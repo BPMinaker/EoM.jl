@@ -105,4 +105,13 @@ function my_round(x; dig = 4, lim = 1e-7)
     x
 end
 
+# Let's define some helper functions to make piecewise functions easier to define
+function step(t)
+    0.5 * (sign(t) + 1)
+ end
+
+ function pulse(t, a, b)
+    step(t-a) - step(t-b)
+ end
+
 end  # end module

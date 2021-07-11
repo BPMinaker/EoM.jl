@@ -16,13 +16,15 @@ function input_ex_pendulum(;m=10.0,l=0.5,r=0.05^0.5,I=5.5-m*r^2)
 # the pendulum example from Anderson Practice of Engineering Dynamics
 the_system=mbd_system("Pendulum")
 
+g=9.807
+
 # add the body, and weight force in -ve z
 item=body("block")
 item.mass=m
 item.location=[0,0,1]
 item.moments_of_inertia=[I,0,0]
 push!(the_system.item,item)
-push!(the_system.item,weight(item,9.807))
+push!(the_system.item,weight(item,g))
 
 # constrain the body to planar motion in yz
 item=rigid_point("planar")
@@ -51,9 +53,10 @@ item.location[2]=[0,-1,1]
 push!(the_system.item,item)
 
 # the sensor is also `line item` and defined by two locations, location[1] attaches to body[1]...
-item=sensor("y")
+item=sensor("mgy/(l+r)")
 item.body[1]="block"
 item.body[2]="ground"
+item.gain=m*g/(l+r)
 item.location[1]=[0,0,1]
 item.location[2]=[0,-1,1]
 push!(the_system.item,item)
