@@ -217,6 +217,29 @@ function write_html(
         println(output_f, read(f, String))
         close(f)
 
+        a = unique.(tau.(results))
+        nf = maximum(unique(length.(a)))
+        
+        for i in 1:length(a)
+            if length(a[i]) < nf
+                append!(a[i], zeros(nf-length(a[i]))*NaN) 
+            end
+        end
+        a = hcat(a...)
+        a[a.==0] .= NaN
+
+        p = plot(xlabel =  vpt_name[2]*" ["*vpt_name[3]*"]", ylabel = "Time constant [s]", size = (600, 300))
+        mc = RGB(0 / 255, 154 / 255, 250 / 255)
+        if size(a,1) > 0
+            plot!(p, v, a'; seriestype, mc, label = "")
+        end
+        # save the figure
+        path = joinpath(dir_data, "tau.html")
+        savefig(p, path)
+        f = open(path, "r")
+        println(output_f, read(f, String))
+        close(f)
+
         b = unique.(omega_n.(results))
         nf = maximum(unique(length.(b)))
         
@@ -234,7 +257,7 @@ function write_html(
             plot!(p, v, b'; seriestype, mc, label = "")
         end
         # save the figure
-        path = joinpath(dir_data, "freq.html")
+        path = joinpath(dir_data, "omega.html")
         savefig(p, path)
         f = open(path, "r")
         println(output_f, read(f, String))
@@ -253,20 +276,38 @@ function write_html(
 
         p = plot(xlabel =  vpt_name[2]*" ["*vpt_name[3]*"]", ylabel = "Damping ratio", size = (600, 300))
         mc = RGB(0 / 255, 154 / 255, 250 / 255)
-        if size(b,1) > 0
+        if size(c,1) > 0
             plot!(p, v, c'; seriestype, mc, label = "")
         end
         # save the figure
-        path = joinpath(dir_data, "damping.html")
+        path = joinpath(dir_data, "zeta.html")
         savefig(p, path)
         f = open(path, "r")
         println(output_f, read(f, String))
         close(f)
 
+        d = unique.(lambda.(results))
+        nf = maximum(unique(length.(d)))
+        
+        for i in 1:length(d)
+            if length(d[i]) < nf
+                append!(d[i], zeros(nf-length(d[i]))*NaN) 
+            end
+        end
+        d = hcat(d...)
+        d[d.==0] .= NaN
 
-
-
-
+        p = plot(xlabel =  vpt_name[2]*" ["*vpt_name[3]*"]", ylabel = "Wavelength [s]", size = (600, 300))
+        mc = RGB(0 / 255, 154 / 255, 250 / 255)
+        if size(d,1) > 0
+            plot!(p, v, d'; seriestype, mc, label = "")
+        end
+        # save the figure
+        path = joinpath(dir_data, "lambda.html")
+        savefig(p, path)
+        f = open(path, "r")
+        println(output_f, read(f, String))
+        close(f)
 
     end
 
