@@ -1,4 +1,4 @@
-function generate_eom(the_system, verbose = false)
+function generate_eom(the_system::mbd_system, verbose::Bool = false)
     ## Copyright (C) 2017, Bruce Minaker
     ## generate_eom.jl is free software; you can redistribute it and/or modify it
     ## under the terms of the GNU General Public License as published by
@@ -44,12 +44,9 @@ function generate_eom(the_system, verbose = false)
     inputs!(the_system, data, verbose)
 
     ## Build the output matrix
-    col = outputs!(the_system, data, verbose)
+    outputs!(the_system, data, verbose)
 
-    ## Assemble the system equations of motion
-    dss_eqns = assemble_eom!(data, col, verbose)
-
-    dss_eqns, data
+    data
 end
 
     #t1 = @elapsed 

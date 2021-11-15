@@ -1,4 +1,4 @@
-function sort_system!(the_system, verbose = false)
+function sort_system!(the_system::mbd_system, verbose::Bool = false)
     ## Copyright (C) 2017, Bruce Minaker
     ## sort_system.jl is free software; you can redistribute it and/or modify it
     ## under the terms of the GNU General Public License as published by
@@ -16,29 +16,24 @@ function sort_system!(the_system, verbose = false)
 
     verbose && println("Sorting system...")
 
-    ## Fill in some extra info in each item
-    item_init!(the_system.item)
-
     ## Ground is added to the system, because it is not in the user-defined system
     push!(the_system.item, body("ground"))  ## Ground body is added last (important!)
 
     ## Find the type of each item, and sort into named fields
-    locn(item) = getproperty(the_system,Symbol(last(split(string(typeof(item)),'.')) * "s"))
-#    locn(item) = getproperty(the_system,Symbol(string(typeof(item)) * "s"))
-    push!.(locn.(the_system.item), the_system.item)
+    sort_items!.(the_system.item, tuple(the_system))
 
-    ## Find the body number from the name
+    ## Find the body number
     verbose && println("Looking for connection info...")
-    names = name.(the_system.bodys)
-    find_bodynum!.(the_system.item, tuple(names))
-    find_bodyframenum!.(the_system.loads, tuple(names))
-
-    ## Find the actuator number from the name
-    find_actnum!.(the_system.sensors, tuple(name.(the_system.actuators)))
+    # link each bodys name with its number in the list
+    idx = Dict(getfield.(the_system.bodys, :name) .=> 1:length(the_system.bodys))
+    find_bodynum!.(the_system.item, tuple(idx))
+    find_bodyframenum!.(the_system.loads, tuple(idx))
+    idx = Dict(getfield.(the_system.actuators, :name) .=> 1:length(the_system.actuators))
+    find_actnum!.(the_system.sensors, tuple(idx))
 
     ## Find the radius of each connector
     verbose && println("Looking for location info...")
-    find_radius!.(the_system.item, tuple(location.(the_system.bodys)))
+    find_radius!.(the_system.item, tuple(getfield.(the_system.bodys, :location)))
 
     verbose && println("System sorted.")
 

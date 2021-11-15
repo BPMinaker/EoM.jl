@@ -26,7 +26,7 @@ function mirror!(the_system)
                 item.location[2] = -item.location[2]
                 item.products_of_inertia[1] = -item.products_of_inertia[1]
                 item.products_of_inertia[2] = -item.products_of_inertia[2]
-                push!(the_system.item, item)
+                add_item!(item, the_system)
 
             elseif isa(item, rigid_point) || isa(item, flex_point)
 
@@ -38,7 +38,7 @@ function mirror!(the_system)
                 item.location[2] = -item.location[2]
                 item.axis[2] = -item.axis[2]
                 item.rolling_axis[2] = -item.rolling_axis[2]
-                push!(the_system.item, item)
+                add_item!(item, the_system)
 
             elseif isa(item, link) || isa(item, spring) || isa(item, beam)
 
@@ -49,7 +49,7 @@ function mirror!(the_system)
 
                 item.location[1][2] = -item.location[1][2]
                 item.location[2][2] = -item.location[2][2]
-                push!(the_system.item, item)
+                add_item!(item, the_system)
 
             elseif isa(item, sensor) || isa(item, actuator)
 
@@ -61,8 +61,7 @@ function mirror!(the_system)
                 del = item.location[2] - item.location[1]
                 item.location[1][2] = -item.location[1][2]
                 item.location[2] = item.location[1] + del
-
-                push!(the_system.item, item)
+                add_item!(item, the_system)
 
             elseif isa(item, load)
 
@@ -72,10 +71,9 @@ function mirror!(the_system)
                 item.location[2] = -item.location[2]
                 item.force[2] = -item.force[2]
                 item.moment[2] = -item.moment[2]
-                push!(the_system.item, item)
+                add_item!(item, the_system)
 
             end
         end
     end
-
 end ## Leave

@@ -31,7 +31,3 @@ function Base.show(io::IO, obj::load)
 	println(io,"Location: ",obj.location)
 	println(io,"Body: ",obj.body)
 end
-
-function name(obj::load)
-	obj.name
-end

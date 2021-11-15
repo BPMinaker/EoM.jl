@@ -20,8 +20,8 @@ function inputs!(the_system, data, verb)
 
     ## Build input matrix
     temp = point_line_jacobian(the_system.actuators, n)
-    f_mtx = -diagm(0 => gain.(the_system.actuators)) * temp
-    g_mtx = -diagm(0 => rate_gain.(the_system.actuators)) * temp
+    f_mtx = -diagm(0 => getfield.(the_system.actuators, :gain)) * temp
+    g_mtx = -diagm(0 => getfield.(the_system.actuators, :rate_gain)) * temp
 
     data.input = f_mtx'
     data.input_rate = g_mtx'  ## Transpose

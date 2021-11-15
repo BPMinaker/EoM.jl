@@ -1,4 +1,4 @@
-function build_examples(args...; dir_examples = "examples")
+function build_examples(verbose::Bool = false; dir_examples = "examples")
 
     ## Copyright (C) 2020, Bruce Minaker
     ## build_examples.jl is free software; you can redistribute it and/or modify it
@@ -13,7 +13,7 @@ function build_examples(args...; dir_examples = "examples")
     ##
     ##--------------------------------------------------------------------
 
-    verbose = any(args .== :verbose)
+#    verbose = any(args .== :verbose)
 
     dir = joinpath(pwd(), dir_examples)
     if ~isdir(dir)  ## If no examples folder exists
@@ -28,18 +28,10 @@ function build_examples(args...; dir_examples = "examples")
 
     for i in list
         if ~isfile(joinpath(dir, i))
-            verbose && println("Copying ", i)
+            verbose && println("Copying ", i, "...")
             cp(joinpath(src, i), joinpath(dir, i))  ## Copy examples
         else
             verbose && println(i, " already exists.  Skipping...")
         end
     end
-
 end
-
-# verbose && println("Including examples...")
-
-# list=readdir(dir)  ## Get list of local example files
-# for i in list
-# 	Base.include(Main,joinpath(dir,i))  ## Include them all
-# end

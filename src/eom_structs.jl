@@ -25,6 +25,7 @@ mutable struct eom_data
     feedthrough::Array{Float64,2}
     M::Array{Float64,2}
     KC::Array{Float64,2}
+    column::Vector{Int64}
 end
 
 eom_data() = eom_data(
@@ -54,6 +55,7 @@ eom_data() = eom_data(
     zeros(0, 0),
     zeros(0, 0),
     zeros(0, 0),
+    zeros(0)
 )
 
 mutable struct mbd_system
@@ -88,8 +90,56 @@ mbd_system(str::String = "Unnamed System") = mbd_system(
     Vector{actuator}(undef, 0),
 )
 
-function vpt(obj::mbd_system)
-    obj.vpt
+function Base.show(io::IO, obj::mbd_system)
+    println(io, "Multibody dynamic system:")
+    println(io, "Name: ", obj.name)
+    println(io, "Number of items: ", length(obj.item))
+    println(io, "vpt: ", obj.vpt)
+end
+
+function add_item!(item::Union{body, link, spring, rigid_point, flex_point, nh_point, beam, load, sensor, actuator}, obj::mbd_system)
+    item_init!(item)
+    push!(obj.item, item)
+end
+
+function sort_items!(item::body, the_system::mbd_system)
+    push!(the_system.bodys, item)
+end
+
+function sort_items!(item::link, the_system::mbd_system)
+    push!(the_system.links, item)
+end
+
+function sort_items!(item::spring, the_system::mbd_system)
+    push!(the_system.springs, item)
+end
+
+function sort_items!(item::rigid_point, the_system::mbd_system)
+    push!(the_system.rigid_points, item)
+end
+
+function sort_items!(item::flex_point, the_system::mbd_system)
+    push!(the_system.flex_points, item)
+end
+
+function sort_items!(item::nh_point, the_system::mbd_system)
+    push!(the_system.nh_points, item)
+end
+
+function sort_items!(item::beam, the_system::mbd_system)
+    push!(the_system.beams, item)
+end
+
+function sort_items!(item::load, the_system::mbd_system)
+    push!(the_system.loads, item)
+end
+
+function sort_items!(item::sensor, the_system::mbd_system)
+    push!(the_system.sensors, item)
+end
+
+function sort_items!(item::actuator, the_system::mbd_system)
+    push!(the_system.actuators, item)
 end
 
 struct dss_data
@@ -103,11 +153,21 @@ end
 
 function Base.show(io::IO, obj::dss_data)
     println(io, "Descriptor state space")
-    println(io, "A: ", obj.A)
-    println(io, "B: ", obj.B)
-    println(io, "C: ", obj.C)
-    println(io, "D: ", obj.D)
-    println(io, "E: ", obj.E)
+    println(io, "A:")
+    show(io, "text/plain", obj.A)
+    println(io)
+    println(io, "B:")
+    show(io, "text/plain", obj.B)
+    println(io)
+    println(io, "C:")
+    show(io, "text/plain", obj.C)
+    println(io)
+    println(io, "D:")
+    show(io, "text/plain", obj.D)
+    println(io)
+    println(io, "E:")
+    show(io, "text/plain", obj.E)
+    println(io)
 end
 
 struct ss_data
@@ -119,15 +179,94 @@ end
 
 function Base.show(io::IO, obj::ss_data)
     println(io, "State space")
-    println(io, "A: ", obj.A)
-    println(io, "B: ", obj.B)
-    println(io, "C: ", obj.C)
-    println(io, "D: ", obj.D)
+    println(io, "A:")
+    show(io, "text/plain", obj.A)
+    println(io)
+    println(io, "B:")
+    show(io, "text/plain", obj.B)
+    println(io)
+    println(io, "C:")
+    show(io, "text/plain", obj.C)
+    println(io)
+    println(io, "D:")
+    show(io, "text/plain", obj.D)
+    println(io)
 end
 
 ss_data() = ss_data(zeros(0, 0), zeros(0, 0), zeros(0, 0), zeros(0, 0))
 
 mutable struct analysis
+    ss_eqns::Vector{ss_data}
+    mode_vals::Vector{Vector{Complex{Float64}}}
+    modes::Vector{Array{Complex{Float64},2}}
+    e_val::Vector{Vector{Complex{Float64}}}
+    omega_n::Vector{Vector{Float64}}
+    zeta::Vector{Vector{Float64}}
+    tau::Vector{Vector{Float64}}
+    lambda::Vector{Vector{Float64}}
+    w::Vector{Vector{Float64}}
+    freq_resp::Vector{Vector{Array{Complex{Float64},2}}}
+    mag::Vector{Vector{Array{Float64,2}}}
+    phase::Vector{Vector{Array{Float64,2}}}
+    ss_resp::Vector{Array{Float64,2}}
+    centre::Vector{Array{Complex{Float64},2}}
+    hsv::Vector{Vector{Float64}}
+end
+
+analysis(nvpts) = analysis(
+fill(ss_data(), nvpts),
+fill([], nvpts),
+fill(zeros(0,0), nvpts),
+fill([], nvpts),
+fill([], nvpts),
+fill([], nvpts),
+fill([], nvpts),
+fill([], nvpts),
+fill([], nvpts),
+fill([zeros(0,0)], nvpts),
+fill([zeros(0,0)], nvpts),
+fill([zeros(0,0)], nvpts),
+fill(zeros(0,0), nvpts),
+fill(zeros(0,0), nvpts),
+fill([], nvpts),
+)
+
+function Base.show(io::IO, obj::analysis)
+    println(io, "EoM analysis of length $(length(obj.ss_eqns)).")
+end
+
+(obj::analysis)() = (obj::analysis)(1)
+
+function (obj::analysis)(idx::Int64)
+    result(
+        obj.ss_eqns[idx],
+        obj.mode_vals[idx],
+        obj.modes[idx],
+        obj.e_val[idx],
+        obj.omega_n[idx],
+        obj.zeta[idx],
+        obj.tau[idx],
+        obj.lambda[idx],
+        obj.w[idx],
+        obj.freq_resp[idx],
+        obj.mag[idx],
+        obj.phase[idx],
+        obj.ss_resp[idx],
+        obj.centre[idx],
+        obj.hsv[idx],
+    )
+end
+
+
+function (obj::analysis)(idx::StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}})
+    obj(collect(idx))
+end
+
+# function (obj::analysis)(idx::Vector{Float64})
+#     obj.(idx)
+# end
+
+mutable struct result
     ss_eqns::ss_data
     mode_vals::Vector{Complex{Float64}}
     modes::Array{Complex{Float64},2}
@@ -137,46 +276,30 @@ mutable struct analysis
     tau::Vector{Float64}
     lambda::Vector{Float64}
     w::Vector{Float64}
-    freq_resp::Array{Complex{Float64},3}
+    freq_resp::Vector{Array{Complex{Float64},2}}
+    mag::Vector{Array{Float64,2}}
+    phase::Vector{Array{Float64,2}}
     ss_resp::Array{Float64,2}
-    zero_val::Vector{Complex{Float64}}
-    hsv::Vector{Float64}
     centre::Array{Complex{Float64},2}
+    hsv::Vector{Float64}
 end
 
-analysis() = analysis(
-    ss_data(),
-    zeros(0),
-    zeros(0, 0),
-    zeros(0),
-    zeros(0),
-    zeros(0),
-    zeros(0),
-    zeros(0),
-    zeros(0),
-    zeros(0, 0, 0),
-    zeros(0, 0),
-    zeros(0),
-    zeros(0),
-    zeros(0, 0),
-)
-
-function e_val(obj::analysis)
-    obj.e_val
+function Base.show(io::IO, obj::result)
+    println(io, "Analysis result: ")
+    println(io, "Natural frequencies [Hz]:")
+    show(io, "text/plain", my_round.(obj.omega_n))
+    println()
+    println(io, "Damping ratios:")
+    show(io, "text/plain", my_round.(obj.zeta))
+    println()
+    println(io, "Time constants [s]:")
+    show(io, "text/plain", my_round.(obj.tau))
+    println()
+    println(io, "Wavelengths [s]:")
+    show(io, "text/plain", my_round.(obj.lambda))
+    println()
+    println(io, "Steady state gains []:")
+    show(io, "text/plain", my_round.(obj.ss_resp))
+    println()
 end
 
-function omega_n(obj::analysis)
-    obj.omega_n
-end
-
-function zeta(obj::analysis)
-    obj.zeta
-end
-
-function tau(obj::analysis)
-    obj.tau
-end
-
-function lambda(obj::analysis)
-    obj.lambda
-end

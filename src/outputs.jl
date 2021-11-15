@@ -21,25 +21,21 @@ function outputs!(the_system, data, verb)
 
     n = length(the_system.bodys)
 
-    sensor_mtx =
-        -diagm(0 => gain.(the_system.sensors)) * point_line_jacobian(the_system.sensors, n)
+    data.output =
+        -diagm(0 => getfield.(the_system.sensors, :gain)) * point_line_jacobian(the_system.sensors, n)
 
-    order_vec = order.(the_system.sensors)
-    frame_vec = frame.(the_system.sensors)
+    order_vec = getfield.(the_system.sensors, :order)
+    frame_vec = getfield.(the_system.sensors, :frame)
 
-    column = 2 * order_vec + frame_vec .- 2  ## Global psn,vel,acc=1,3,5, local vel,acc=2,4
+    data.column = 2 * order_vec + frame_vec .- 2  ## Global psn,vel,acc=1,3,5, local vel,acc=2,4
 
     idx = 1
     for i in the_system.sensors
-        if (i.actuator_number > 0)
+        if i.actuator_number > 0
             d_mtx[idx, i.actuator_number] = i.actuator_gain
         end
         idx += 1
     end
-
-    data.output = sensor_mtx
     data.feedthrough = d_mtx
-
-    column
 
 end ## Leave

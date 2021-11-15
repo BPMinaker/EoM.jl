@@ -10,36 +10,40 @@
     ## General Public License for more details at www.gnu.org/copyleft/gpl.html.
     ##
     ##--------------------------------------------------------------------
-function find_bodynum!(item, names)
-    if !(item isa body) && !(item isa load)
-        for i in 1:2
-            j = findnext(item.body[i] .== names, 1)
-            if j === nothing
-                error("Item $(item.name) is attached to missing body!")
-            else
-                item.body_number[i] = j
-            end
+function find_bodynum!(item::Union{spring, link, rigid_point, flex_point, nh_point, beam, actuator, sensor}, idx::Dict)
+    for i in 1:2
+        j = get(idx, item.body[i], nothing)
+        if isnothing(j)
+            error("Item $(item.name) is attached to missing body!")
+        else
+            item.body_number[i] = j
         end
     end
 end
 
-function find_bodyframenum!(item, names)
-    i = findnext(item.body .== names, 1)
-    j = findnext(item.frame .== names, 1)
-    if i === nothing
-        error("Item $(item.name) is attached to a missing body!")
-    end
-    if j === nothing
-        error("Item $(item.name) is attached a missing frame!")
-    end
-    item.body_number = i
-    item.frame_number = j
+function find_bodynum!(item::Union{body, load}, idx::Dict)
+
 end
 
-function find_actnum!(item, names)
+function find_bodyframenum!(item::load, idx::Dict)
+    i = get(idx, item.body, nothing)
+    if isnothing(i)
+        error("Item $(item.name) is attached to a missing body!")
+    else
+        item.body_number = i
+    end
+    j = get(idx, item.frame, nothing)
+    if isnothing(j)
+        error("Item $(item.name) is attached a missing frame!")
+    else
+        item.frame_number = j
+    end
+end
+
+function find_actnum!(item::sensor, idx)
     if !(item.actuator == "ground")
-        i = findnext(item.actuator .== names, 1)
-        if i === nothing
+        i = get(idx, item.actuator, nothing)
+        if isnothing(i)
             error("Item $(item.name) actuator not found!")
         end
         item.actuator_number = i

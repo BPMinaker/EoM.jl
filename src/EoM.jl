@@ -6,23 +6,28 @@ using LinearAlgebra
 using Dates
 using DelimitedFiles
 using ForwardDiff
+using Plots
+using PrettyTables
 
 export build_examples
 export setup
-export run_eom
+export run_eom!
 export analyze
 export full_ss
-export write_output
-export weave_output
+#export write_output
+#export weave_output
 export write_html
+export summarize
 export lsim
 export splsim
 export random_road
 
 export skew
 export mbd_system
+export eom_output
 export thin_rod
 export mirror!
+export add_item!
 
 export e_val
 export omega_n
@@ -33,23 +38,23 @@ export vpt
 
 export my_round
 
-macro def(name, definition)
-    return quote
-        macro $(esc(name))()
-            esc($(Expr(:quote, definition)))
-        end
-    end
-end
+# macro def(name, definition)
+#     return quote
+#         macro $(esc(name))()
+#             esc($(Expr(:quote, definition)))
+#         end
+#     end
+# end
 
-@def add_generic_fields begin
-    name::String
-    group::String
-    body::Vector{String}
-    body_number::Vector{Int}
-    forces::Int
-    moments::Int
-    radius::Vector{Vector{Float64}}
-end
+# @def add_generic_fields begin
+#     name::String
+#     group::String
+#     body::Vector{String}
+#     body_number::Vector{Int}
+#     forces::Int
+#     moments::Int
+#     radius::Vector{Vector{Float64}}
+# end
 
 fldr = joinpath(dirname(pathof(EoM)), "types")
 types = readdir(fldr)
@@ -89,7 +94,10 @@ include("analyze.jl")
 include("full_ss.jl")
 include("dss2ss.jl")
 include("decompose.jl")
+include("minreal.jl")
 include("write_html.jl")
+include("summarize.jl")
+
 include("mirror.jl")
 include("thin_rod.jl")
 include("lsim.jl")

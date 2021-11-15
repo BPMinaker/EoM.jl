@@ -34,10 +34,18 @@ function elastic_connections!(the_system, data, verb)
         end
 
         ## Gather all stiffness and damping coefficients into a vector
-        spring_stiff = stiffness.(the_system.springs)
-        spring_dmpng = damping.(the_system.springs)
-        spring_inertia = inertance.(the_system.springs)
-        preload_vec = preload.(the_system.springs)
+        ns = length(the_system.springs)
+        if ns > 0
+            spring_stiff = getfield.(the_system.springs, :stiffness)
+            spring_dmpng = getfield.(the_system.springs, :damping)
+            spring_inertia = getfield.(the_system.springs, :inertance)
+            preload_vec = getfield.(the_system.springs, :preload)
+        else
+            spring_stiff = zeros(0)
+            spring_dmpng = zeros(0)
+            spring_inertia = zeros(0)
+            preload_vec = zeros(0)
+        end
 
         ## Find the springs where the preload is given
         fnd = findall(.~ isnan.(preload_vec))
@@ -80,8 +88,13 @@ function elastic_connections!(the_system, data, verb)
                 0 2/l -1 0 0 -2/l -1 0
             ]
             beam_stiff[8*idx.+(-7:0), 8*idx.+(-7:0)] =
-                i.stiffness / l * (D' * diagm(0 => [1, 3, 1, 3]) * D)
-            E = [6 0 0 l 6 0 0 -l; 8 0 0 l -8 0 0 l; 0 6 -l 0 0 6 l 0; 0 8 -l 0 0 -8 -l 0]
+                1 / l * (D' * diagm(0 => [i.stiffness[1], 3 * i.stiffness[1], i.stiffness[2], 3 * i.stiffness[2]]) * D)
+            E = [
+                6 0 0 l 6 0 0 -l
+                8 0 0 l -8 0 0 l
+                0 6 -l 0 0 6 l 0
+                0 8 -l 0 0 -8 -l 0
+            ]
             beam_inertia[8*idx.+(-7:0), 8*idx.+(-7:0)] =
                 i.mpul * l / 432 * (E' * diagm(0 => [111 / 37, 1, 111 / 37, 1]) * E)
             idx += 1

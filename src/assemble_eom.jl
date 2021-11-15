@@ -1,4 +1,4 @@
-function assemble_eom!(data, column, verb)
+function assemble_eom!(data::eom_data, verbose::Bool)
     ## Copyright (C) 2017, Bruce Minaker
     ## assemble_eom.jl is free software; you can redistribute it and/or modify it
     ## under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@ function assemble_eom!(data, column, verb)
     ##--------------------------------------------------------------------
 
     ## Build angular stiffness matrix from motion of items with preload, both rigid and flexible
-    verb && println("Building equations of motion...")
+    verbose && println("Building equations of motion...")
 
     mass_mtx = data.mass + data.inertia
     stiff_mtx = data.stiffness + data.tangent_stiffness + data.load_stiffness  ## Sum total system stiffness
@@ -53,19 +53,19 @@ function assemble_eom!(data, column, verb)
     C = zeros(nout, 2 * dim + nin)
 
     for i = 1:nout
-        if column[i] == 1 ## p
+        if data.column[i] == 1 ## p
             mask = [I zeros(dim, dim + nin)]
 
-        elseif column[i] == 2  ## w
+        elseif data.column[i] == 2  ## w
             mask = [zeros(dim, dim) I zeros(dim, nin)]
 
-        elseif column[i] == 3  ## p dot
+        elseif data.column[i] == 3  ## p dot
             mask = -data.KC[1:dim, :]
 
-        elseif column[i] == 4  ## w dot
+        elseif data.column[i] == 4  ## w dot
             mask = -pinv(data.M[dim+1:2*dim, dim+1:2*dim]) * data.KC[dim+1:2*dim, :]
 
-        elseif column[i] == 5 ## p dot dot
+        elseif data.column[i] == 5 ## p dot dot
             mask =
                 [data.velocity^2 -data.velocity zeros(dim, nin)] -
                 pinv(data.M[dim+1:2*dim, dim+1:2*dim]) * data.KC[dim+1:2*dim, :]
@@ -79,11 +79,8 @@ function assemble_eom!(data, column, verb)
     C *= r_orth
     D = data.feedthrough  ## Add the user defined feed forward
     phys = r_orth[1:dim, :]
+    verbose && println("Okay, built equations of motion.")
 
-    ss_eqns = dss_data(A, B, C, D, E, phys)
-
-    verb && println("Okay, built equations of motion.")
-
-    ss_eqns
+    dss_data(A, B, C, D, E, phys)
 
 end  ## Leave
