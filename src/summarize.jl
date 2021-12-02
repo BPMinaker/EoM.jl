@@ -57,12 +57,12 @@ function summarize(
         labels = []
         gain = []
         # loop over outputs and inputs and vpts
-        for i = 1:nout
-            for j = 1:nin
+        for i in 1:nout
+            for j in 1:nin
                 n = (i - 1) * nin + j
                 if findnext(ss .== n, 1) !== nothing
                     x = zeros(nvpts)
-                    for k = 1:nvpts
+                    for k in 1:nvpts
                         x[k] = my_round(results.ss_resp[k][i, j])
                     end
                     push!(gain, x[1])
@@ -82,7 +82,15 @@ function summarize(
                     push!(labels, lb)
                     # if many vpts, make plot vs velocity
                     if nvpts > 1
-                        p = plot(vpts, x, lw = 2, xlabel = vpt_name[2] * " [" * vpt_name[3] * "]", ylabel = lb, label = "", size = (600, 300))
+                        p = plot(
+                            vpts,
+                            x,
+                            lw = 2,
+                            xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
+                            ylabel = lb,
+                            label = "",
+                            size = (600, 300),
+                        )
                         display(p)
                     end
                 end
@@ -101,7 +109,7 @@ function summarize(
         # get eigenvalues
         m = maximum(length.(results.e_val))
         s = zeros(m, nvpts) * 1im
-        for i = 1:nvpts
+        for i in 1:nvpts
             l = length(results.e_val[i])
             s[1:l, i] = results.e_val[i]
         end
@@ -127,14 +135,14 @@ function summarize(
 
             # eliminate all zero rows
             tr = []
-            for i = 1:size(sr, 1)
+            for i in 1:size(sr, 1)
                 if any(sr[i, :] .!= 0)
                     push!(tr, i)
                 end
             end
             sr = sr[tr, :]
             tr = []
-            for i = 1:size(si, 1)
+            for i in 1:size(si, 1)
                 if any(si[i, :] .!= 0)
                     push!(tr, i)
                 end
@@ -147,99 +155,100 @@ function summarize(
 
             seriestype = :scatter
             ms = 3
-            p = plot(xlabel = vpt_name[2] * " [" * vpt_name[3] * "]", ylabel = "Eigenvalue [1/s]", size = (600, 300))
+            p = plot(;
+                xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
+                ylabel = "Eigenvalue [1/s]",
+                size = (600, 300),
+            )
 
             rr = vec(sr')
             mc = RGB(0 / 255, 154 / 255, 250 / 255)
             label = "Real"
             u = size(sr, 1)
             vv = vcat(fill(vpts, u)...)
-            plot!(p, vv, rr; seriestype, mc, ms, label)
-
+            if length(rr) > 0
+                plot!(p, vv, rr; seriestype, mc, ms, label)
+            end
             rr = vec(si')
             mc = RGB(227 / 255, 111 / 255, 71 / 255)
             label = "Imaginary"
             u = size(si, 1)
             vv = vcat(fill(vpts, u)...)
-            plot!(p, vv, rr; seriestype, mc, ms, label)
+            if length(rr) > 0
+                plot!(p, vv, rr; seriestype, mc, ms, label)
+            end
             display(p)
 
             label = ""
 
-            omega = unique.(results.omega_n)
-            nf = maximum(unique(length.(omega)))
-
-            for i = 1:length(omega)
-                if length(omega[i]) < nf
-                    append!(omega[i], zeros(nf - length(omega[i])) * NaN)
-                end
-            end
-            omega = hcat(omega...)'
-            omega[omega .== 0] .= NaN
-
-            po = plot(xlabel = "", ylabel = "Natural frequency [Hz]", size = (600, 300))
+            omega = treat(results.omega_n)
             mc = RGB(0 / 255, 154 / 255, 250 / 255)
             if size(omega, 2) > 0
-                plot!(po, vpts, omega; seriestype, mc, ms, label)
+                po = plot(
+                    vpts,
+                    omega;
+                    seriestype,
+                    mc,
+                    ms,
+                    label,
+                    xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
+                    ylabel = "Natural frequency [Hz]",
+                    ylims = (0, Inf),
+                    size = (600, 300),
+                )
+                display(po)
             end
 
-            zeta = unique.(results.zeta)
-            nf = maximum(unique(length.(zeta)))
-
-            for i = 1:length(zeta)
-                if length(zeta[i]) < nf
-                    append!(zeta[i], zeros(nf - length(zeta[i])) * NaN)
-                end
-            end
-            zeta = hcat(zeta...)'
-
-            pz = plot(xlabel = vpt_name[2] * " [" * vpt_name[3] * "]", ylabel = "Damping ratio", size = (600, 300))
+            zeta = treat(results.zeta)
             mc = RGB(0 / 255, 154 / 255, 250 / 255)
             if size(zeta, 2) > 0
-                plot!(pz, vpts, zeta; seriestype, mc, ms, label)
+                pz = plot(
+                    vpts,
+                    zeta;
+                    seriestype,
+                    mc,
+                    ms,
+                    label,
+                    xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
+                    ylabel = "Damping ratio",
+                    size = (600, 300),
+                )
+                display(pz)
             end
 
-            p = plot(po, pz, layout = grid(2, 1), size = (600, 400))
-            display(p)
-
-            tau = unique.(results.tau)
-            nf = maximum(unique(length.(tau)))
-
-            for i = 1:length(tau)
-                if length(tau[i]) < nf
-                    append!(tau[i], zeros(nf - length(tau[i])) * NaN)
-                end
-                tau[i][any.(abs.(tau[i]) .> 1e4)] .= 0
-            end
-            tau = hcat(tau...)'
-            tau[tau.==0] .= NaN
-
-            pt = plot(xlabel = "", ylabel = "Time constant [s]", size = (600, 300))
+            tau = treat(results.tau)
             mc = RGB(0 / 255, 154 / 255, 250 / 255)
             if size(tau, 2) > 0
-                plot!(pt, vpts, tau; seriestype, mc, ms, label)
+                pt = plot(
+                    vpts,
+                    tau;
+                    seriestype,
+                    mc,
+                    ms,
+                    label,
+                    xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
+                    ylabel = "Time constant [s]",
+                    size = (600, 300),
+                )
+                display(pt)
             end
 
-            lambda = unique.(results.lambda)
-            nf = maximum(unique(length.(lambda)))
-
-            for i = 1:length(lambda)
-                if length(lambda[i]) < nf
-                    append!(lambda[i], zeros(nf - length(lambda[i])) * NaN)
-                end
-                lambda[i][any.(abs.(lambda[i]) .> 1e4)] .= 0
-            end
-            lambda = hcat(lambda...)'
-            lambda[lambda.==0] .= NaN
-
-            pl = plot(xlabel = vpt_name[2] * " [" * vpt_name[3] * "]", ylabel = "Wavelength [s]", size = (600, 300))
+            lambda = treat(results.lambda)
             mc = RGB(0 / 255, 154 / 255, 250 / 255)
             if size(lambda, 2) > 0
-                plot!(pl, vpts, lambda; seriestype, mc, ms, label)
+                pl = plot(
+                    vpts,
+                    lambda;
+                    seriestype,
+                    mc,
+                    ms,
+                    label,
+                    xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
+                    ylabel = "Wavelength [s]",
+                    size = (600, 300),
+                )
+                display(pl)
             end
-
-            p = plot(pt, pl, layout = grid(2, 1), size = (600, 400))
-            display(p)
         end
 
         # print instant centre of body 1
@@ -256,7 +265,7 @@ function summarize(
         # pick out up to four representative vpts from the list
         l = unique(Int.(round.((nvpts - 1) .* [1, 3, 5, 7] / 8 .+ 1)))
         if length(l) == 1
-            for i = 1:nin
+            for i in 1:nin
                 # fill in for each selected vpt
                 w = results.w[l[1]] / 2 / pi
                 mag = cat(results.mag[l[1]]..., dims = 3)[bode, i, :]
@@ -267,27 +276,63 @@ function summarize(
                 label = hcat(output_names[bode]...)
                 label .*= "/" * input_names[i]
                 xscale = :log10
-                xticks = 10.0 .^ collect(Int(round(log10(w[1]))):1:Int(round(log10(w[end]))))
-                p1 = plot(w, mag'; lw = 2, label, xlabel = "", ylabel = "Gain [dB]", xscale, xticks, ylims = (-60, Inf))
-                p2 = plot(w, phs'; lw = 2, label = "", xlabel = "Frequency [Hz]", ylabel = "Phase [deg]", xscale, xticks, ylims = (-360, 0), yticks = -360:60:0)
+                xticks =
+                    10.0 .^ collect(Int(round(log10(w[1]))):1:Int(round(log10(w[end]))))
+                p1 = plot(
+                    w,
+                    mag';
+                    lw = 2,
+                    label,
+                    xlabel = "",
+                    ylabel = "Gain [dB]",
+                    xscale,
+                    xticks,
+                    ylims = (-40, Inf),
+                )
+                p2 = plot(
+                    w,
+                    phs';
+                    lw = 2,
+                    label = "",
+                    xlabel = "Frequency [Hz]",
+                    ylabel = "Phase [deg]",
+                    xscale,
+                    xticks,
+                    ylims = (-360, 0),
+                    yticks = -360:60:0,
+                )
                 # merge two subplots
-                p = plot(p1, p2, layout = grid(2, 1, heights = [0.66, 0.33]), size = (600, 450))
+                p = plot(
+                    p1,
+                    p2,
+                    layout = grid(2, 1, heights = [0.66, 0.33]),
+                    size = (600, 450),
+                )
                 display(p)
             end
         else
             # loop over outputs and inputs and selected vpts
-            for i = 1:nout
-                for j = 1:nin
+            for i in 1:nout
+                for j in 1:nin
                     n = (i - 1) * nin + j
                     if !(findnext(bode .== i, 1) === nothing)
                         # make empty plots of magnitude and phase
                         xscale = :log10
                         w = results.w[1] / 2 / pi
-                        xticks = 10.0 .^ collect(Int(round(log10(w[1]))):1:Int(round(log10(w[end]))))
+                        xticks =
+                            10.0 .^
+                            collect(Int(round(log10(w[1]))):1:Int(round(log10(w[end]))))
                         ylabel = "|$(output_names[i])|/|$(input_names[j])| [dB]"
-                        p1 = plot(; xlabel = "", ylabel, xscale, xticks, legend = :top)
+                        p1 = plot(; xlabel = "", ylabel, xscale, xticks, ylims = (-40, Inf))
                         ylabel = "∠ $(output_names[i])/$(input_names[j]) [deg]"
-                        p2 = plot(; xlabel = "Frequency [Hz]", ylabel, xscale, xticks, ylims = (-360, 0), yticks = -360:60:0)
+                        p2 = plot(;
+                            xlabel = "Frequency [Hz]",
+                            ylabel,
+                            xscale,
+                            xticks,
+                            ylims = (-360, 0),
+                            yticks = -360:60:0,
+                        )
                         # fill in for each selected vpt
                         for k in l
                             w = results.w[k] / 2 / pi
@@ -303,9 +348,14 @@ function summarize(
                             end
                             p1 = plot!(p1, w, mag, lw = 2, label = lb)
                             p2 = plot!(p2, w, phs, lw = 2, label = "")
-                            # merge two subplots
-                            p = plot(p1, p2, layout = grid(2, 1, heights = [0.66, 0.33]), size = (600, 450))
                         end
+                        # merge two subplots
+                        p = plot(
+                            p1,
+                            p2,
+                            layout = grid(2, 1, heights = [0.66, 0.33]),
+                            size = (600, 450),
+                        )
                         display(p)
                     end
                 end
@@ -317,7 +367,7 @@ function summarize(
     if n > 0
         println("Time history and other plots")
     end
-    for i = 1:n
+    for i in 1:n
         display(plots[i])
     end
 
@@ -330,8 +380,12 @@ function summarize(
         systems[1].springs
         systems[1].links
     ]
-    temp = [getfield.(items, :name) my_round.(vcat(getfield.(items, :force)'...)) my_round.(vcat(getfield.(items,:moment)'...))]
-    
+    temp =
+        [getfield.(items, :name) my_round.(vcat(getfield.(items, :force)'...); lim = 1e-4) my_round.(
+            vcat(getfield.(items, :moment)'...);
+            lim = 1e-4,
+        )]
+
     #=    for item in the_system.beams
            println(preload_f, "{$idx} {" * item.name * "} shear $(item.force[1][1]), $(item.force[1][2]), $(item.force[1][3]), $(norm(force[1]))")
            println(preload_f, "{} {} moment $(item.moment[1][1]), $(item.moment[1][2]), $(item.moment[1][3]), $(norm(item.moment[1]))")
@@ -341,4 +395,24 @@ function summarize(
        end =#
 
     pretty_table(temp; header)
+end
+
+function treat(vec_in)
+    vect = unique.(vec_in)
+    nf = maximum(length.(vect))
+    len = length(vect)
+    for i in 1:len
+        if length(vect[i]) < nf
+            pushfirst!(vect[i], NaN * zeros(nf - length(vect[i]))...)
+        end
+    end
+    vect = hcat(vect...)'
+    vect[vect .== 0] .= NaN
+    rcol = []
+    for i in 1:size(vect, 2)
+        if sum(isnan.(vect[:, i])) < len && sum(isinf.(vect[:, i])) < len
+            push!(rcol, i)
+        end
+    end
+    vect[:, rcol]
 end

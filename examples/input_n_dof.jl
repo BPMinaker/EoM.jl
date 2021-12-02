@@ -125,6 +125,7 @@ function input_n_dof(args...; n = 10, m = 1, k = 1)
     item.body[2] = "upper block $(j-1)"
     item.location[1] = [-1, 0.5, -0.2] * 0.1
     item.location[2] = [1, 0.5, -0.2] * 0.1
+    item.units = "N"
     add_item!(item, the_system)
 
     item = sensor("kx")
@@ -133,6 +134,7 @@ function input_n_dof(args...; n = 10, m = 1, k = 1)
     item.location[1] = [1, 0.5, 0.2] * 0.1
     item.location[2] = [-1, 0.5, 0.2] * 0.1
     item.gain = k
+    item.units = "N"
     add_item!(item, the_system)
 
     the_system
