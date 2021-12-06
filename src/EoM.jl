@@ -14,8 +14,7 @@ export setup
 export run_eom!
 export analyze
 export full_ss
-#export write_output
-#export weave_output
+export write_output
 export write_html
 export summarize
 export lsim
@@ -96,6 +95,9 @@ include("dss2ss.jl")
 include("decompose.jl")
 include("minreal.jl")
 include("write_html.jl")
+include("write_output.jl")
+include("load_defln.jl")
+include("syst_props.jl")
 include("summarize.jl")
 
 include("mirror.jl")

@@ -45,7 +45,7 @@ function write_html(
     noeigs = false
 
     # set up the paths
-    dirs = setup(folder = folder, data = systems[1].name)
+    dirs = setup(folder = folder, data = filename)
     dir_date = dirs[1]
     dir_time = dirs[2]
     dir_data = joinpath(dir_date, dir_time)
