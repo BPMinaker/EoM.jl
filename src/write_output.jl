@@ -240,5 +240,3 @@ function write_output(
     writedlm(joinpath(ss_path, "D.out"), results.ss_eqns[1].D)
 
 end ## Leave
-
-

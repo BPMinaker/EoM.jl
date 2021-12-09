@@ -36,6 +36,8 @@ function summarize(
 
     plotly()
 
+    verbose && println("Printing summary of analysis...")
+
     noeigs = false
 
     # get names of inputs and outputs
@@ -363,12 +365,8 @@ function summarize(
         end
     end
 
-    n = length(plots)
-    if n > 0
-        println("Time history and other plots")
-    end
-    for i in 1:n
-        display(plots[i])
+    for i in plots
+        display(i)
     end
 
     # add the static preloads
@@ -407,7 +405,7 @@ function treat(vec_in)
         end
     end
     vect = hcat(vect...)'
-    vect[vect .== 0] .= NaN
+    vect[vect.==0] .= NaN
     rcol = []
     for i in 1:size(vect, 2)
         if sum(isnan.(vect[:, i])) < len && sum(isinf.(vect[:, i])) < len

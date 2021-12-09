@@ -94,7 +94,10 @@ function write_html(
     # open the base html file to write, and start filling it
     output_f = open(joinpath(dir_date, filename * ".html"), "w")
     println(output_f, str_open)
-    println(output_f, "<img src=\"figures/eom_logo.png\" alt=\"Icon\" style=\"width:200px;\">")
+    println(
+        output_f,
+        "<img src=\"figures/eom_logo.png\" alt=\"Icon\" style=\"width:200px;\">",
+    )
     println(output_f, "<h1>Analysis results</h1>")
     println(output_f, "<p>Here are the results of the analysis of: $(systems[1].name)</p>")
 
@@ -104,12 +107,12 @@ function write_html(
         labels = []
         gain = []
         # loop over outputs and inputs and vpts
-        for i = 1:nout
-            for j = 1:nin
+        for i in 1:nout
+            for j in 1:nin
                 n = (i - 1) * nin + j
                 if findnext(ss .== n, 1) !== nothing
                     x = zeros(nvpts)
-                    for k = 1:nvpts
+                    for k in 1:nvpts
                         x[k] = my_round(results.ss_resp[k][i, j])
                     end
                     push!(gain, x[1])
@@ -129,7 +132,15 @@ function write_html(
                     push!(labels, lb)
                     # if many vpts, make tau plot vs velocity
                     if nvpts > 1
-                        p = plot(vpts, x, lw = 2, xlabel = vpt_name[2] * " [" * vpt_name[3] * "]", ylabel = lb, label = "", size = (600, 300))
+                        p = plot(
+                            vpts,
+                            x,
+                            lw = 2,
+                            xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
+                            ylabel = lb,
+                            label = "",
+                            size = (600, 300),
+                        )
                         # save the figure
                         path = joinpath(dir_data, "sstf_$(i)_$(j).html")
                         savefig(p, path)
@@ -161,7 +172,7 @@ function write_html(
         # get eigenvalues
         m = maximum(length.(results.e_val))
         s = zeros(m, nvpts) * 1im
-        for i = 1:nvpts
+        for i in 1:nvpts
             l = length(results.e_val[i])
             s[1:l, i] = results.e_val[i]
         end
@@ -191,14 +202,14 @@ function write_html(
 
             # eliminate all zero rows
             tr = []
-            for i = 1:size(sr, 1)
+            for i in 1:size(sr, 1)
                 if any(sr[i, :] .!= 0)
                     push!(tr, i)
                 end
             end
             sr = sr[tr, :]
             tr = []
-            for i = 1:size(si, 1)
+            for i in 1:size(si, 1)
                 if any(si[i, :] .!= 0)
                     push!(tr, i)
                 end
@@ -211,7 +222,11 @@ function write_html(
 
             seriestype = :scatter
             ms = 3
-            p = plot(xlabel = vpt_name[2] * " [" * vpt_name[3] * "]", ylabel = "Eigenvalue [1/s]", size = (600, 300))
+            p = plot(
+                xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
+                ylabel = "Eigenvalue [1/s]",
+                size = (600, 300),
+            )
 
             rr = vec(sr')
             mc = RGB(0 / 255, 154 / 255, 250 / 255)
@@ -239,13 +254,13 @@ function write_html(
             omega = unique.(results.omega_n)
             nf = maximum(unique(length.(omega)))
 
-            for i = 1:length(omega)
+            for i in 1:length(omega)
                 if length(omega[i]) < nf
                     append!(omega[i], zeros(nf - length(omega[i])) * NaN)
                 end
             end
             omega = hcat(omega...)'
-            omega[omega .== 0] .= NaN
+            omega[omega.==0] .= NaN
 
             po = plot(xlabel = "", ylabel = "Natural frequency [Hz]", size = (600, 300))
             mc = RGB(0 / 255, 154 / 255, 250 / 255)
@@ -256,14 +271,18 @@ function write_html(
             zeta = unique.(results.zeta)
             nf = maximum(unique(length.(zeta)))
 
-            for i = 1:length(zeta)
+            for i in 1:length(zeta)
                 if length(zeta[i]) < nf
                     append!(zeta[i], zeros(nf - length(zeta[i])) * NaN)
                 end
             end
             zeta = hcat(zeta...)'
 
-            pz = plot(xlabel = vpt_name[2] * " [" * vpt_name[3] * "]", ylabel = "Damping ratio", size = (600, 300))
+            pz = plot(
+                xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
+                ylabel = "Damping ratio",
+                size = (600, 300),
+            )
             mc = RGB(0 / 255, 154 / 255, 250 / 255)
             if size(zeta, 2) > 0
                 plot!(pz, vpts, zeta; seriestype, mc, ms, label)
@@ -279,7 +298,7 @@ function write_html(
             tau = unique.(results.tau)
             nf = maximum(unique(length.(tau)))
 
-            for i = 1:length(tau)
+            for i in 1:length(tau)
                 if length(tau[i]) < nf
                     append!(tau[i], zeros(nf - length(tau[i])) * NaN)
                 end
@@ -297,7 +316,7 @@ function write_html(
             lambda = unique.(results.lambda)
             nf = maximum(unique(length.(lambda)))
 
-            for i = 1:length(lambda)
+            for i in 1:length(lambda)
                 if length(lambda[i]) < nf
                     append!(lambda[i], zeros(nf - length(lambda[i])) * NaN)
                 end
@@ -306,7 +325,11 @@ function write_html(
             lambda = hcat(lambda...)'
             lambda[lambda.==0] .= NaN
 
-            pl = plot(xlabel = vpt_name[2] * " [" * vpt_name[3] * "]", ylabel = "Wavelength [s]", size = (600, 300))
+            pl = plot(
+                xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
+                ylabel = "Wavelength [s]",
+                size = (600, 300),
+            )
             mc = RGB(0 / 255, 154 / 255, 250 / 255)
             if size(lambda, 2) > 0
                 plot!(pl, vpts, lambda; seriestype, mc, ms, label)
@@ -325,7 +348,12 @@ function write_html(
         if nvpts == 1
             println(output_f, "<h2>Rotation centres of first body for all modes</h2>")
             temp = my_round.([results.mode_vals[1] (results.centre[1][1:6, 1:end])'])
-            str = html_table([["No." "Eigenvalue" "x" "y" "z" "u_x" "u_y" "u_z"]; 1:1:size(temp, 1) temp])
+            str = html_table(
+                [
+                    ["No." "Eigenvalue" "x" "y" "z" "u_x" "u_y" "u_z"]
+                    1:1:size(temp, 1) temp
+                ],
+            )
             println(output_f, str)
 
             path = joinpath(dir_data, "centres.html")
@@ -341,7 +369,7 @@ function write_html(
         # pick out up to four representative vpts from the list
         l = unique(Int.(round.((nvpts - 1) .* [1, 3, 5, 7] / 8 .+ 1)))
         if length(l) == 1
-            for i = 1:nin
+            for i in 1:nin
                 # fill in for each selected vpt
                 w = results.w[l[1]] / 2 / pi
                 mag = cat(results.mag[l[1]]..., dims = 3)[bode, i, :]
@@ -352,11 +380,38 @@ function write_html(
                 label = hcat(output_names[bode]...)
                 label .*= "/" * input_names[i]
                 xscale = :log10
-                xticks = 10.0 .^ collect(Int(round(log10(w[1]))):1:Int(round(log10(w[end]))))
-                p1 = plot(w, mag'; lw = 2, label, xlabel = "", ylabel = "Gain [dB]", xscale, xticks, ylims = (-60, Inf))
-                p2 = plot(w, phs'; lw = 2, label = "", xlabel = "Frequency [Hz]", ylabel = "Phase [deg]", xscale, xticks, ylims = (-360, 0), yticks = -360:60:0)
+                xticks =
+                    10.0 .^ collect(Int(round(log10(w[1]))):1:Int(round(log10(w[end]))))
+                p1 = plot(
+                    w,
+                    mag';
+                    lw = 2,
+                    label,
+                    xlabel = "",
+                    ylabel = "Gain [dB]",
+                    xscale,
+                    xticks,
+                    ylims = (-60, Inf),
+                )
+                p2 = plot(
+                    w,
+                    phs';
+                    lw = 2,
+                    label = "",
+                    xlabel = "Frequency [Hz]",
+                    ylabel = "Phase [deg]",
+                    xscale,
+                    xticks,
+                    ylims = (-360, 0),
+                    yticks = -360:60:0,
+                )
                 # merge two subplots
-                p = plot(p1, p2, layout = grid(2, 1, heights = [0.66, 0.33]), size = (600, 450))
+                p = plot(
+                    p1,
+                    p2,
+                    layout = grid(2, 1, heights = [0.66, 0.33]),
+                    size = (600, 450),
+                )
                 # save the figure
                 path = joinpath(dir_data, "bode_$i.html")
                 savefig(p, path)
@@ -366,18 +421,27 @@ function write_html(
             end
         else
             # loop over outputs and inputs and selected vpts
-            for i = 1:nout
-                for j = 1:nin
+            for i in 1:nout
+                for j in 1:nin
                     n = (i - 1) * nin + j
                     if !(findnext(bode .== i, 1) === nothing)
                         # make empty plots of magnitude and phase
                         xscale = :log10
                         w = results.w[1] / 2 / pi
-                        xticks = 10.0 .^ collect(Int(round(log10(w[1]))):1:Int(round(log10(w[end]))))
+                        xticks =
+                            10.0 .^
+                            collect(Int(round(log10(w[1]))):1:Int(round(log10(w[end]))))
                         ylabel = "|$(output_names[i])|/|$(input_names[j])| [dB]"
                         p1 = plot(; xlabel = "", ylabel, xscale, xticks, legend = :top)
                         ylabel = "∠ $(output_names[i])/$(input_names[j]) [deg]"
-                        p2 = plot(; xlabel = "Frequency [Hz]", ylabel, xscale, xticks, ylims = (-360, 0), yticks = -360:60:0)
+                        p2 = plot(;
+                            xlabel = "Frequency [Hz]",
+                            ylabel,
+                            xscale,
+                            xticks,
+                            ylims = (-360, 0),
+                            yticks = -360:60:0,
+                        )
                         # fill in for each selected vpt
                         for k in l
                             w = results.w[k] / 2 / pi
@@ -394,7 +458,12 @@ function write_html(
                             p1 = plot!(p1, w, mag, lw = 2, label = lb)
                             p2 = plot!(p2, w, phs, lw = 2, label = "")
                             # merge two subplots
-                            p = plot(p1, p2, layout = grid(2, 1, heights = [0.66, 0.33]), size = (600, 450))
+                            p = plot(
+                                p1,
+                                p2,
+                                layout = grid(2, 1, heights = [0.66, 0.33]),
+                                size = (600, 450),
+                            )
                         end
                         # save the figure
                         path = joinpath(dir_data, "bode_$(i)_$(j).html")
@@ -412,7 +481,7 @@ function write_html(
     if n > 0
         println(output_f, "<h2>Time history and other plots</h2>")
     end
-    for i = 1:n
+    for i in 1:n
         # save the figure
         path = joinpath(dir_data, "plot_$(i).html")
         savefig(plots[i], path)
@@ -466,7 +535,7 @@ function html_table(mtx)
         str *= "<th>$i</th>"
     end
     str *= "</tr>\n</thead><tbody>\n"
-    for i = 2:n
+    for i in 2:n
         str *= "<tr>"
         for j in mtx[i, :]
             if j isa String || imag(j) != 0
