@@ -3,8 +3,8 @@ function summarize(
     results::EoM.analysis,
     verbose::Bool = false;
     plots = [],
-    ss = 1:1:length(system.sensors)*length(system.actuators),
-    bode = 1:1:length(system.sensors),
+    ss = ones(Int64, length(system.sensors), length(system.actuators)),
+    bode = ones(Int64, length(system.sensors), length(system.actuators)),
     vpt_name = ["u" "Speed" "m/s"],
 )
     summarize([system], 0, results, verbose; plots, ss, bode, vpt_name)
@@ -16,8 +16,9 @@ function summarize(
     results::EoM.analysis,
     verbose::Bool = false;
     plots = [],
-    ss = 1:1:length(systems[1].sensors)*length(systems[1].actuators),
-    bode = 1:1:length(systems[1].sensors),
+    ss = ones(Int64, length(systems[1].sensors), length(systems[1].actuators)),
+    bode = ones(Int64, length(systems[1].sensors), length(systems[1].actuators)),
+#    bode = 1:1:length(systems[1].sensors),
     vpt_name = ["u" "Speed" "m/s"],
 )
 
@@ -34,9 +35,11 @@ function summarize(
     ##
     ##--------------------------------------------------------------------
 
+    gr()
+    display(plot(1,1; label = "", size = (50, 50)))
     plotly()
 
-    verbose && println("Printing summary of analysis...")
+    verbose && println("Printing summary of the analysis of: $(systems[1].name)...")
 
     noeigs = false
 
@@ -52,8 +55,6 @@ function summarize(
 
     nvpts = length(vpts)
 
-    println("Results of the analysis of: $(systems[1].name)...")
-
     # if there are too many inputs and outputs, skip
     if nin * nout > 0 && nin * nout < 16 && length(ss) > 0
         labels = []
@@ -61,8 +62,9 @@ function summarize(
         # loop over outputs and inputs and vpts
         for i in 1:nout
             for j in 1:nin
-                n = (i - 1) * nin + j
-                if findnext(ss .== n, 1) !== nothing
+                # n = (i - 1) * nin + j
+                #if findnext(ss .== n, 1) !== nothing
+                if ss[i, j] == 1
                     x = zeros(nvpts)
                     for k in 1:nvpts
                         x[k] = my_round(results.ss_resp[k][i, j])
@@ -86,7 +88,7 @@ function summarize(
                     if nvpts > 1
                         p = plot(
                             vpts,
-                            x,
+                            x;
                             lw = 2,
                             xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
                             ylabel = lb,
@@ -247,6 +249,7 @@ function summarize(
                     label,
                     xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
                     ylabel = "Wavelength [s]",
+                    ylims = (0, Inf),
                     size = (600, 300),
                 )
                 display(pl)
@@ -269,13 +272,14 @@ function summarize(
         if length(l) == 1
             for i in 1:nin
                 # fill in for each selected vpt
+                r = findall(bode[:, i] .== 1)
                 w = results.w[l[1]] / 2 / pi
-                mag = cat(results.mag[l[1]]..., dims = 3)[bode, i, :]
-                phs = cat(results.phase[l[1]]..., dims = 3)[bode, i, :]
+                mag = cat(results.mag[l[1]]..., dims = 3)[r, i, :]
+                phs = cat(results.phase[l[1]]..., dims = 3)[r, i, :]
                 phs[phs.>0] .-= 360
                 phs[findall(diff(phs, dims = 2) .> 300)] .= Inf
                 phs[findall(diff(phs, dims = 2) .< -300)] .= Inf
-                label = hcat(output_names[bode]...)
+                label = hcat(output_names[r]...)
                 label .*= "/" * input_names[i]
                 xscale = :log10
                 xticks =
@@ -316,8 +320,8 @@ function summarize(
             # loop over outputs and inputs and selected vpts
             for i in 1:nout
                 for j in 1:nin
-                    n = (i - 1) * nin + j
-                    if !(findnext(bode .== i, 1) === nothing)
+                    if bode[i,j] == 1
+                    #if !(findnext(bode .== i, 1) === nothing)
                         # make empty plots of magnitude and phase
                         xscale = :log10
                         w = results.w[1] / 2 / pi
@@ -393,24 +397,4 @@ function summarize(
        end =#
 
     pretty_table(temp; header)
-end
-
-function treat(vec_in)
-    vect = unique.(vec_in)
-    nf = maximum(length.(vect))
-    len = length(vect)
-    for i in 1:len
-        if length(vect[i]) < nf
-            pushfirst!(vect[i], NaN * zeros(nf - length(vect[i]))...)
-        end
-    end
-    vect = hcat(vect...)'
-    vect[vect.==0] .= NaN
-    rcol = []
-    for i in 1:size(vect, 2)
-        if sum(isnan.(vect[:, i])) < len && sum(isinf.(vect[:, i])) < len
-            push!(rcol, i)
-        end
-    end
-    vect[:, rcol]
 end

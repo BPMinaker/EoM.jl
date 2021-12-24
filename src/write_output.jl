@@ -4,11 +4,8 @@ function write_output(
     verbose::Bool = false;
     folder::String = "output",
     filename::String = system.name,
-    ss = 1:1:length(system.sensors)*length(system.actuators),
-    bode = 1:1:length(system.sensors),
-    vpt_name = ["u" "Speed" "m/s"],
 )
-    write_output([system], 0, results, verbose; folder, filename, ss, bode, vpt_name)
+    write_output([system], 0, results, verbose; folder, filename)
 end
 
 function write_output(
@@ -18,9 +15,6 @@ function write_output(
     verbose::Bool = false;
     folder::String = "output",
     filename::String = systems[1].name,
-    ss = 1:1:length(systems[1].sensors)*length(systems[1].actuators),
-    bode = 1:1:length(systems[1].sensors),
-    vpt_name = ["u" "Speed" "m/s"],
 )
 
     ## Copyright (C) 2017, Bruce Minaker

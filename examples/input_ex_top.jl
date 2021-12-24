@@ -70,15 +70,6 @@ function input_ex_top(; r = 1, m = 1e-2, h = 4e-2, It = 3e-4, Ia = 4e-4, g = 9.8
     item.units = "Nm"
     add_item!(item, the_system)
 
-    item = actuator("M")
-    item.body[1] = "top"
-    item.body[2] = "ground"
-    item.location[1] = [0, 0, h]
-    item.location[2] = [0, 0.1, h]
-    item.twist = 1
-    item.units = "Nm"
-    add_item!(item, the_system)
-
     the_system
 
 end

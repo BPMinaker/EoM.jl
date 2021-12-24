@@ -115,6 +115,26 @@ function my_round(x; dig = 4, lim = 1e-7)
     x
 end
 
+function treat(vec_in)
+    vect = unique.(vec_in)
+    nf = maximum(length.(vect))
+    len = length(vect)
+    for i in 1:len
+        if length(vect[i]) < nf
+            pushfirst!(vect[i], NaN * zeros(nf - length(vect[i]))...)
+        end
+    end
+    vect = hcat(vect...)'
+    vect[vect.==0] .= NaN
+    rcol = []
+    for i in 1:size(vect, 2)
+        if sum(isnan.(vect[:, i])) < len && sum(isinf.(vect[:, i])) < len
+            push!(rcol, i)
+        end
+    end
+    vect[:, rcol]
+end
+
 # Let's define some helper functions to make piecewise functions easier to define
 function step(t)
     0.5 * (sign(t) + 1)
