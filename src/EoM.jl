@@ -14,8 +14,8 @@ export setup
 export run_eom!
 export analyze
 export full_ss
-export write_output
-export write_html
+#export write_output
+#export write_html
 export summarize
 export lsim
 export splsim
@@ -36,24 +36,6 @@ export lambda
 export vpt
 
 export my_round
-
-# macro def(name, definition)
-#     return quote
-#         macro $(esc(name))()
-#             esc($(Expr(:quote, definition)))
-#         end
-#     end
-# end
-
-# @def add_generic_fields begin
-#     name::String
-#     group::String
-#     body::Vector{String}
-#     body_number::Vector{Int}
-#     forces::Int
-#     moments::Int
-#     radius::Vector{Vector{Float64}}
-# end
 
 fldr = joinpath(dirname(pathof(EoM)), "types")
 types = readdir(fldr)
@@ -94,8 +76,8 @@ include("full_ss.jl")
 include("dss2ss.jl")
 include("decompose.jl")
 include("minreal.jl")
-include("write_html.jl")
-include("write_output.jl")
+#include("write_html.jl")
+#include("write_output.jl")
 include("load_defln.jl")
 include("syst_props.jl")
 include("summarize.jl")
@@ -145,3 +127,25 @@ function step(t)
  end
 
 end  # end module
+
+
+
+# macro def(name, definition)
+#     return quote
+#         macro $(esc(name))()
+#             esc($(Expr(:quote, definition)))
+#         end
+#     end
+# end
+
+# @def add_generic_fields begin
+#     name::String
+#     group::String
+#     body::Vector{String}
+#     body_number::Vector{Int}
+#     forces::Int
+#     moments::Int
+#     radius::Vector{Vector{Float64}}
+# end
+
+

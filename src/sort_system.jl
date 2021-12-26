@@ -14,7 +14,7 @@ function sort_system!(the_system::mbd_system, verbose::Bool = false)
 
     ## Sort the system into a new structure
 
-    verbose && println("Sorting system...")
+    verbose && println("Sorting system: $(the_system.name)...")
 
     ## Ground is added to the system, because it is not in the user-defined system
     push!(the_system.item, body("ground"))  ## Ground body is added last (important!)
