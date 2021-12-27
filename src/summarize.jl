@@ -359,7 +359,7 @@ function summarize(
             temp = my_round.([results[1].mode_vals (results[1].centre[1:6, 1:end])'])
             if format == :html
                 println(output_f, "<h2>Rotation centres of first body for all modes</h2>")
-                pretty_table(String,[1:1:size(temp, 1) temp]; header, backend = :html, standalone = false)
+                str = pretty_table(String, [1:1:size(temp, 1) temp]; header, backend = :html, standalone = false)
                 println(output_f, str)
     
                 path = joinpath(dir_data, "centres.html")
@@ -516,7 +516,6 @@ function summarize(
     end
 
     # add the static preloads
-    println("Preloads of first system:")
     header = ["Connector", "f_x", "f_y", "f_z", "m_x", "m_y", "m_z"]
     items = [
         systems[1].rigid_points
@@ -552,6 +551,7 @@ function summarize(
         close(output_f)
 
     else
+        println("Preloads of first system:")
         pretty_table(temp; header)
     end
 end
