@@ -22,7 +22,7 @@ function find_bodynum!(item::Union{spring, link, rigid_point, flex_point, nh_poi
 end
 
 function find_bodynum!(item::Union{body, load}, idx::Dict)
-
+    nothing
 end
 
 function find_bodyframenum!(item::load, idx::Dict)

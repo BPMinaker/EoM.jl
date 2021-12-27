@@ -1,4 +1,4 @@
-function full_ss(dss_eqns; verbose = false)
+function full_ss(dss_eqns::EoM.dss_data, verb::Bool = false)
     ## Copyright (C) 2017, Bruce Minaker
     ## full_ss.jl is free software; you can redistribute it and/or modify it
     ## under the terms of the GNU General Public License as published by
@@ -12,7 +12,7 @@ function full_ss(dss_eqns; verbose = false)
     ##
     ##--------------------------------------------------------------------
 
-    verbose && println("Converting...")
+    verb && println("Converting...")
 
     nvpts = length(dss_eqns)  ## Number of points to plot
     result = Vector{ss_data}(undef, nvpts)

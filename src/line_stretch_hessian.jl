@@ -1,4 +1,4 @@
-function line_stretch_hessian(items, num)
+function hessian(items::Union{Vector{link}, Vector{spring}, Vector{beam}, Vector{sensor}, Vector{actuator}}, num::Int64)
     ## Copyright (C) 2017, Bruce Minaker
     ## line_stretch_hessian.jl is free software; you can redistribute it and/or modify it
     ## under the terms of the GNU General Public License as published by

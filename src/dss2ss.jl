@@ -1,4 +1,4 @@
-function dss2ss(dss_eqns::EoM.dss_data,args...)
+function dss2ss(dss_eqns::EoM.dss_data, verb::Bool = false)
 
 ## Copyright (C) 2020, Bruce Minaker
 ## dss2ss.jl is free software; you can redistribute it and/or modify it
@@ -13,9 +13,9 @@ function dss2ss(dss_eqns::EoM.dss_data,args...)
 ##
 ##--------------------------------------------------------------------
 
-verbose=any(args.==:verbose)
-verbose && println("System is of dimension ",size(dss_eqns.A,1),".")
-verbose && println("Converting from descriptor form to standard state space...")
+
+verb && println("System is of dimension ",size(dss_eqns.A,1),".")
+verb && println("Converting from descriptor form to standard state space...")
 
 Q,S,P=svd(dss_eqns.E)  ##Q'*E*P should = S
 
@@ -47,9 +47,8 @@ C=C1-C2*A221
 D=dss_eqns.D-C2*A22B
 
 n=size(A,1)
-verbose && println("System is now of dimension ",n,".")
-ss_eqns=ss_data(A,B,C,D)
+verb && println("System is now of dimension ",n,".")
 
-ss_eqns
+ss_data(A,B,C,D)
 
 end

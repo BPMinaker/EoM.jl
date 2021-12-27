@@ -1,4 +1,4 @@
-function elastic_connections!(the_system, data, verb)
+function elastic_connections!(the_system::mbd_system, data::EoM.eom_data, verb::Bool = false)
     ## Copyright (C) 2017, Bruce Minaker
     ## elastic_connections.jl is free software; you can redistribute it and/or modify it
     ## under the terms of the GNU General Public License as published by

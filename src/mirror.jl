@@ -1,4 +1,4 @@
-function mirror!(the_system)
+function mirror!(the_system::mbd_system)
 
     ## Copyright (C) 2017, Bruce Minaker
     ## mirror.jl is free software; you can redistribute it and/or modify it

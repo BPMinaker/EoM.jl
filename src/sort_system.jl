@@ -1,4 +1,4 @@
-function sort_system!(the_system::mbd_system, verbose::Bool = false)
+function sort_system!(the_system::mbd_system, verb::Bool = false)
     ## Copyright (C) 2017, Bruce Minaker
     ## sort_system.jl is free software; you can redistribute it and/or modify it
     ## under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@ function sort_system!(the_system::mbd_system, verbose::Bool = false)
 
     ## Sort the system into a new structure
 
-    verbose && println("Sorting system: $(the_system.name)...")
+    verb && println("Sorting system: $(the_system.name)...")
 
     ## Ground is added to the system, because it is not in the user-defined system
     push!(the_system.item, body("ground"))  ## Ground body is added last (important!)
@@ -23,7 +23,7 @@ function sort_system!(the_system::mbd_system, verbose::Bool = false)
     sort_items!.(the_system.item, tuple(the_system))
 
     ## Find the body number
-    verbose && println("Looking for connection info...")
+    verb && println("Looking for connection info...")
     # link each bodys name with its number in the list
     idx = Dict(getfield.(the_system.bodys, :name) .=> 1:length(the_system.bodys))
     find_bodynum!.(the_system.item, tuple(idx))
@@ -32,9 +32,9 @@ function sort_system!(the_system::mbd_system, verbose::Bool = false)
     find_actnum!.(the_system.sensors, tuple(idx))
 
     ## Find the radius of each connector
-    verbose && println("Looking for location info...")
+    verb && println("Looking for location info...")
     find_radius!.(the_system.item, tuple(getfield.(the_system.bodys, :location)))
 
-    verbose && println("System sorted.")
+    verb && println("System sorted.")
 
 end  ## Leave

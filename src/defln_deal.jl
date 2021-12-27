@@ -1,4 +1,4 @@
-function defln_deal!(the_system, static, verb)
+function defln_deal!(the_system::mbd_system, static::Vector{Float64}, verb::Bool = false)
     ## Copyright (C) 2017 Bruce Minaker
     ## defln_deal.jl is free software; you can redistribute it and/or modify it
     ## under the terms of the GNU General Public License as published by

@@ -11,7 +11,7 @@
     ##
     ##--------------------------------------------------------------------
 
-function item_init!(item::Union{link, spring, beam, sensor, actuator}, verb=false)
+function item_init!(item::Union{link, spring, beam, sensor, actuator}, verb::Bool = false)
 
     verb && println("Initializing...")
 

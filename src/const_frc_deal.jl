@@ -1,4 +1,4 @@
-function const_frc_deal!(the_system, lambda, verb)
+function const_frc_deal!(the_system::mbd_system, lambda::Vector{Float64}, verb::Bool = false)
     ## Copyright (C) 2017 Bruce Minaker
     ## const_frc_deal.jl is free software; you can redistribute it and/or modify it
     ## under the terms of the GNU General Public License as published by

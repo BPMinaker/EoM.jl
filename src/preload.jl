@@ -1,4 +1,4 @@
-function preload!(data, verb)
+function preload!(data::EoM.eom_data, verb::Bool = false)
     ## Copyright (C) 2017, Bruce Minaker
     ## preload.jl is free software; you can redistribute it and/or modify it
     ## under the terms of the GNU General Public License as published by

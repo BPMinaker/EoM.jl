@@ -1,4 +1,4 @@
-function lsim(ss, u, t, x0 = zeros(size(ss.A, 2), 1); verbose = false)
+function lsim(ss::EoM.ss_data, u, t, x0 = zeros(size(ss.A, 2), 1), verbose::Bool = false)
 
     n = length(t)
     T = t[2] - t[1]

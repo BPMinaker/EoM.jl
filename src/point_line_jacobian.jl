@@ -1,4 +1,4 @@
-function point_line_jacobian(items, num)
+function point_line_jacobian(items::Union{Vector{link}, Vector{spring}, Vector{beam}, Vector{flex_point}, Vector{rigid_point}, Vector{nh_point}, Vector{sensor}, Vector{actuator}}, num::Int64)
     ## Copyright (C) 2017, Bruce Minaker
     ## point_line_jacobian.m is free software; you can redistribute it and/or modify it
     ## under the terms of the GNU General Public License as published by

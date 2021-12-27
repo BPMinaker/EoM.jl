@@ -1,4 +1,4 @@
-function tangent!(the_system, data, verb)
+function tangent!(the_system::mbd_system, data::EoM.eom_data, verb::Bool = false)
     ## Copyright (C) 2017, Bruce Minaker
     ## tangent.jl is free software; you can redistribute it and/or modify it
     ## under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ function tangent!(the_system, data, verb)
     n = length(the_system.bodys)
 
     data.tangent_stiffness =
-        line_stretch_hessian([the_system.links; the_system.springs], n) +
-        point_hessian([the_system.flex_points; the_system.rigid_points], n)
+        hessian(the_system.links, n) + hessian(the_system.springs, n) +
+        hessian(the_system.flex_points, n) + hessian(the_system.rigid_points, n)
 
 end

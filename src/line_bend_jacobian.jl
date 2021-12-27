@@ -1,4 +1,4 @@
-function line_bend_jacobian(items, num) ## Function 'line_bend_jacobian' returns 'mtx' (constraint or deflection matrix of directed items) as a function of 'in' (directed items in system) and 'num' (number of bodies)
+function line_bend_jacobian(items::Union{Vector{link}, Vector{spring}, Vector{beam}, Vector{sensor}, Vector{actuator}}, num::Int64) ## Function 'line_bend_jacobian' returns 'mtx' (constraint or deflection matrix of directed items) as a function of 'in' (directed items in system) and 'num' (number of bodies)
     ## Copyright (C) 2017, Bruce Minaker
     ## line_bend_jacobian.jl is free software; you can redistribute it and/or modify it
     ## under the terms of the GNU General Public License as published by

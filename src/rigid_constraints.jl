@@ -1,4 +1,4 @@
-function rigid_constraints!(the_system, data, verb)
+function rigid_constraints!(the_system::mbd_system, data::EoM.eom_data, verb::Bool = false)
     ## Copyright (C) 2017, Bruce Minaker
     ## rigid_constraints.jl is free software; you can redistribute it and/or modify it
     ## under the terms of the GNU General Public License as published by

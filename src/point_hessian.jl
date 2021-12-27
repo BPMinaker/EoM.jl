@@ -1,4 +1,4 @@
-function point_hessian(items, num)
+function hessian(items::Union{Vector{flex_point}, Vector{rigid_point}, Vector{nh_point}}, num::Int64)
     ## Copyright (C) 2017, Bruce Minaker
     ## point_hessian.jl is free software; you can redistribute it and/or modify it
     ## under the terms of the GNU General Public License as published by

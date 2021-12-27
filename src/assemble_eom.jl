@@ -1,4 +1,4 @@
-function assemble_eom!(data::eom_data, verbose::Bool)
+function assemble_eom!(data::eom_data, verb::Bool = false)
     ## Copyright (C) 2017, Bruce Minaker
     ## assemble_eom.jl is free software; you can redistribute it and/or modify it
     ## under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@ function assemble_eom!(data::eom_data, verbose::Bool)
     ##--------------------------------------------------------------------
 
     ## Build angular stiffness matrix from motion of items with preload, both rigid and flexible
-    verbose && println("Building equations of motion...")
+    verb && println("Building equations of motion...")
 
     mass_mtx = data.mass + data.inertia
     stiff_mtx = data.stiffness + data.tangent_stiffness + data.load_stiffness  ## Sum total system stiffness
@@ -79,7 +79,7 @@ function assemble_eom!(data::eom_data, verbose::Bool)
     C *= r_orth
     D = data.feedthrough  ## Add the user defined feed forward
     phys = r_orth[1:dim, :]
-    verbose && println("Okay, built equations of motion.")
+    verb && println("Okay, built equations of motion.")
 
     dss_data(A, B, C, D, E, phys)
 

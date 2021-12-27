@@ -1,4 +1,4 @@
-function thin_rod(name, ends, mass)
+function thin_rod(name::String, ends::Array{Float64,2}, mass::Union{Float64, Int64})
     ## Copyright (C) 2013, Bruce Minaker
     ## This file is intended for use with Octave.
     ## thin_rod.m is free software; you can redistribute it and/or modify it

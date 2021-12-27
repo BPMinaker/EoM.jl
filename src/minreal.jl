@@ -1,4 +1,4 @@
-function minreal(ss_eqns::EoM.ss_data, args...)
+function minreal(ss_eqns::EoM.ss_data, verb::Bool = false)
     ## Copyright (C) © 2021, Bruce Minaker
     ## minreal.jl is free software; you can redistribute it and/or modify it
     ## under the terms of the GNU General Public License as published by
@@ -15,11 +15,10 @@ function minreal(ss_eqns::EoM.ss_data, args...)
     # Based on the algorithm in "An Elementary Derivation of Rosenbrock's Minimal Realization Algorithm", D.Q. Mayne
     # IEEE Transactions on Automatic Control, June 1973
 
-    verbose = any(args .== :verbose)
     ss_1 = cont_part(ss_eqns)
     ss_2 = cont_part(ss_data(ss_1.A', ss_1.C', ss_1.B', ss_eqns.D'))
     ss_2 = ss_data(ss_2.A', ss_2.C', ss_2.B', ss_eqns.D)
-    verbose && println("Minimal system is of dimension ", size(ss_2.A,2), ".")
+    verb && println("Minimal system is of dimension ", size(ss_2.A,2), ".")
     ss_2
 end
 

@@ -1,4 +1,4 @@
-function phi(the_system, verb)
+function phi(the_system::mbd_system, verb::Bool = false)
     ## Copyright (C) 2020 Bruce Minaker
     ## phi.jl is free software; you can redistribute it and/or modify it
     ## under the terms of the GNU General Public License as published by

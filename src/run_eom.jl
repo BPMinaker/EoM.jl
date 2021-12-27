@@ -1,4 +1,4 @@
-function run_eom!(the_system::mbd_system, verbose::Bool = false)
+function run_eom!(the_system::mbd_system, verb::Bool = false)
 
     ## Copyright (C) 2017, Bruce Minaker
     ## run_eom.jl is free software; you can redistribute it and/or modify it
@@ -13,8 +13,8 @@ function run_eom!(the_system::mbd_system, verbose::Bool = false)
     ##
     ##--------------------------------------------------------------------
 
-    sort_system!(the_system, verbose) # sort all the input structs
-    the_data = generate_eom(the_system, verbose)
-    assemble_eom!(the_data, verbose)
+    sort_system!(the_system, verb) # sort all the input structs
+    the_data = generate_eom(the_system, verb)
+    assemble_eom!(the_data, verb)
 
 end

@@ -1,4 +1,4 @@
-function setup(; folder = "output", data = "data")
+function setup(; folder::String = "output", data::String = "data")
 
     ## Copyright (C) 2017, Bruce Minaker
     ## setup.jl is free software; you can redistribute it and/or modify it

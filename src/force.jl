@@ -1,4 +1,4 @@
-function force!(the_system, data, verb)
+function force!(the_system::mbd_system, data::EoM.eom_data, verb::Bool = false)
     ## Copyright (C) 2017, Bruce Minaker
     ## force.jl is free software; you can redistribute it and/or modify it
     ## under the terms of the GNU General Public License as published by
@@ -12,6 +12,8 @@ function force!(the_system, data, verb)
     ##
     ##--------------------------------------------------------------------
     ## function 'force' returns 'vec' (external loads), 'mtx' (stiffness matrix for angular motion resulting from applied forces) as a function of 'in' (the loads) and 'num' (the number of bodies)
+
+    verb && println("Summing external forces...")
 
     num = length(the_system.bodys)
     vec = zeros(6 * num) ## Vec (force vector) is defined as zero vector

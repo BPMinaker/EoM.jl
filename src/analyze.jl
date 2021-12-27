@@ -1,4 +1,4 @@
-function analyze(dss_eqns::EoM.dss_data, verbose::Bool = false)
+function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
     ## Copyright (C) 2017, Bruce Minaker
     ## analyze.jl is free software; you can redistribute it and/or modify it
     ## under the terms of the GNU General Public License as published by
@@ -12,7 +12,7 @@ function analyze(dss_eqns::EoM.dss_data, verbose::Bool = false)
     ##
     ##--------------------------------------------------------------------
 
-    verbose && println("Running linear analysis...")
+    verb && println("Running linear analysis...")
 
     result = analysis()
 
@@ -40,8 +40,8 @@ function analyze(dss_eqns::EoM.dss_data, verbose::Bool = false)
         end
     end
 
-    temp_ss = dss2ss(dss_eqns, verbose && :verbose) # reduce to standard form
-    min_ss =  minreal(temp_ss, verbose && :verbose)
+    temp_ss = dss2ss(dss_eqns, verb) # reduce to standard form
+    min_ss =  minreal(temp_ss, verb)
 
     if size(min_ss.A, 1) < size(temp_ss.A,1)
         result.ss_eqns = min_ss
@@ -127,18 +127,18 @@ function analyze(dss_eqns::EoM.dss_data, verbose::Bool = false)
     try
         result.ss_resp = -C * (A \ B) + D
     catch
-        verbose && println("No system inverse exists, trying individual input-output pairs...")
+        verb && println("No system inverse exists, trying individual input-output pairs...")
 
         result.ss_resp = zeros(nout, nin)
         for m in 1:nin
             for n in 1:nout
                 try
                     temp_mn = ss_data(temp_ss.A, temp_ss.B[:, m:m], temp_ss.C[n:n, :], temp_ss.D[n:n, m:m]) # eliminate all the other inputs and outputs
-                    ss_eqns = minreal(temp_mn, verbose && :verbose)
+                    ss_eqns = minreal(temp_mn, verb)
                     result.ss_resp[n, m] = -(ss_eqns.C * (ss_eqns.A \ ss_eqns.B))[1, 1] + ss_eqns.D[1, 1] # note only one input and one output here
                 catch
                     result.ss_resp[n, m] = Inf
-                    verbose && println("No steady state exists for at least one input-output pair.")
+                    verb && println("No steady state exists for at least one input-output pair.")
                 end
             end
         end
