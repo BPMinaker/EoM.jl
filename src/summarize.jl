@@ -10,7 +10,7 @@
     ## General Public License for more details at www.gnu.org/copyleft/gpl.html.
     ##
     ##--------------------------------------------------------------------
-
+    using Plots.Measures
 function summarize(
     system::mbd_system,
     results::EoM.analysis,
@@ -40,10 +40,10 @@ function summarize(
     filename::String = systems[1].name,
 )
 
-    if format == :screen
-        gr()
-        display(plot(1,1; label = "", size = (50, 50)))
-    end
+#    if format == :screen
+#        gr()
+#        display(plot(1,1; label = "", size = (50, 50)))
+#    end
     plotly()
 
     verbose && println("Printing summary of the analysis of: $(systems[1].name)...")
@@ -410,6 +410,7 @@ function summarize(
                     xscale,
                     xlims = (10^low, 10^high),
                     ylims = (-40, Inf),
+                    bottom_margin = 5mm,
                 )
                 p2 = plot(
                     w,
@@ -450,7 +451,7 @@ function summarize(
                         xscale = :log10
                         w = results[l[1]].w / 2 / pi
                         ylabel = "|$(output_names[i])|/|$(input_names[j])| [dB]"
-                        p1 = plot(; xlabel = "", ylabel, xscale, xlims = (10^low, 10^high), ylims = (-40, Inf))
+                        p1 = plot(; xlabel = "", ylabel, xscale, xlims = (10^low, 10^high), ylims = (-40, Inf), bottom_margin = 5mm)
                         ylabel = "∠ $(output_names[i])/$(input_names[j]) [deg]"
                         p2 = plot(;
                             xlabel = "Frequency [Hz]",

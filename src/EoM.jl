@@ -19,6 +19,7 @@ export summarize
 export lsim
 export splsim
 export random_road
+export input_delay!
 
 export skew
 export mbd_system
@@ -84,6 +85,7 @@ include("thin_rod.jl")
 include("lsim.jl")
 include("splsim.jl")
 include("random_road.jl")
+include("input_delay.jl")
 
 #include("phi.jl")
 
