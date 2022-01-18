@@ -84,6 +84,23 @@ function input_ex_drag_race(; re = 0.3, a = 1.2, b = 1.4, h_G = 0.5, kf = 35000,
     item.order = 2
     add_item!(item, the_system)
 
+    item = sensor("Zs_f")
+    item.body[1] = "chassis"
+    item.body[2] = "ground"
+    item.location[1] = [a, 0, re]
+    item.location[2] = [a, 0, 0]
+    item.gain = kf
+    add_item!(item, the_system)
+
+    item = sensor("Zd_f")
+    item.body[1] = "chassis"
+    item.body[2] = "ground"
+    item.location[1] = [a, 0, re]
+    item.location[2] = [a, 0, 0]
+    item.gain = cf
+    item.order = 2
+    add_item!(item, the_system)
+
 
     # inputs
     item = actuator("X_a")
@@ -96,8 +113,8 @@ function input_ex_drag_race(; re = 0.3, a = 1.2, b = 1.4, h_G = 0.5, kf = 35000,
     item = actuator("X_t")
     item.body[1] = "chassis"
     item.body[2] = "ground"
-    item.location[1] = [-b, 0, 0]
-    item.location[2] = [-b - 0.1, 0, 0]
+    item.location[1] = [0, 0, 0]
+    item.location[2] = [-0.1, 0, 0]
     add_item!(item, the_system)
 
     the_system
