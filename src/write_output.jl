@@ -5,13 +5,13 @@ function write_output(
     folder::String = "output",
     filename::String = system.name,
 )
-    write_output([system], 0, results, verbose; folder, filename)
+    write_output([system], 0, [results], verbose; folder, filename)
 end
 
 function write_output(
     systems::Vector{mbd_system},
     vpts,
-    results::EoM.analysis,
+    results::Vector{EoM.analysis},
     verbose::Bool = false;
     folder::String = "output",
     filename::String = systems[1].name,
@@ -86,39 +86,23 @@ function write_output(
     end
     println(bode_f, "")
 
-
-
     #hsv_f=open(joinpath(dir_output,"hsv.out"),"w")
     #println(hsv_f,"###### Hankel SVD\nnum speed hsv")
 
     for i in 1:nvpts
-        for j in 1:length(results.mode_vals[i])
-            println(
-                mode_f,
-                "{",
-                j,
-                "} ",
-                vpts[i],
-                " ",
-                real(results.mode_vals[i][j]),
-                " ",
-                imag(results.mode_vals[i][j]),
-            )  ## Write the number, the speed, then the eigenvalue
+        for j in 1:length(results[i].mode_vals)
+            rr = real(results[i].mode_vals[j])
+            ii = imag(results[i].mode_vals[j])
+            ## Write the number, the speed, then the eigenvalue
+            println(mode_f, "{", j, "} ", vpts[i], " ", rr, " ", ii)
             for k in 1:length(systems[i].bodys)-1
                 for m in 1:6
-                    println(
-                        centre_f,
-                        "{",
-                        j,
-                        "} {",
-                        systems[i].bodys[k].name,
-                        "} ",
-                        vpts[i],
-                        " ",
-                        real(results.centre[i][6*k-6+m, j]),
-                        " ",
-                        imag(results.centre[i][6*k-6+m, j]),
-                    )  ## Write the number, the speed ...
+                    ## Write the number, the speed ...
+                    print(centre_f, "{", j, "} ")
+                    print(centre_f, "{", systems[i].bodys[k].name, "} ")
+                    print(centre_f, vpts[i])
+                    print(centre_f, " ", real(results[i].centre[6*k-6+m, j]))
+                    println(centre_f, " ", imag(results[i].centre[6*k-6+m, j]))
                 end
                 println(centre_f, "")
             end
@@ -126,32 +110,16 @@ function write_output(
         end
         println(mode_f, "")
 
-        for j in 1:length(results.e_val[i])
-            realpt = real(results.e_val[i][j])
-            imagpt = imag(results.e_val[i][j])
-            println(
-                eigen_f,
-                "{",
-                j,
-                "} ",
-                vpts[i],
-                " ",
-                realpt,
-                " ",
-                imagpt,
-                " ",
-                realpt / 2 / pi,
-                " ",
-                imagpt / 2 / pi,
-                " ",
-                results.omega_n[i][j],
-                " ",
-                results.zeta[i][j],
-                " ",
-                results.tau[i][j],
-                " ",
-                results.lambda[i][j],
-            )  ## Write the number, the speed, then the eigenvalue
+        for j in 1:length(results[i].e_val)
+            realpt = real(results[i].e_val[j])
+            imagpt = imag(results[i].e_val[j])
+            ## Write the number, the speed, then the eigenvalue
+            print(eigen_f, "{", j, "} ", vpts[i], " ")
+            print(eigen_f, realpt, " ", imagpt, " ", realpt / 2pi, " ", imagpt / 2pi)
+            print(eigen_f, " ", results[i].omega_n[j])
+            print(eigen_f, " ", results[i].zeta[j])
+            print(eigen_f, " ", results[i].tau[j])
+            println(eigen_f, " ", results[i].lambda[j])
         end
         println(eigen_f, "")
     end
@@ -163,35 +131,29 @@ function write_output(
                 for j in 1:nout
                     for k in 1:nin
                         print(sstf_f, "{", (j - 1) * nin + k, "} ")
-                        println(
-                            sstf_f,
-                            "{\$",
-                            output_names[j],
-                            "/",
-                            input_names[k],
-                            "\$} ",
-                            results.ss_resp[i][j, k],
-                        )
+                        print(sstf_f, "{\$", output_names[j], "/")
+                        print(sstf_f, input_names[k], "\$} ")
+                        println(sstf_f, results[i].ss_resp[j, k])
                     end
                 end
             else
                 ## Each row starts with vpoint, followed by first column, written as a row, then next column, as a row
                 print(sstf_f, vpts[i], " ")
-                for k in vec(results.ss_resp[i][:, :])
+                for k in vec(results[i].ss_resp[:, :])
                     print(sstf_f, k, " ")
                 end
                 println(sstf_f, "")
             end
 
-            for j in 1:length(results.w[i]) ## Loop over frequency range
+            for j in 1:length(results[i].w) ## Loop over frequency range
                 ## Each row starts with vpt, then freq in Hz
-                print(bode_f, vpts[i], " ", results.w[i][j] / 2 / pi, " ")
+                print(bode_f, vpts[i], " ", results[i].w[j] / 2 / pi, " ")
                 # Followed by first mag column, written as a row, then next column, as a row
-                for k in vec(results.mag[i][j])
+                for k in vec(results[i].mag[j])
                     print(bode_f, k, " ")
                 end
                 # Followed by first phase column, written as a row, then next column, as a row
-                for k in vec(results.phase[i][j])
+                for k in vec(results[i].phase[j])
                     print(bode_f, k, " ")
                 end
                 println(bode_f, "")
@@ -214,23 +176,25 @@ function write_output(
     #close(hsv_f)
 
     load_defln(systems[1], dir_data)
-    syst_props(systems[1], dir_data)
-
-    dss_path = joinpath(dir_data, "dss")
-    ~isdir(dss_path) && (mkdir(dss_path))
+#    syst_props(systems[1], dir_data)
 
     ss_path = joinpath(dir_data, "ss")
     ~isdir(ss_path) && (mkdir(ss_path))
 
-    # writedlm(joinpath(dss_path, "A.out"), eoms.A)
-    # writedlm(joinpath(dss_path, "B.out"), eoms.B)
-    # writedlm(joinpath(dss_path, "C.out"), eoms.C)
-    # writedlm(joinpath(dss_path, "D.out"), eoms.D)
-    # writedlm(joinpath(dss_path, "E.out"), eoms.E)
-
-    writedlm(joinpath(ss_path, "A.out"), results.ss_eqns[1].A)
-    writedlm(joinpath(ss_path, "B.out"), results.ss_eqns[1].B)
-    writedlm(joinpath(ss_path, "C.out"), results.ss_eqns[1].C)
-    writedlm(joinpath(ss_path, "D.out"), results.ss_eqns[1].D)
+    writedlm(joinpath(ss_path, "A.out"), results[1].ss_eqns.A)
+    writedlm(joinpath(ss_path, "B.out"), results[1].ss_eqns.B)
+    writedlm(joinpath(ss_path, "C.out"), results[1].ss_eqns.C)
+    writedlm(joinpath(ss_path, "D.out"), results[1].ss_eqns.D)
 
 end ## Leave
+
+
+
+# dss_path = joinpath(dir_data, "dss")
+# ~isdir(dss_path) && (mkdir(dss_path))
+
+# writedlm(joinpath(dss_path, "A.out"), eoms.A)
+# writedlm(joinpath(dss_path, "B.out"), eoms.B)
+# writedlm(joinpath(dss_path, "C.out"), eoms.C)
+# writedlm(joinpath(dss_path, "D.out"), eoms.D)
+# writedlm(joinpath(dss_path, "E.out"), eoms.E)

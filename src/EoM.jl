@@ -14,7 +14,7 @@ export setup
 export run_eom!
 export analyze
 export full_ss
-#export write_output
+export write_output
 export summarize
 export lsim
 export splsim
@@ -75,7 +75,7 @@ include("analyze.jl")
 include("full_ss.jl")
 include("dss2ss.jl")
 include("minreal.jl")
-#include("write_output.jl")
+include("write_output.jl")
 include("load_defln.jl")
 include("syst_props.jl")
 include("summarize.jl")
