@@ -40,14 +40,9 @@ function summarize(
     filename::String = systems[1].name,
 )
 
-#    if format == :screen
-#        gr()
-#        display(plot(1,1; label = "", size = (50, 50)))
-#    end
     plotly()
 
     verbose && println("Printing summary of the analysis of: $(systems[1].name)...")
-
     noeigs = false
 
     if format == :html
@@ -373,20 +368,50 @@ function summarize(
         end
     end
 
-    t = unique(abs.(s))
-    t = t[t .> 0.1]
-    low = floor(log10(0.5 * minimum(t) / 2 / pi))
-    low < -2 && (low =-2.0)
-    # lowest low eigenvalue, round number in Hz
-    high = ceil(log10(2.0 * maximum(t) / 2 / pi))
-    # highest high eigenvalue, round number in Hz
-    high > 3 && (high = 3.0)
-
     # if there are too many inputs and outputs, skip
-    if nin * nout > 0 && length(bode) > 0 && nin * nout < 16
+    if nin * nout > 0 && sum(bode) > 0 && nin * nout < 16
         # pick out up to four representative vpts from the list
         l = unique(Int.(round.((nvpts - 1) .* [1, 3, 5, 7] / 8 .+ 1)))
-        if length(l) == 1
+        ll = length(l)
+        low = zeros(ll)
+        high = zeros(ll)
+
+        for i in 1:ll
+            t = unique(abs.(results[l[i]].e_val))
+            t = t[t .> 0.0628]
+            low[i] = floor(log10(0.5 * minimum(t) / 2 / pi))
+            # lowest low eigenvalue, round number in Hz
+            high[i] = ceil(log10(2.0 * maximum(t) / 2 / pi))
+            # highest high eigenvalue, round number in Hz
+        end
+        low = minimum(low)
+        high = maximum(high)
+        nw = Int(high - low)
+        if nw == 0
+            nw = 1
+            high += 1
+        end
+        wpts = 200 * nw + 1
+        w = 2 * pi * (10.0 .^ range(low, stop = high, length = wpts))
+        # compute evenly spaced range of frequncies in log space to consider
+
+        for i in l
+            results[i].w = w
+            A = results[i].ss_eqns.A
+            B = results[i].ss_eqns.B
+            C = results[i].ss_eqns.C
+            D = results[i].ss_eqns.D
+
+            # compute frequency response
+            G(x) = C * ((I * x * 1im - A) \ B) + D
+            results[i].freq_resp = G.(w)
+            mag(x) =  20 * log10.(abs.(x)) .+ eps(1.0)
+            results[i].mag = mag.(results[i].freq_resp)
+            phs(x) = 180 / pi * angle.(x)
+            results[i].phase = phs.(results[i].freq_resp)
+        end
+
+        if ll == 1
             for i in 1:nin
                 # fill in for each selected vpt
                 r = findall(bode[:, i] .== 1)
@@ -408,7 +433,7 @@ function summarize(
                     xlabel = "",
                     ylabel = "Gain [dB]",
                     xscale,
-                    xlims = (10^low, 10^high),
+                    xlims = (w[1], w[end]),
                     ylims = (-40, Inf),
                     bottom_margin = 5mm,
                 )
@@ -420,7 +445,7 @@ function summarize(
                     xlabel = "Frequency [Hz]",
                     ylabel = "Phase [deg]",
                     xscale,
-                    xlims = (10^low, 10^high),
+                    xlims = (w[1], w[end]),
                     ylims = (-360, 0),
                     yticks = -360:60:0,
                 )
@@ -451,13 +476,20 @@ function summarize(
                         xscale = :log10
                         w = results[l[1]].w / 2 / pi
                         ylabel = "|$(output_names[i])|/|$(input_names[j])| [dB]"
-                        p1 = plot(; xlabel = "", ylabel, xscale, xlims = (10^low, 10^high), ylims = (-40, Inf), bottom_margin = 5mm)
+                        p1 = plot(;
+                            xlabel = "",
+                            ylabel,
+                            xscale,
+                            xlims = (w[1], w[end]),
+                            ylims = (-40, Inf),
+                            bottom_margin = 5mm,
+                        )
                         ylabel = "∠ $(output_names[i])/$(input_names[j]) [deg]"
                         p2 = plot(;
                             xlabel = "Frequency [Hz]",
                             ylabel,
                             xscale,
-                            xlims = (10^low, 10^high),
+                            xlims = (w[1], w[end]),
                             ylims = (-360, 0),
                             yticks = -360:60:0,
                         )
@@ -475,8 +507,8 @@ function summarize(
                             else
                                 lb = vpt_name[1] * "=$(my_round(vpts[k])) " * vpt_name[3]
                             end
-                            p1 = plot!(p1, w, mag, lw = 2, label = lb)
-                            p2 = plot!(p2, w, phs, lw = 2, label = "")
+                            p1 = plot!(p1, w, mag; lw = 2, label = lb)
+                            p2 = plot!(p2, w, phs; lw = 2, label = "")
                         end
                         # merge two subplots
                         p = plot(
@@ -557,29 +589,4 @@ function summarize(
     end
 end
 
-
 #   xticks = 10.0 .^ collect(Int(round(log10(w[1]))):1:Int(round(log10(w[end]))))
-
-# function html_table(mtx)
-#     # function to put array into html format
-#     n, m = size(mtx)
-
-#     str = "<table><thead>\n<tr>"
-#     for i in mtx[1, :]
-#         str *= "<th>$i</th>"
-#     end
-#     str *= "</tr>\n</thead><tbody>\n"
-#     for i in 2:n
-#         str *= "<tr>"
-#         for j in mtx[i, :]
-#             if j isa String || imag(j) != 0
-#                 str *= "<td>$j</td>"
-#             else
-#                 str *= "<td>$(real(j))</td>"
-#             end
-#         end
-#         str *= "</tr>\n"
-#     end
-#     str *= "</tbody></table>"
-#     str
-# end
