@@ -533,18 +533,16 @@ function summarize(
         end
     end
 
-    j = 0
-    for i in plots
-        j += 1
-        if format == :html
-            println(output_f, "<h2>Time history and other plots</h2>")
-            path = joinpath(dir_data, "plot_$j.html")
-            savefig(i, path)
+    if format == :screen
+        display.(plots)
+    elseif length(plots) > 0
+        println(output_f, "<h2>Time history and other plots</h2>")
+        for i in 1:length(plots)
+            path = joinpath(dir_data, "plot_$i.html")
+            savefig(plots[i], path)
             f = open(path, "r")
             println(output_f, read(f, String))
             close(f)
-        else
-            display(i)
         end
     end
 
