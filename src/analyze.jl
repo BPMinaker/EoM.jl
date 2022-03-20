@@ -71,12 +71,11 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
     result.omega_n[idx] .= 0
     result.zeta[idx] .= NaN
 
-#    t = unique(abs.(result.e_val))
-#    t = t[t .> 0.1]
-
     A = result.ss_eqns.A
     B = result.ss_eqns.B
     C = result.ss_eqns.C
+    D = result.ss_eqns.D
+
     try
         WC = lyap(A, B * B')
         WO = lyap(I * A', C' * C)
@@ -85,44 +84,9 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
         result.hsv = zeros(size(A,1))
     end
 
-    # low = floor(log10(0.5 * minimum(t) / 2 / pi))
-    # # lowest low eigenvalue, round number in Hz
-    # high = ceil(log10(2.0 * maximum(t) / 2 / pi))
-    # # highest high eigenvalue, round number in Hz
-    # nw = Int(high - low)
-    # if nw == 2 || nw == 4
-    #     wpts = 401
-    # elseif nw == 3 || nw == 6
-    #     wpts = 601
-    # else
-    #     wpts = 501
-    # end
-    low = -2
-    high = 3
-    wpts =2001
-
-    w = 2 * pi * (10.0 .^ range(low, stop = high, length = wpts))
-    # compute evenly spaced range of frequncies in log space to consider
-
-    result.w = w
     nin = size(result.ss_eqns.B, 2)
     nout = size(result.ss_eqns.C, 1)
-
-    A = result.ss_eqns.A
-    B = result.ss_eqns.B
-    C = result.ss_eqns.C
-    D = result.ss_eqns.D
-
     result.ss_resp = zeros(nout, nin)
-
-    # compute frequency response
-    G(x) = C * ((I * x * 1im - A) \ B) + D
-    result.freq_resp = G.(w)
-    mag(x) =  20 * log10.(abs.(x)) .+ eps(1.0)
-    result.mag = mag.(result.freq_resp)
-    phs(x) = 180 / pi * angle.(x)
-    result.phase = phs.(result.freq_resp)
-
     # compute steady state response
     try
         result.ss_resp = -C * (A \ B) + D
@@ -146,6 +110,48 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
 
     result
 end
+
+    # if nw == 2 || nw == 4
+    #     wpts = 401
+    # elseif nw == 3 || nw == 6
+    #     wpts = 601
+    # else
+    #     wpts = 501
+    # end
+#    low = -2
+#    high = 3
+#    wpts =2001
+    # t = unique(abs.(result.e_val))
+    # t = t[t .> 0.0628]
+    # low = floor(log10(0.5 * minimum(t) / 2 / pi))
+    # # lowest low eigenvalue, round number in Hz
+    # high = ceil(log10(2.0 * maximum(t) / 2 / pi))
+    # # highest high eigenvalue, round number in Hz
+    # nw = Int(high - low)
+    # if nw == 0
+    #     nw = 1
+    #     high += 1
+    # end
+    # wpts = 200 * nw + 1
+
+    # w = 2 * pi * (10.0 .^ range(low, stop = high, length = wpts))
+    # # compute evenly spaced range of frequncies in log space to consider
+
+    # result.w = w
+
+    # A = result.ss_eqns.A
+    # B = result.ss_eqns.B
+    # C = result.ss_eqns.C
+    # D = result.ss_eqns.D
+
+
+    # # compute frequency response
+    # G(x) = C * ((I * x * 1im - A) \ B) + D
+    # result.freq_resp = G.(w)
+    # mag(x) =  20 * log10.(abs.(x)) .+ eps(1.0)
+    # result.mag = mag.(result.freq_resp)
+    # phs(x) = 180 / pi * angle.(x)
+    # result.phase = phs.(result.freq_resp)
 
 
 #p = sortperm(round.(tmp_vals, digits = 5), by = x -> (isreal(x), real(x) > 0, abs(x), real(x), abs(imag(x)), -imag(x)
