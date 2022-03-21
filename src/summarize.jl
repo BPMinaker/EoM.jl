@@ -373,43 +373,6 @@ function summarize(
         # pick out up to four representative vpts from the list
         l = unique(Int.(round.((nvpts - 1) .* [1, 3, 5, 7] / 8 .+ 1)))
         ll = length(l)
-        low = zeros(ll)
-        high = zeros(ll)
-
-        for i in 1:ll
-            t = unique(abs.(results[l[i]].e_val))
-            t = t[t .> 0.0628]
-            low[i] = floor(log10(0.5 * minimum(t) / 2 / pi))
-            # lowest low eigenvalue, round number in Hz
-            high[i] = ceil(log10(2.0 * maximum(t) / 2 / pi))
-            # highest high eigenvalue, round number in Hz
-        end
-        low = minimum(low)
-        high = maximum(high)
-        nw = Int(high - low)
-        if nw == 0
-            nw = 1
-            high += 1
-        end
-        wpts = 200 * nw + 1
-        w = 2 * pi * (10.0 .^ range(low, stop = high, length = wpts))
-        # compute evenly spaced range of frequncies in log space to consider
-
-        for i in l
-            results[i].w = w
-            A = results[i].ss_eqns.A
-            B = results[i].ss_eqns.B
-            C = results[i].ss_eqns.C
-            D = results[i].ss_eqns.D
-
-            # compute frequency response
-            G(x) = C * ((I * x * 1im - A) \ B) + D
-            results[i].freq_resp = G.(w)
-            mag(x) =  20 * log10.(abs.(x)) .+ eps(1.0)
-            results[i].mag = mag.(results[i].freq_resp)
-            phs(x) = 180 / pi * angle.(x)
-            results[i].phase = phs.(results[i].freq_resp)
-        end
 
         if ll == 1
             for i in 1:nin
