@@ -368,6 +368,10 @@ function summarize(
         end
     end
 
+    if size(bode, 1) > nout || size(bode, 2) > nin
+        error("Bode plot request dimensions are incompatible with system!")
+    end
+
     # if there are too many inputs and outputs, skip
     if nin * nout > 0 && sum(bode) > 0 && nin * nout < 16
         # pick out up to four representative vpts from the list
