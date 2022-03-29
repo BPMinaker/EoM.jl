@@ -373,7 +373,7 @@ function summarize(
     end
 
     # if there are too many inputs and outputs, skip
-    if nin * nout > 0 && sum(bode) > 0 && nin * nout < 16
+    if nin * nout > 0 && any(bode .== 1) > 0 && nin * nout < 16
         # pick out up to four representative vpts from the list
         l = unique(Int.(round.((nvpts - 1) .* [1, 3, 5, 7] / 8 .+ 1)))
         ll = length(l)
