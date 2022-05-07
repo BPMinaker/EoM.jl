@@ -78,7 +78,7 @@ function summarize(
     nvpts = length(vpts)
 
     # if there are too many inputs and outputs, skip
-    if nin * nout > 0 && nin * nout < 16 && length(ss) > 0
+    if nin * nout > 0 && any(ss .== 1) && sum(ss .== 1) < 16
         labels = []
         gain = []
         # loop over outputs and inputs and vpts
@@ -373,7 +373,7 @@ function summarize(
     end
 
     # if there are too many inputs and outputs, skip
-    if nin * nout > 0 && any(bode .== 1) > 0 && nin * nout < 16
+    if nin * nout > 0 && any(bode .== 1) && sum(bode .== 1) < 16
         # pick out up to four representative vpts from the list
         l = unique(Int.(round.((nvpts - 1) .* [1, 3, 5, 7] / 8 .+ 1)))
         ll = length(l)
