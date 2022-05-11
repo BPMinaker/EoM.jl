@@ -5,7 +5,7 @@ module EoM
 using LinearAlgebra
 using Dates
 using DelimitedFiles
-using ForwardDiff
+#using ForwardDiff
 using Plots
 using PrettyTables
 
