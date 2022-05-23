@@ -15,15 +15,6 @@ function syst_props(the_system::mbd_system, dir_output::String)
     body_f = open(joinpath(dir_output, "bodydata.out"), "w")
     println(body_f, "###### Body Data\nnum name mass rx ry rz ixx iyy izz ixy iyz ixz")
 
-    point_f = open(joinpath(dir_output, "pointdata.out"), "w")
-    println(point_f, "###### Connection Data\nnum name rx ry rz ux uy uz")
-
-    stiff_f = open(joinpath(dir_output, "stiffnessdata.out"), "w")
-    println(
-        stiff_f,
-        "###### Connection Data\nnum name stiffness damping t_stiffness t_damping",
-    )
-
     ## Body data
     idx = 1
     for item in the_system.bodys[1:end-1]
@@ -63,6 +54,15 @@ function syst_props(the_system::mbd_system, dir_output::String)
         idx += 1
     end
     close(body_f)
+
+    point_f = open(joinpath(dir_output, "pointdata.out"), "w")
+    println(point_f, "###### Connection Data\nnum name rx ry rz ux uy uz")
+
+    stiff_f = open(joinpath(dir_output, "stiffnessdata.out"), "w")
+    println(
+        stiff_f,
+        "###### Connection Data\nnum name stiffness damping t_stiffness t_damping",
+    )
 
     ## Connection data
     idx = 1
@@ -251,67 +251,68 @@ function syst_props(the_system::mbd_system, dir_output::String)
         idx2 += 1
     end
 
-    for item in the_system.actuators
-        println(
-            point_f,
-            "{",
-            idx,
-            "} {\$",
-            item.name,
-            "\$} ",
-            item.location[1][1],
-            " ",
-            item.location[1][2],
-            " ",
-            item.location[1][3],
-            " {} {} {}",
-        )
-        println(
-            point_f,
-            "{} {} ",
-            item.location[2][1],
-            " ",
-            item.location[2][2],
-            " ",
-            item.location[2][3],
-            " {} {} {}",
-        )
-        println(stiff_f, "{", idx2, "} {\$", item.name, "\$} ", item.gain, " {} {} {}")
-        idx += 1
-        idx2 += 1
-    end
-
-    for item in the_system.sensors
-        println(
-            point_f,
-            "{",
-            idx,
-            "} {\$",
-            item.name,
-            "\$} ",
-            item.location[1][1],
-            " ",
-            item.location[1][2],
-            " ",
-            item.location[1][3],
-            " {} {} {}",
-        )
-        println(
-            point_f,
-            "{} {} ",
-            item.location[2][1],
-            " ",
-            item.location[2][2],
-            " ",
-            item.location[2][3],
-            " {} {} {}",
-        )
-        println(stiff_f, "{", idx2, "} {\$", item.name, "\$} ", item.gain, " {} {} {}")
-        idx += 1
-        idx2 += 1
-    end
-
     close(point_f)
     close(stiff_f)
+
+
+    input_f = open(joinpath(dir_output, "inputdata.out"), "w")
+    println(input_f, "###### Connection Data\nnum name rx ry rz ux uy uz gain")
+
+    idx = 1
+    for item in the_system.actuators
+        println(
+            input_f,
+            "{",
+            idx,
+            "} {",
+            item.name,
+            "} ",
+            item.location[1][1],
+            " ",
+            item.location[1][2],
+            " ",
+            item.location[1][3],
+            " ",
+            item.location[2][1],
+            " ",
+            item.location[2][2],
+            " ",
+            item.location[2][3],
+            " ",
+            item.gain)
+        idx += 1
+    end
+
+    close(input_f)
+
+    output_f = open(joinpath(dir_output, "outputdata.out"), "w")
+    println(output_f, "###### Connection Data\nnum name rx ry rz ux uy uz gain")
+
+    idx = 1
+    for item in the_system.sensors
+        println(
+            output_f,
+            "{",
+            idx,
+            "} {",
+            item.name,
+            "} ",
+            item.location[1][1],
+            " ",
+            item.location[1][2],
+            " ",
+            item.location[1][3],
+            " ",
+            item.location[2][1],
+            " ",
+            item.location[2][2],
+            " ",
+            item.location[2][3],
+            " ",
+            item.gain)
+        idx += 1
+    end
+
+    close(output_f)
 
 end  ## Leave
