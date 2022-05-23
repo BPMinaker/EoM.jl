@@ -382,56 +382,58 @@ function summarize(
             for i in 1:nin
                 # fill in for each selected vpt
                 r = findall(bode[:, i] .== 1)
-                w = results[l[1]].w / 2 / pi
-                mag = cat(results[l[1]].mag..., dims = 3)[r, i, :]
-                mag[findall(mag .> 100)] .= Inf
-                phs = cat(results[l[1]].phase..., dims = 3)[r, i, :]
-                phs[phs.>0] .-= 360
-                phs[findall(diff(phs, dims = 2) .> 300)] .= Inf
-                phs[findall(diff(phs, dims = 2) .< -300)] .= Inf
-                label = hcat(output_names[r]...)
-                label .*= "/" * input_names[i]
-                xscale = :log10
-                p1 = plot(
-                    w,
-                    mag';
-                    lw = 2,
-                    label,
-                    xlabel = "",
-                    ylabel = "Gain [dB]",
-                    xscale,
-                    xlims = (w[1], w[end]),
-                    ylims = (-40, Inf),
-                    bottom_margin = 5mm,
-                )
-                p2 = plot(
-                    w,
-                    phs';
-                    lw = 2,
-                    label = "",
-                    xlabel = "Frequency [Hz]",
-                    ylabel = "Phase [deg]",
-                    xscale,
-                    xlims = (w[1], w[end]),
-                    ylims = (-360, 0),
-                    yticks = -360:60:0,
-                )
-                # merge two subplots
-                p = plot(
-                    p1,
-                    p2,
-                    layout = grid(2, 1, heights = [0.66, 0.33]),
-                    size = (600, 450),
-                )
-                if format == :html
-                    println(output_f, "<h2>Bode plots</h2>")
-                    path = joinpath(dir_data, "bode_$i.html")
-                    savefig(p, path)
-                    f = open(path, "r")
-                    println(output_f, read(f, String))
-                    close(f)
-                else
-                    display(p)
+                if length(r) > 0
+                    w = results[l[1]].w / 2 / pi
+                    mag = cat(results[l[1]].mag..., dims = 3)[r, i, :]
+                    mag[findall(mag .> 100)] .= Inf
+                    phs = cat(results[l[1]].phase..., dims = 3)[r, i, :]
+                    phs[phs.>0] .-= 360
+                    phs[findall(diff(phs, dims = 2) .> 300)] .= Inf
+                    phs[findall(diff(phs, dims = 2) .< -300)] .= Inf
+                    label = hcat(output_names[r]...)
+                    label .*= "/" * input_names[i]
+                    xscale = :log10
+                    p1 = plot(
+                        w,
+                        mag';
+                        lw = 2,
+                        label,
+                        xlabel = "",
+                        ylabel = "Gain [dB]",
+                        xscale,
+                        xlims = (w[1], w[end]),
+                        ylims = (-40, Inf),
+                        bottom_margin = 5mm,
+                    )
+                    p2 = plot(
+                        w,
+                        phs';
+                        lw = 2,
+                        label = "",
+                        xlabel = "Frequency [Hz]",
+                        ylabel = "Phase [deg]",
+                        xscale,
+                        xlims = (w[1], w[end]),
+                        ylims = (-360, 0),
+                        yticks = -360:60:0,
+                    )
+                    # merge two subplots
+                    p = plot(
+                        p1,
+                        p2,
+                        layout = grid(2, 1, heights = [0.66, 0.33]),
+                        size = (600, 450),
+                    )
+                    if format == :html
+                        println(output_f, "<h2>Bode plots</h2>")
+                        path = joinpath(dir_data, "bode_$i.html")
+                        savefig(p, path)
+                        f = open(path, "r")
+                        println(output_f, read(f, String))
+                        close(f)
+                    else
+                        display(p)
+                    end
                 end
             end
         else
