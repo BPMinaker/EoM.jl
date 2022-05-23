@@ -109,11 +109,11 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
     end
 
     t = unique(abs.(result.e_val))
-    t = t[t .> 0.0628]
-    low = floor(log10(0.5 * minimum(t) / 2 / pi))
-    low > -1 && (low = -1)
+    t = t[t .> 4π / 10]
+    t = t[t .< π * 1000]
+    low = floor(log10(0.5 * minimum(t) / 2π))
     # lowest low eigenvalue, round number in Hz
-    high = ceil(log10(2.0 * maximum(t) / 2 / pi))
+    high = ceil(log10(2.0 * maximum(t) / 2π))
     # highest high eigenvalue, round number in Hz
     nw = Int(high - low)
     if nw == 0
@@ -122,14 +122,14 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
     end
     wpts = 200 * nw + 1
     # compute evenly spaced range of frequncies in log space to consider
-    result.w = 2 * pi * (10.0 .^ range(low, stop = high, length = wpts))
+    result.w = 2π * (10.0 .^ range(low, stop = high, length = wpts))
 
     # compute frequency response
     G(x) = C * ((I * x * 1im - A) \ B) + D
     result.freq_resp = G.(result.w)
     mag(x) =  20 * log10.(abs.(x)) .+ eps(1.0)
     result.mag = mag.(result.freq_resp)
-    phs(x) = 180 / pi * angle.(x)
+    phs(x) = 180 / π * angle.(x)
     result.phase = phs.(result.freq_resp)
 
     result
