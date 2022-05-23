@@ -1,11 +1,11 @@
 function write_output(
     system::mbd_system,
-    results::EoM.analysis,
+    result::EoM.analysis,
     verbose::Bool = false;
     folder::String = "output",
     filename::String = system.name,
 )
-    write_output([system], 0, [results], verbose; folder, filename)
+    write_output([system], 0, [result], verbose; folder, filename)
 end
 
 function write_output(
@@ -124,15 +124,15 @@ function write_output(
         println(eigen_f, "")
     end
 
-    if nin * nout > 0 && nin * nout < 16
+    if nin * nout > 0
         for i in 1:nvpts
             if nvpts == 1
                 println(sstf_f, "num outputtoinput gain")
                 for j in 1:nout
                     for k in 1:nin
                         print(sstf_f, "{", (j - 1) * nin + k, "} ")
-                        print(sstf_f, "{\$", output_names[j], "/")
-                        print(sstf_f, input_names[k], "\$} ")
+                        print(sstf_f, "{", output_names[j], "/")
+                        print(sstf_f, input_names[k], "} ")
                         println(sstf_f, results[i].ss_resp[j, k])
                     end
                 end
@@ -176,7 +176,7 @@ function write_output(
     #close(hsv_f)
 
     load_defln(systems[1], dir_data)
-#    syst_props(systems[1], dir_data)
+    syst_props(systems[1], dir_data)
 
     ss_path = joinpath(dir_data, "ss")
     ~isdir(ss_path) && (mkdir(ss_path))
@@ -186,8 +186,9 @@ function write_output(
     writedlm(joinpath(ss_path, "C.out"), results[1].ss_eqns.C)
     writedlm(joinpath(ss_path, "D.out"), results[1].ss_eqns.D)
 
-end ## Leave
+    dir_data
 
+end ## Leave
 
 
 # dss_path = joinpath(dir_data, "dss")
