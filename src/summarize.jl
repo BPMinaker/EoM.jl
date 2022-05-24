@@ -1,16 +1,4 @@
-    ## Copyright (C) 2020, Bruce Minaker
-    ## summarize.jl is free software; you can redistribute it and/or modify it
-    ## under the terms of the GNU General Public License as published by
-    ## the Free Software Foundation; either version 2, or (at your option)
-    ## any later version.
-    ##
-    ## summarize.jl is distributed in the hope that it will be useful, but
-    ## WITHOUT ANY WARRANTY; without even the implied warranty of
-    ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    ## General Public License for more details at www.gnu.org/copyleft/gpl.html.
-    ##
-    ##--------------------------------------------------------------------
-    using Plots.Measures
+using Plots.Measures
 function summarize(
     system::mbd_system,
     results::EoM.analysis,
@@ -38,7 +26,20 @@ function summarize(
     format = :screen,
     folder::String = "output",
     filename::String = systems[1].name,
-)
+    )
+
+    ## Copyright (C) 2020, Bruce Minaker
+    ## summarize.jl is free software; you can redistribute it and/or modify it
+    ## under the terms of the GNU General Public License as published by
+    ## the Free Software Foundation; either version 2, or (at your option)
+    ## any later version.
+    ##
+    ## summarize.jl is distributed in the hope that it will be useful, but
+    ## WITHOUT ANY WARRANTY; without even the implied warranty of
+    ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    ## General Public License for more details at www.gnu.org/copyleft/gpl.html.
+    ##
+    ##--------------------------------------------------------------------
 
     plotly()
 
@@ -468,14 +469,10 @@ function summarize(
                             mag = cat(results[k].mag..., dims = 3)[i, j, :]
                             mag[findall(mag .> 100)] .= Inf
                             phs = cat(results[k].phase..., dims = 3)[i, j, :]
-                            phs[phs.>0] .-= 360
+                            phs[phs .> 0] .-= 360
                             # set wrap arounds in phase to Inf to avoid jumps in plot
                             phs[findall(abs.(diff(phs)) .> 180)] .= Inf
-                            if length(l) == 1
-                                lb = ""
-                            else
-                                lb = vpt_name[1] * "=$(my_round(vpts[k])) " * vpt_name[3]
-                            end
+                            lb = vpt_name[1] * "=$(my_round(vpts[k])) " * vpt_name[3]
                             p1 = plot!(p1, w, mag; lw = 2, label = lb)
                             p2 = plot!(p2, w, phs; lw = 2, label = "")
                         end
