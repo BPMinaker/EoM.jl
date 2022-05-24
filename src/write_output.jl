@@ -74,18 +74,6 @@ function write_output(
         println(sstf_f, "")
     end
 
-    bode_f = open(joinpath(dir_data, "bode.out"), "w")
-    println(bode_f, "###### Bode Mag Phase")
-    print(bode_f, "vpt frequency")
-
-    for i in 1:nin*nout
-        print(bode_f, " m$i")
-    end
-    for i in 1:nin*nout
-        print(bode_f, " p$i")
-    end
-    println(bode_f, "")
-
     #hsv_f=open(joinpath(dir_output,"hsv.out"),"w")
     #println(hsv_f,"###### Hankel SVD\nnum speed hsv")
 
@@ -145,25 +133,39 @@ function write_output(
                 println(sstf_f, "")
             end
 
-            for j in 1:length(results[i].w) ## Loop over frequency range
-                ## Each row starts with vpt, then freq in Hz
-                print(bode_f, vpts[i], " ", results[i].w[j] / 2 / pi, " ")
-                # Followed by first mag column, written as a row, then next column, as a row
-                for k in vec(results[i].mag[j])
-                    print(bode_f, k, " ")
-                end
-                # Followed by first phase column, written as a row, then next column, as a row
-                for k in vec(results[i].phase[j])
-                    print(bode_f, k, " ")
-                end
-                println(bode_f, "")
-            end
-            println(bode_f, "")
-
             #for j=1:length(results[i].hsv)
             #	println(hsv_f,"{",j,"} ",the_list[i].vpt," ",results[i].hsv[j])  ## Write the vpoint (e.g. speed), then the hankel_sv
             #end
             #println(hsv_f,"")
+        end
+
+        nr = maximum(length.(getfield.(results,:w)))
+        nc = 3 * nvpts
+
+        for i in 1:nout
+            for j in 1:nin
+                temp = NaN * ones(nr, nc)
+                for k in 1:nvpts
+                    mag = cat(results[k].mag..., dims = 3)[i,j,:]
+                    phs = cat(results[k].phase..., dims = 3)[i,j,:]
+                    phs[phs .> 0] .-= 360
+                    temp[1:length(results[k].w), 3 * k .+ (-2:0) ] = [results[k].w / 2π mag phs]
+                end
+
+                bode_f = open(joinpath(dir_data, "bode_o$(i)_i$(j).out"), "w")
+                println(bode_f, "###### Bode #####")
+                for k in 1:nvpts
+                    print(bode_f, "frequency$k ", "m$k ", "p$k ")
+                end
+                println(bode_f, "")
+                for k in 1:nr
+                    for l in 1: nc
+                        print(bode_f, temp[k,l], " ")
+                    end
+                    println(bode_f, "")
+                end
+                close(bode_f)
+            end
         end
     end
 
@@ -171,8 +173,6 @@ function write_output(
     close(eigen_f)
     close(mode_f)
     close(centre_f)
-    close(bode_f)
-
     #close(hsv_f)
 
     load_defln(systems[1], dir_data)
@@ -189,6 +189,23 @@ function write_output(
     dir_data
 
 end ## Leave
+
+
+    # for j in 1:length(results[i].w) ## Loop over frequency range
+    #     ## Each row starts with vpt, then freq in Hz
+    #     print(bode_f, vpts[i], " ", results[i].w[j] / 2 / pi, " ")
+    #     # Followed by first mag column, written as a row, then next column, as a row
+    #     for k in vec(results[i].mag[j])
+    #         print(bode_f, k, " ")
+    #     end
+    #     # Followed by first phase column, written as a row, then next column, as a row
+    #     for k in vec(results[i].phase[j])
+    #         print(bode_f, k, " ")
+    #     end
+    #     println(bode_f, "")
+    # end
+    # println(bode_f, "")
+
 
 
 # dss_path = joinpath(dir_data, "dss")
