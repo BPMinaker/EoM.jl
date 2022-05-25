@@ -109,7 +109,7 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
     end
 
     t = unique(abs.(result.e_val))
-    t = t[t .> 4π / 10]
+    t = t[t .> 4π / 100]
     t = t[t .< π * 1000]
     low = floor(log10(0.5 * minimum(t) / 2π))
     # lowest low eigenvalue, round number in Hz
