@@ -373,6 +373,10 @@ function summarize(
         error("Bode plot request dimensions are incompatible with system!")
     end
 
+    if format == :html
+        println(output_f, "<h2>Bode plots</h2>")
+    end
+
     # if there are too many inputs and outputs, skip
     if nin * nout > 0 && any(bode .== 1) && sum(bode .== 1) < 16
         # pick out up to four representative vpts from the list
@@ -426,7 +430,6 @@ function summarize(
                         size = (600, 450),
                     )
                     if format == :html
-                        println(output_f, "<h2>Bode plots</h2>")
                         path = joinpath(dir_data, "bode_$i.html")
                         savefig(p, path)
                         f = open(path, "r")
@@ -484,7 +487,6 @@ function summarize(
                             size = (600, 450),
                         )
                         if format == :html
-                            println(output_f, "<h2>Bode plots</h2>")
                             path = joinpath(dir_data, "bode_$(i)_$(j).html")
                             savefig(p, path)
                             f = open(path, "r")
