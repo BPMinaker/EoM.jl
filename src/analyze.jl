@@ -84,29 +84,6 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
         result.hsv = zeros(size(A,1))
     end
 
-    nin = size(result.ss_eqns.B, 2)
-    nout = size(result.ss_eqns.C, 1)
-    result.ss_resp = zeros(nout, nin)
-    # compute steady state response
-    try
-        result.ss_resp = -C * (A \ B) + D
-    catch
-        verb && println("No system inverse exists, trying individual input-output pairs...")
-
-        result.ss_resp = zeros(nout, nin)
-        for m in 1:nin
-            for n in 1:nout
-                try
-                    temp_mn = ss_data(temp_ss.A, temp_ss.B[:, m:m], temp_ss.C[n:n, :], temp_ss.D[n:n, m:m]) # eliminate all the other inputs and outputs
-                    ss_eqns = minreal(temp_mn, verb)
-                    result.ss_resp[n, m] = -(ss_eqns.C * (ss_eqns.A \ ss_eqns.B))[1, 1] + ss_eqns.D[1, 1] # note only one input and one output here
-                catch
-                    result.ss_resp[n, m] = Inf
-                    verb && println("No steady state exists for at least one input-output pair.")
-                end
-            end
-        end
-    end
 
     t = unique(abs.(result.e_val))
     t = t[t .> 4π / 100]
@@ -131,6 +108,38 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
     result.mag = mag.(result.freq_resp)
     phs(x) = 180 / π * angle.(x)
     result.phase = phs.(result.freq_resp)
+
+
+
+    nin = size(result.ss_eqns.B, 2)
+    nout = size(result.ss_eqns.C, 1)
+    nn = size(result.ss_eqns.A, 1)
+    result.ss_resp = zeros(nout, nin)
+
+    # compute steady state response
+    if cond(A) < 1e6
+        result.ss_resp = -C * (A \ B) + D
+    else
+        verb && println("No system inverse exists, trying individual input-output pairs...")
+        result.ss_resp = zeros(nout, nin)
+        for m in 1:nin
+            for n in 1:nout
+                temp_mn = ss_data(temp_ss.A, temp_ss.B[:, m:m], temp_ss.C[n:n, :], temp_ss.D[n:n, m:m]) # eliminate all the other inputs and outputs
+                ss_eqns = minreal(temp_mn, verb)
+                if size(ss_eqns.A, 1) < nn
+                    try
+                        result.ss_resp[n, m] = -(ss_eqns.C * (ss_eqns.A \ ss_eqns.B))[1, 1] + ss_eqns.D[1, 1] # note only one input and one output here
+                    catch
+                        result.ss_resp[n, m] = Inf
+                        verb && println("No steady state exists for at least one input-output pair.")
+                    end
+                else
+                    verb && println("No steady state exists for at least one input-output pair.  Trying real part of low frequency response...")
+                    result.ss_resp[n, m] = real(G(0.1 * 2π)[n,m])
+                end
+            end
+        end
+    end
 
     result
 end
