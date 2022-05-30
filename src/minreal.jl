@@ -31,15 +31,15 @@ function cont_part(ss_eqns::EoM.ss_data)
 
     H = [A B; C zeros(size(D))]
     #display(H)
-
+    eps = 1e-7
     # step 1
     i, j = size([A B])
     n = i
     while i != j && i > 1
         # step 2
-        if any(abs.(H[1:i, j]) .> 1e-8)
+        if any(abs.(H[1:i, j]) .> eps)
             # step 3
-            if abs(H[i, j]) < 1e-8
+            if abs(H[i, j]) < eps
                 # step 4
                 r = argmax(abs.(H[1:i-1, j]))
                 swap!(H, i, r)
@@ -50,6 +50,9 @@ function cont_part(ss_eqns::EoM.ss_data)
             end
             # step 6
             i -= 1
+#        else
+#            println("Skipping... ", i, " ", j)
+#            display(H[1:i, j])
         end
         # step 7
         j -= 1
@@ -58,7 +61,7 @@ function cont_part(ss_eqns::EoM.ss_data)
 
     j = 0
     for i in 1:n-1
-        if !any(abs.(H[1:i, i+1:end]) .> 1e-8)
+        if !any(abs.(H[1:i, i+1:end]) .> eps)
             j = i
         end
     end
