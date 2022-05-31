@@ -32,14 +32,14 @@ function input_ex_beam(; EI1 = 1, EI2 = 1, mpul = 1, l = 1, n = 1)
     for i = 1:n
 
         item = body("body $i")
-        item.location = [i * l, 0, 0]
+        item.location = [i * l, 0, 0.1]
         add_item!(item, the_system)
 
         item = beam("beam $i")
         item.body[1] = "body $i"
         item.body[2] = "body $(i-1)"
-        item.location[1] = [i * l, 0, 0]
-        item.location[2] = [(i - 1) * l, 0, 0]
+        item.location[1] = [i * l, 0, 0.1]
+        item.location[2] = [(i - 1) * l, 0, 0.1]
         item.perp = [0, 1, 0]
         item.stiffness = [EI1, EI2]
         item.mpul = mpul
@@ -48,7 +48,7 @@ function input_ex_beam(; EI1 = 1, EI2 = 1, mpul = 1, l = 1, n = 1)
         item = rigid_point("x $i")
         item.body[1] = "body $i"
         item.body[2] = "ground"
-        item.location = [i * l, 0, 0]
+        item.location = [i * l, 0, 0.1]
         item.forces = 1
         item.moments = 1
         item.axis = [1, 0, 0]
@@ -60,16 +60,16 @@ function input_ex_beam(; EI1 = 1, EI2 = 1, mpul = 1, l = 1, n = 1)
     item = actuator("Y")
     item.body[1] = "body $n"
     item.body[2] = "ground"
-    item.location[1] = [n * l, 0, 0]
-    item.location[2] = [n * l, -0.1, 0]
+    item.location[1] = [n * l, 0, 0.1]
+    item.location[2] = [n * l, -0.1, 0.1]
     item.units = "N"
     add_item!(item, the_system)
 
     item = sensor("ky")
     item.body[1] = "body $n"
     item.body[2] = "ground"
-    item.location[1] = [n * l, 0, 0]
-    item.location[2] = [n * l, -0.1, 0]
+    item.location[1] = [n * l, 0, 0.1]
+    item.location[2] = [n * l, -0.1, 0.1]
     item.gain = 3 * EI1 / (n * l)^3
     item.units = "N"
     add_item!(item, the_system)
@@ -77,16 +77,16 @@ function input_ex_beam(; EI1 = 1, EI2 = 1, mpul = 1, l = 1, n = 1)
     item = actuator("Z")
     item.body[1] = "body $n"
     item.body[2] = "ground"
-    item.location[1] = [n * l, 0, 0]
-    item.location[2] = [n * l, 0, -0.1]
+    item.location[1] = [n * l, 0, 0.1]
+    item.location[2] = [n * l, 0, 0]
     item.units = "N"
     add_item!(item, the_system)
 
     item = sensor("kz")
     item.body[1] = "body $n"
     item.body[2] = "ground"
-    item.location[1] = [n * l, 0, 0]
-    item.location[2] = [n * l, 0, -0.1]
+    item.location[1] = [n * l, 0, 0.1]
+    item.location[2] = [n * l, 0, 0]
     item.gain = 3 * EI2 / (n * l)^3
     item.units = "N"
     add_item!(item, the_system)
