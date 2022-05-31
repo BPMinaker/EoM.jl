@@ -355,7 +355,11 @@ function summarize(
             temp = my_round.([results[1].mode_vals (results[1].centre[1:6, 1:end])'])
             if format == :html
                 println(output_f, "<h2>Rotation centres of first body for all modes</h2>")
-                str = pretty_table(String, [1:1:size(temp, 1) temp]; header, backend = :html, standalone = false)
+                link = []
+                for i in 1:size(temp, 1)
+                    push!(link, joinpath("<a href=\"$filename", "x3d", "mode_$(i)_s=$(round(results[1].mode_vals[i], digits=3)).html\">$i</a>"))
+                end
+                str = pretty_table(String, [link temp]; header, backend = :html, standalone = false,allow_html_in_cells = true)
                 println(output_f, str)
     
                 path = joinpath(dir_data, "centres.html")
