@@ -396,7 +396,7 @@ function summarize(
                     mag = cat(results[l[1]].mag..., dims = 3)[r, i, :]
                     mag[findall(mag .> 100)] .= Inf
                     phs = cat(results[l[1]].phase..., dims = 3)[r, i, :]
-                    phs[phs.>0] .-= 360
+                    phs[phs .> 0] .-= 360
                     phs[findall(diff(phs, dims = 2) .> 300)] .= Inf
                     phs[findall(diff(phs, dims = 2) .< -300)] .= Inf
                     label = hcat(output_names[r]...)
