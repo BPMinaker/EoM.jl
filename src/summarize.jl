@@ -424,7 +424,7 @@ function summarize(
                         ylabel = "Phase [deg]",
                         xscale,
                         xlims = (w[1], w[end]),
-                        ylims = (-360, 0),
+                        ylims = (-365, 5),
                         yticks = -360:60:0,
                     )
                     # merge two subplots
@@ -468,7 +468,7 @@ function summarize(
                             ylabel,
                             xscale,
                             xlims = (w[1], w[end]),
-                            ylims = (-360, 0),
+                            ylims = (-365, 5),
                             yticks = -360:60:0,
                         )
                         # fill in for each selected vpt
