@@ -377,12 +377,13 @@ function summarize(
         error("Bode plot request dimensions are incompatible with system!")
     end
 
-    if format == :html
-        println(output_f, "<h2>Bode plots</h2>")
-    end
-
     # if there are too many inputs and outputs, skip
     if nin * nout > 0 && any(bode .== 1) && sum(bode .== 1) < 16
+        
+        if format == :html
+            println(output_f, "<h2>Bode plots</h2>")
+        end
+        
         # pick out up to four representative vpts from the list
         l = unique(Int.(round.((nvpts - 1) .* [1, 3, 5, 7] / 8 .+ 1)))
         ll = length(l)
