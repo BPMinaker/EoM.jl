@@ -20,7 +20,7 @@ function input_full_car_rc(; u=0, a=1.189, b=2.885 - 1.189, tf=1.595, tr=1.631, 
     item.mass = m
     item.moments_of_inertia = [Ix, Iy, Iz]  ## Only the Iy term matters here
     item.products_of_inertia = [0, 0, 0]
-    item.location = [0, 0, hG]  ## Put cg at origin, but offset vertically to make animation more clear
+    item.location = [0, 0, hG]
     item.velocity = [u, 0, 0]
     add_item!(item, the_system)
     add_item!(weight(item), the_system)
@@ -40,6 +40,20 @@ function input_full_car_rc(; u=0, a=1.189, b=2.885 - 1.189, tf=1.595, tr=1.631, 
     add_item!(weight(item), the_system)
 
 
+    item = body("LF axle")
+    item.mass = 0
+    item.location = [a, tf / 2, r]
+    item.velocity = [u, 0, 0]
+    add_item!(item, the_system)
+    add_item!(weight(item), the_system)
+
+    item = body("LR axle")
+    item.mass = 0
+    item.location = [-b, tr / 2, r]
+    item.velocity = [u, 0, 0]
+    add_item!(item, the_system)
+    add_item!(weight(item), the_system)
+
     item = rigid_point("fixed speed")
     item.body[1] = "chassis"
     item.body[2] = "ground"
@@ -50,9 +64,47 @@ function input_full_car_rc(; u=0, a=1.189, b=2.885 - 1.189, tf=1.595, tr=1.631, 
     add_item!(item, the_system)
 
 
+    item = rigid_point("LF wheel bearing")
+    item.body[1] = "LF wheel"
+    item.body[2] = "LF axle"
+    item.location = [a, tf / 2, r]
+    item.forces = 3
+    item.moments = 2
+    item.axis = [0, 1, 0]
+    add_item!(item, the_system)
+
+    item = rigid_point("LR wheel bearing")
+    item.body[1] = "LR wheel"
+    item.body[2] = "LR axle"
+    item.location = [-b, tr / 2, r]
+    item.forces = 3
+    item.moments = 2
+    item.axis = [0, 1, 0]
+    add_item!(item, the_system)
+
+
+    item = rigid_point("LF wheel, X")
+    item.body[1] = "LF wheel"
+    item.body[2] = "ground"
+    item.location = [a, tf / 2, 0]
+    item.forces = 1
+    item.moments = 0
+    item.axis = [1, 0, 0]
+    add_item!(item, the_system)
+
+    item = rigid_point("LR wheel, X")
+    item.body[1] = "LR wheel"
+    item.body[2] = "ground"
+    item.location = [-b, tr / 2, 0]
+    item.forces = 1
+    item.moments = 0
+    item.axis = [1, 0, 0]
+    add_item!(item, the_system)
+
+
     # suspension constraints
     item = rigid_point("LF susp")
-    item.body[1] = "LF wheel"
+    item.body[1] = "LF axle"
     item.body[2] = "chassis"
     item.location = [a, 0, hf]
     item.forces = 3
@@ -61,7 +113,7 @@ function input_full_car_rc(; u=0, a=1.189, b=2.885 - 1.189, tf=1.595, tr=1.631, 
     add_item!(item, the_system)
 
     item = rigid_point("LR susp")
-    item.body[1] = "LR wheel"
+    item.body[1] = "LR axle"
     item.body[2] = "chassis"
     item.location = [-b, 0, hr]
     item.forces = 3
@@ -82,18 +134,18 @@ function input_full_car_rc(; u=0, a=1.189, b=2.885 - 1.189, tf=1.595, tr=1.631, 
 
     # anti-roll
     item = body("LF anti-roll arm")
-    item.location = [a - 0.2, tf / 2 - r / 2, r]
+    item.location = [a - 0.2, tf / 2 - r / 2, r - 0.1]
     add_item!(item, the_system)
 
     item = body("LR anti-roll arm")
-    item.location = [-b + 0.2, tr / 2 - r / 2, r]
+    item.location = [-b + 0.2, tr / 2 - r / 2, r - 0.1]
     add_item!(item, the_system)
 
 
     item = rigid_point("LF anti-roll hinge")
     item.body[1] = "LF anti-roll arm"
     item.body[2] = "chassis"
-    item.location = [a - 0.2, tf / 2 - r / 2, r]
+    item.location = [a - 0.2, tf / 2 - r / 2, r - 0.1]
     item.forces = 3
     item.moments = 2
     item.axis = [0, 1, 0]
@@ -102,7 +154,7 @@ function input_full_car_rc(; u=0, a=1.189, b=2.885 - 1.189, tf=1.595, tr=1.631, 
     item = rigid_point("LR anti-roll hinge")
     item.body[1] = "LR anti-roll arm"
     item.body[2] = "chassis"
-    item.location = [-b + 0.2, tr / 2 - r / 2, r]
+    item.location = [-b + 0.2, tr / 2 - r / 2, r - 0.1]
     item.forces = 3
     item.moments = 2
     item.axis = [0, 1, 0]
@@ -111,16 +163,16 @@ function input_full_car_rc(; u=0, a=1.189, b=2.885 - 1.189, tf=1.595, tr=1.631, 
 
     item = link("LF drop link")
     item.body[1] = "LF anti-roll arm"
-    item.body[2] = "LF wheel"
-    item.location[1] = [a, tf / 2 - r / 2, r]
-    item.location[2] = [a, tf / 2 - r / 2, r - 0.1]
+    item.body[2] = "LF axle"
+    item.location[1] = [a, tf / 2 - r / 2, r - 0.1]
+    item.location[2] = [a, tf / 2 - r / 2, r]
     add_item!(item, the_system)
 
     item = link("LR drop link")
     item.body[1] = "LR anti-roll arm"
-    item.body[2] = "LR wheel"
-    item.location[1] = [-b, tr / 2 - r / 2, r]
-    item.location[2] = [-b, tr / 2 - r / 2, r - 0.1]
+    item.body[2] = "LR axle"
+    item.location[1] = [-b, tr / 2 - r / 2, r - 0.1]
+    item.location[2] = [-b, tr / 2 - r / 2, r]
     add_item!(item, the_system)
 
 
@@ -129,8 +181,8 @@ function input_full_car_rc(; u=0, a=1.189, b=2.885 - 1.189, tf=1.595, tr=1.631, 
     item = spring("F anti-roll")
     item.body[1] = "LF anti-roll arm"
     item.body[2] = "RF anti-roll arm"
-    item.location[1] = [a - 0.2, tf / 2 - r / 2 - 0.05, r]
-    item.location[2] = [a - 0.2, -tf / 2 + r / 2 + 0.05, r]
+    item.location[1] = [a - 0.2, tf / 2 - r / 2 - 0.05, r - 0.1]
+    item.location[2] = [a - 0.2, -tf / 2 + r / 2 + 0.05, r - 0.1]
     item.stiffness = krf
     item.twist = 1
     add_item!(item, the_system)
@@ -138,35 +190,31 @@ function input_full_car_rc(; u=0, a=1.189, b=2.885 - 1.189, tf=1.595, tr=1.631, 
     item = spring("R anti-roll")
     item.body[1] = "LR anti-roll arm"
     item.body[2] = "RR anti-roll arm"
-    item.location[1] = [-b + 0.2, tr / 2 - r / 2 - 0.05, r]
-    item.location[2] = [-b + 0.2, -tr / 2 + r / 2 + 0.05, r]
+    item.location[1] = [-b + 0.2, tr / 2 - r / 2 - 0.05, r - 0.1]
+    item.location[2] = [-b + 0.2, -tr / 2 + r / 2 + 0.05, r - 0.1]
     item.stiffness = krr
     item.twist = 1
     add_item!(item, the_system)
 
 
     # front suspension
-    item = flex_point("LF spring")
-    item.body[1] = "chassis"
-    item.body[2] = "LF wheel"
-    item.location = [a, tf / 2, 2 * r + 0.1]
-    item.forces = 1
-    item.moments = 0
-    item.axis = [0, 0, 1] # spring acts in z direction
-    item.stiffness = [kf, 0] # linear stiffness "kf" N/m; (torsional stiffness zero, not a torsion spring so has no effect
-    item.damping = [cf, 0]
+    item = spring("LF spring")
+    item.body[1] = "LF axle"
+    item.body[2] = "chassis"
+    item.location[1] = [a, tf / 2 - 0.15, r]
+    item.location[2] = [a, tf / 2 - 0.15, 2 * r + 0.1]
+    item.stiffness = kf
+    item.damping = cf
     add_item!(item, the_system)
 
     # rear suspension
-    item = flex_point("LR spring")
-    item.body[1] = "chassis"
-    item.body[2] = "LR wheel"
-    item.location = [-b, tr / 2, 2 * r + 0.1]
-    item.forces = 1
-    item.moments = 0
-    item.axis = [0, 0, 1]  ## Spring acts in z direction
-    item.stiffness = [kr, 0]  ## Linear stiffness "kr" N/m; (torsional stiffness zero, not a torsion spring so has no effect
-    item.damping = [cr, 0]
+    item = spring("LR spring")
+    item.body[1] = "LR axle"
+    item.body[2] = "chassis"
+    item.location[1] = [-b, tr / 2 - 0.15, r]
+    item.location[2] = [-b, tr / 2 - 0.15, 2 * r + 0.1]
+    item.stiffness = kr
+    item.damping = cr
     add_item!(item, the_system)
 
 
@@ -180,6 +228,7 @@ function input_full_car_rc(; u=0, a=1.189, b=2.885 - 1.189, tf=1.595, tr=1.631, 
     item.forces = 1
     item.moments = 0
     item.axis = [0, 0, 1]
+    item.rolling_axis = [0, 1, 0]
     add_item!(item, the_system)
 
     item = flex_point("LR tire, Z")
@@ -191,7 +240,30 @@ function input_full_car_rc(; u=0, a=1.189, b=2.885 - 1.189, tf=1.595, tr=1.631, 
     item.forces = 1
     item.moments = 0
     item.axis = [0, 0, 1]
+    item.rolling_axis = [0, 1, 0]
     add_item!(item, the_system)
+
+
+    item = flex_point("LF tire, Y")
+    item.body[1] = "LF wheel"
+    item.body[2] = "ground"
+    item.damping = [cfy / u, 0]
+    item.location = [a, tf / 2, 0]
+    item.forces = 1
+    item.moments = 0
+    item.axis = [0, 1, 0]
+    add_item!(item, the_system)
+
+    item = flex_point("LR tire, Y")
+    item.body[1] = "LR wheel"
+    item.body[2] = "ground"
+    item.damping = [cry / u, 0]
+    item.location = [-b, tr / 2, 0]
+    item.forces = 1
+    item.moments = 0
+    item.axis = [0, 1, 0]
+    add_item!(item, the_system)
+
 
 
     # tire lateral force
