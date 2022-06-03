@@ -42,14 +42,14 @@ function input_full_car_rc(; u=0, a=1.189, b=2.885 - 1.189, tf=1.595, tr=1.631, 
 
     item = body("LF axle")
     item.mass = 0
-    item.location = [a, tf / 2, r]
+    item.location = [a, tf / 2 - 0.15, r]
     item.velocity = [u, 0, 0]
     add_item!(item, the_system)
     add_item!(weight(item), the_system)
 
     item = body("LR axle")
     item.mass = 0
-    item.location = [-b, tr / 2, r]
+    item.location = [-b, tr / 2 - 0.15, r]
     item.velocity = [u, 0, 0]
     add_item!(item, the_system)
     add_item!(weight(item), the_system)
@@ -181,8 +181,8 @@ function input_full_car_rc(; u=0, a=1.189, b=2.885 - 1.189, tf=1.595, tr=1.631, 
     item = spring("F anti-roll")
     item.body[1] = "LF anti-roll arm"
     item.body[2] = "RF anti-roll arm"
-    item.location[1] = [a - 0.2, tf / 2 - r / 2 - 0.05, r - 0.1]
-    item.location[2] = [a - 0.2, -tf / 2 + r / 2 + 0.05, r - 0.1]
+    item.location[1] = [a - 0.2, tf / 2 - 0.2, r - 0.1]
+    item.location[2] = [a - 0.2, -tf / 2 + 0.2, r - 0.1]
     item.stiffness = krf
     item.twist = 1
     add_item!(item, the_system)
@@ -190,8 +190,8 @@ function input_full_car_rc(; u=0, a=1.189, b=2.885 - 1.189, tf=1.595, tr=1.631, 
     item = spring("R anti-roll")
     item.body[1] = "LR anti-roll arm"
     item.body[2] = "RR anti-roll arm"
-    item.location[1] = [-b + 0.2, tr / 2 - r / 2 - 0.05, r - 0.1]
-    item.location[2] = [-b + 0.2, -tr / 2 + r / 2 + 0.05, r - 0.1]
+    item.location[1] = [-b + 0.2, tr / 2 - 0.2, r - 0.1]
+    item.location[2] = [-b + 0.2, -tr / 2 + 0.2, r - 0.1]
     item.stiffness = krr
     item.twist = 1
     add_item!(item, the_system)
