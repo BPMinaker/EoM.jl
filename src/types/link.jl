@@ -1,25 +1,25 @@
 export link
 
-mutable struct link
+Base.@kwdef mutable struct link
     name::String
-    group::String
-    body::Vector{String}
-    body_number::Vector{Int}
-    forces::Int
-    moments::Int
-    radius::Vector{Vector{Float64}}
-    location::Vector{Vector{Float64}}
-    twist::Bool
-    preload::Float64
-    length::Float64
-    unit::Vector{Float64}
-    nu::Array{Float64,2}
-    b_mtx::Vector{Array{Float64,2}}
-    force::Vector{Float64}
-    moment::Vector{Float64}
+    group::String = "link"
+    body::Vector{String} = ["ground", "ground"]
+    body_number::Vector{Int} = zeros(2)
+    forces::Int = 0
+    moments::Int = 0
+    radius::Vector{Vector{Float64}} = [zeros(3), zeros(3)]
+    location::Vector{Vector{Float64}} = [zeros(3), zeros(3)]
+    twist::Bool = false
+    preload::Float64 = NaN
+    length::Float64 = 0
+    unit::Vector{Float64} = zeros(3)
+    nu::Array{Float64,2} = zeros(3, 2)
+    b_mtx::Vector{Array{Float64,2}} = [zeros(1, 3), zeros(1, 3)]
+    force::Vector{Float64} = zeros(3)
+    moment::Vector{Float64} = zeros(3)
 end
 
-link(str::String) = link(str, "link", ["ground", "ground"], zeros(2), 0, 0, [zeros(3), zeros(3)], [zeros(3), zeros(3)], false, NaN, 0, zeros(3), zeros(3, 2), [zeros(1, 3), zeros(1, 3)], zeros(3), zeros(3))
+link(str::String) = link(; name = str)
 
 function Base.show(io::IO, obj::link)
     println(io, "Link:")

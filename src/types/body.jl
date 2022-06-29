@@ -4,26 +4,22 @@ export location
 export weight
 export mass_mtx
 
-#export inertia_mtx
-#export lcn_orn
-#export welocity
-
-mutable struct body
+Base.@kwdef mutable struct body
     name::String
-    group::String
-    location::Vector{Float64}
-    orientation::Vector{Float64}
-    mass::Float64
-    moments_of_inertia::Vector{Float64}
-    products_of_inertia::Vector{Float64}
-    velocity::Vector{Float64}
-    angular_velocity::Vector{Float64}
-    deflection::Vector{Float64}
-    angular_deflection::Vector{Float64}
-    x3d::String
+    group::String = "body"
+    location::Vector{Float64} = zeros(3)
+    orientation::Vector{Float64} = zeros(3)
+    mass::Float64 = 0
+    moments_of_inertia::Vector{Float64} = zeros(3)
+    products_of_inertia::Vector{Float64} = zeros(3)
+    velocity::Vector{Float64} = zeros(3)
+    angular_velocity::Vector{Float64} = zeros(3)
+    deflection::Vector{Float64} = [NaN, NaN, NaN]
+    angular_deflection::Vector{Float64} = [NaN, NaN, NaN]
+    x3d::String = ""
 end
 
-body(str::String) = body(str, "body", zeros(3), zeros(3), 0, zeros(3), zeros(3), zeros(3), zeros(3), [NaN, NaN, NaN], [NaN, NaN, NaN], "")
+body(str::String) = body(; name = str)
 
 function Base.show(io::IO, obj::body)
     println(io, "Body:")

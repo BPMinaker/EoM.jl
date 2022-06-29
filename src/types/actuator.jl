@@ -3,26 +3,26 @@ export name
 export gain
 export rate_gain
 
-mutable struct actuator
+Base.@kwdef mutable struct actuator
     name::String
-    group::String
-    body::Vector{String}
-    body_number::Vector{Int}
-    forces::Int
-    moments::Int
-    radius::Vector{Vector{Float64}}
-    location::Vector{Vector{Float64}}
-    twist::Bool
-    gain::Float64
-    rate_gain::Float64
-    length::Float64
-    unit::Vector{Float64}
-    nu::Array{Float64,2}
-    b_mtx::Vector{Array{Float64,2}}
-    units::String
+    group::String = "actuator"
+    body::Vector{String} = ["ground", "ground"]
+    body_number::Vector{Int} = zeros(2)
+    forces::Int = 0
+    moments::Int = 0
+    radius::Vector{Vector{Float64}} = [zeros(3), zeros(3)]
+    location::Vector{Vector{Float64}} = [zeros(3), zeros(3)]
+    twist::Bool = false
+    gain::Float64 = 1
+    rate_gain::Float64 = 0
+    length::Float64 = 0
+    unit::Vector{Float64} = zeros(3)
+    nu::Array{Float64,2} = zeros(3, 2)
+    b_mtx::Vector{Array{Float64,2}} = [zeros(1, 3), zeros(1, 3)]
+    units::String = "N"
 end
 
-actuator(str::String) = actuator(str, "actuator", ["ground", "ground"], zeros(2), 0, 0, [zeros(3), zeros(3)], [zeros(3), zeros(3)], false, 1, 0, 0, zeros(3), zeros(3, 2), [zeros(1, 3), zeros(1, 3)], "N")
+actuator(str::String) = actuator(; name = str)
 
 function Base.show(io::IO, obj::actuator)
     println(io, "Actuator:")

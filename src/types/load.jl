@@ -1,29 +1,19 @@
 export load
 
-mutable struct load
+Base.@kwdef mutable struct load
 	name::String
-	group::String
-	location::Vector{Float64}
-	body::String
-	body_number::Int
-	force::Vector{Float64}
-	moment::Vector{Float64}
-	radius::Vector{Float64}
-	frame::String
-	frame_number::Int
+	group::String = "load"
+	location::Vector{Float64} = zeros(3)
+	body::String = "ground"
+	body_number::Int = 0
+	force::Vector{Float64} = zeros(3)
+	moment::Vector{Float64} = zeros(3)
+	radius::Vector{Float64} = zeros(3)
+	frame::String = "ground"
+	frame_number::Int = 0
 end
 
-load(str::String)=load(
-str,
-"load",
-zeros(3),
-"ground",
-0,
-zeros(3),
-zeros(3),
-zeros(3),
-"ground",
-0)
+load(str::String)=load(; name = str)
 
 function Base.show(io::IO, obj::load)
 	println(io,"Load:")

@@ -2,39 +2,39 @@ export wing
 export name
 export build_mtx
 
-mutable struct wing
+Base.@kwdef mutable struct wing
     name::String
-    group::String
-    CXu::Float64
-    CXw::Float64
-    CXq::Float64
-    CYv::Float64
-    CYp::Float64
-    CYr::Float64
-    CZu::Float64
-    CZw::Float64
-    CZq::Float64
-    Clv::Float64
-    Clp::Float64
-    Clr::Float64
-    Cmu::Float64
-    Cmw::Float64
-    Cmq::Float64
-    Cnv::Float64
-    Cnp::Float64
-    Cnr::Float64
-    CX::Float64
-    CY::Float64
-    CZ::Float64
-    Cl::Float64
-    Cm::Float64
-    Cn::Float64
-    chord::Float64
-    span::Float64
+    group::String = "wing"
+    CXu::Float64 = 0
+    CXw::Float64 = 0
+    CXq::Float64 = 0
+    CYv::Float64 = 0
+    CYp::Float64 = 0
+    CYr::Float64 = 0
+    CZu::Float64 = 0
+    CZw::Float64 = 0
+    CZq::Float64 = 0
+    Clv::Float64 = 0
+    Clp::Float64 = 0
+    Clr::Float64 = 0
+    Cmu::Float64 = 0
+    Cmw::Float64 = 0
+    Cmq::Float64 = 0
+    Cnv::Float64 = 0
+    Cnp::Float64 = 0
+    Cnr::Float64 = 0
+    CX::Float64 = 0
+    CY::Float64 = 0
+    CZ::Float64 = 0
+    Cl::Float64 = 0
+    Cm::Float64 = 0
+    Cn::Float64 = 0
+    chord::Float64 = 0
+    span::Float64 = 0
 
 end
 
-wing(str::String) = wing(str, "wing", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+wing(str::String) = wing(; name = str)
 
 function build_mtx(obj::wing)
     mtx = zeros(6, 6)

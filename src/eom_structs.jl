@@ -1,94 +1,50 @@
-mutable struct eom_data
-    mass::Array{Float64,2}  ## mass matrix from bodies
-    inertia::Array{Float64,2}  ## mass matrix from springs
-    damping::Array{Float64,2}  ## damping matrix from dampers
-    stiffness::Array{Float64,2}  ## stiffness matrix from springs
-    tangent_stiffness::Array{Float64,2}  ## stiffness matrix from internal loads
-    load_stiffness::Array{Float64,2}  ## stiffness matrix from external loads
-    velocity::Array{Float64,2}  ## velocity matrix for kinematics differential equation
-    momentum::Array{Float64,2}  ## momentum matrix that gets added to damping matrix
-    constraint::Array{Float64,2}  ## holonomic constraint jacobian
-    nh_constraint::Array{Float64,2}  ## nonholonomic constraint jacobian
-    deflection::Array{Float64,2}   ## elactic deflections jacobian
-    lambda::Vector{Float64}  ## lagrange multipliers, internal preloads
-    static::Vector{Float64}  ## static deflection
-    selection::Array{Float64,2}  ## indicator of which springs preload is known in advance
-    spring_stiffness::Array{Float64,2}  ## all flexible item stiffnesses
-    subset_spring_stiffness::Vector{Float64}  ## stiffnesses of springs with known preload
-    left_jacobian::Array{Float64,2}
-    right_jacobian::Array{Float64,2}
-    force::Vector{Float64}  ## external forces
-    preload::Vector{Float64}  ## all known and NaN preloads
-    input::Array{Float64,2}
-    input_rate::Array{Float64,2}
-    output::Array{Float64,2}
-    feedthrough::Array{Float64,2}
-    M::Array{Float64,2}
-    KC::Array{Float64,2}
-    column::Vector{Int64}
+Base.@kwdef mutable struct eom_data
+    mass::Array{Float64,2} =  zeros(0, 0) ## mass matrix from bodies
+    inertia::Array{Float64,2} =  zeros(0, 0) ## mass matrix from springs
+    damping::Array{Float64,2} =  zeros(0, 0) ## damping matrix from dampers
+    stiffness::Array{Float64,2} =  zeros(0, 0) ## stiffness matrix from springs
+    tangent_stiffness::Array{Float64,2} = zeros(0, 0) ## stiffness matrix from internal loads
+    load_stiffness::Array{Float64,2} = zeros(0, 0) ## stiffness matrix from external loads
+    velocity::Array{Float64,2} = zeros(0, 0) ## velocity matrix for kinematics differential equation
+    momentum::Array{Float64,2} = zeros(0, 0) ## momentum matrix that gets added to damping matrix
+    constraint::Array{Float64,2} = zeros(0, 0) ## holonomic constraint jacobian
+    nh_constraint::Array{Float64,2} = zeros(0, 0) ## nonholonomic constraint jacobian
+    deflection::Array{Float64,2} = zeros(0, 0) ## elactic deflections jacobian
+    lambda::Vector{Float64} = zeros(0)  ## lagrange multipliers, internal preloads
+    static::Vector{Float64} = zeros(0)  ## static deflection
+    selection::Array{Float64,2} = zeros(0, 0) ## indicator of which springs preload is known in advance
+    spring_stiffness::Array{Float64,2} = zeros(0, 0)  ## all flexible item stiffnesses
+    subset_spring_stiffness::Vector{Float64} = zeros(0) ## stiffnesses of springs with known preload
+    left_jacobian::Array{Float64,2} = zeros(0, 0)
+    right_jacobian::Array{Float64,2} = zeros(0, 0)
+    force::Vector{Float64} = zeros(0) ## external forces
+    preload::Vector{Float64} = zeros(0) ## all known and NaN preloads
+    input::Array{Float64,2} = zeros(0, 0)
+    input_rate::Array{Float64,2} = zeros(0, 0)
+    output::Array{Float64,2} = zeros(0, 0)
+    feedthrough::Array{Float64,2} = zeros(0, 0)
+    M::Array{Float64,2} = zeros(0, 0)
+    KC::Array{Float64,2} = zeros(0, 0)
+    column::Vector{Int64} = zeros(0)
 end
 
-eom_data() = eom_data(
-    zeros(0, 0),
-    zeros(0, 0),
-    zeros(0, 0),
-    zeros(0, 0),
-    zeros(0, 0),
-    zeros(0, 0),
-    zeros(0, 0),
-    zeros(0, 0),
-    zeros(0, 0),
-    zeros(0, 0),
-    zeros(0, 0),
-    zeros(0),
-    zeros(0),
-    zeros(0, 0),
-    zeros(0, 0),
-    zeros(0),
-    zeros(0, 0),
-    zeros(0, 0),
-    zeros(0),
-    zeros(0),
-    zeros(0, 0),
-    zeros(0, 0),
-    zeros(0, 0),
-    zeros(0, 0),
-    zeros(0, 0),
-    zeros(0, 0),
-    zeros(0)
-)
-
-mutable struct mbd_system
-    name::String
-    vpt::Number
-    item::Vector{Any}
-    bodys::Vector{body}
-    links::Vector{link}
-    springs::Vector{spring}
-    rigid_points::Vector{rigid_point}
-    flex_points::Vector{flex_point}
-    nh_points::Vector{nh_point}
-    beams::Vector{beam}
-    loads::Vector{load}
-    sensors::Vector{sensor}
-    actuators::Vector{actuator}
+Base.@kwdef mutable struct mbd_system
+    name::String = "Unnamed System"
+    vpt::Number = 0
+    item::Vector{Any} = Vector{Any}(undef, 0)
+    bodys::Vector{body} = Vector{body}(undef, 0)
+    links::Vector{link} = Vector{link}(undef, 0)
+    springs::Vector{spring} = Vector{spring}(undef, 0)
+    rigid_points::Vector{rigid_point} = Vector{rigid_point}(undef, 0)
+    flex_points::Vector{flex_point} = Vector{flex_point}(undef, 0)
+    nh_points::Vector{nh_point} = Vector{nh_point}(undef, 0)
+    beams::Vector{beam} = Vector{beam}(undef, 0)
+    loads::Vector{load} = Vector{load}(undef, 0)
+    sensors::Vector{sensor} = Vector{sensor}(undef, 0)
+    actuators::Vector{actuator} = Vector{actuator}(undef, 0)
 end
 
-mbd_system(str::String = "Unnamed System") = mbd_system(
-    str,
-    0,
-    Vector{Any}(undef, 0),
-    Vector{body}(undef, 0),
-    Vector{link}(undef, 0),
-    Vector{spring}(undef, 0),
-    Vector{rigid_point}(undef, 0),
-    Vector{flex_point}(undef, 0),
-    Vector{nh_point}(undef, 0),
-    Vector{beam}(undef, 0),
-    Vector{load}(undef, 0),
-    Vector{sensor}(undef, 0),
-    Vector{actuator}(undef, 0),
-)
+mbd_system(str::String) = mbd_system(; name = str)
 
 function Base.show(io::IO, obj::mbd_system)
     println(io, "Multibody dynamic system:")
@@ -195,41 +151,23 @@ end
 
 ss_data() = ss_data(zeros(0, 0), zeros(0, 0), zeros(0, 0), zeros(0, 0))
 
-mutable struct analysis
-    ss_eqns::ss_data
-    mode_vals::Vector{Complex{Float64}}
-    modes::Array{Complex{Float64},2}
-    e_val::Vector{Complex{Float64}}
-    omega_n::Vector{Float64}
-    zeta::Vector{Float64}
-    tau::Vector{Float64}
-    lambda::Vector{Float64}
-    w::Vector{Float64}
-    freq_resp::Vector{Array{Complex{Float64},2}}
-    mag::Vector{Array{Float64,2}}
-    phase::Vector{Array{Float64,2}}
-    ss_resp::Array{Float64,2}
-    centre::Array{Complex{Float64},2}
-    hsv::Vector{Float64}
+Base.@kwdef mutable struct analysis
+    ss_eqns::ss_data = ss_data()
+    mode_vals::Vector{Complex{Float64}} = zeros(0)
+    modes::Array{Complex{Float64},2} = zeros(0,0) * 1im
+    e_val::Vector{Complex{Float64}} = zeros(0)
+    omega_n::Vector{Float64} = zeros(0)
+    zeta::Vector{Float64} = zeros(0)
+    tau::Vector{Float64} = zeros(0)
+    lambda::Vector{Float64} = zeros(0)
+    w::Vector{Float64} = zeros(0)
+    freq_resp::Vector{Array{Complex{Float64},2}} = [zeros(0,0) * 1im]
+    mag::Vector{Array{Float64,2}} = [zeros(0,0)]
+    phase::Vector{Array{Float64,2}} = [zeros(0,0)]
+    ss_resp::Array{Float64,2} = zeros(0,0)
+    centre::Array{Complex{Float64},2} = zeros(0,0) * 1im
+    hsv::Vector{Float64} = zeros(0)
 end
-
-analysis() = analysis(
-    ss_data(),
-    zeros(0),
-    zeros(0,0) * 1im,
-    zeros(0),
-    zeros(0),
-    zeros(0),
-    zeros(0),
-    zeros(0),
-    zeros(0),
-    [zeros(0,0) * 1im],
-    [zeros(0,0)],
-    [zeros(0,0)],
-    zeros(0,0),
-    zeros(0,0) * 1im,
-    zeros(0)
-)
 
 function Base.show(io::IO, obj::analysis)
     println(io, "Analysis result: ")
@@ -313,7 +251,35 @@ end
 #     )
 # end
 
-
+# eom_data() = eom_data(
+#     zeros(0, 0),
+#     zeros(0, 0),
+#     zeros(0, 0),
+#     zeros(0, 0),
+#     zeros(0, 0),
+#     zeros(0, 0),
+#     zeros(0, 0),
+#     zeros(0, 0),
+#     zeros(0, 0),
+#     zeros(0, 0),
+#     zeros(0, 0),
+#     zeros(0),
+#     zeros(0),
+#     zeros(0, 0),
+#     zeros(0, 0),
+#     zeros(0),
+#     zeros(0, 0),
+#     zeros(0, 0),
+#     zeros(0),
+#     zeros(0),
+#     zeros(0, 0),
+#     zeros(0, 0),
+#     zeros(0, 0),
+#     zeros(0, 0),
+#     zeros(0, 0),
+#     zeros(0, 0),
+#     zeros(0)
+# )
 # function (obj::analysis)(idx::StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}})
 #     obj(collect(idx))
 # end

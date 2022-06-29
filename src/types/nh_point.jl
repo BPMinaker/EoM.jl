@@ -1,23 +1,23 @@
 export nh_point
 
-mutable struct nh_point
+Base.@kwdef mutable struct nh_point
     name::String
-    group::String
-    body::Vector{String}
-    body_number::Vector{Int}
-    forces::Int
-    moments::Int
-    radius::Vector{Vector{Float64}}
-    location::Vector{Float64}
-    axis::Vector{Float64}
-    rolling_axis::Vector{Float64}
-    unit::Vector{Float64}
-    rolling_unit::Vector{Float64}
-    nu::Array{Float64,2}
-    b_mtx::Vector{Array{Float64,2}}
+    group::String = "nh_point"
+    body::Vector{String} = ["ground", "ground"]
+    body_number::Vector{Int} = zeros(2)
+    forces::Int = 0
+    moments::Int = 0
+    radius::Vector{Vector{Float64}} = [zeros(3), zeros(3)]
+    location::Vector{Float64} = zeros(3)
+    axis::Vector{Float64} = zeros(3)
+    rolling_axis::Vector{Float64} = zeros(3)
+    unit::Vector{Float64} = zeros(3)
+    rolling_unit::Vector{Float64} = zeros(3)
+    nu::Array{Float64,2} = zeros(3, 2)
+    b_mtx::Vector{Array{Float64,2}} = [zeros(3, 3), zeros(3, 3)]
 end
 
-nh_point(str::String) = nh_point(str, "nh_point", ["ground", "ground"], zeros(2), 0, 0, [zeros(3), zeros(3)], zeros(3), zeros(3), zeros(3), zeros(3), zeros(3), zeros(3, 2), [zeros(3, 3), zeros(3, 3)])
+nh_point(str::String) = nh_point(; name = str)
 
 function Base.show(io::IO, obj::nh_point)
     println(io, "Nonholonomic point:")
