@@ -4,6 +4,7 @@ function write_output(
     verbose::Bool = false;
     folder::String = "output",
     filename::String = system.name,
+    overwrite::Bool = false
 )
     write_output([system], 0, [result], verbose; folder, filename)
 end
@@ -15,6 +16,7 @@ function write_output(
     verbose::Bool = false;
     folder::String = "output",
     filename::String = systems[1].name,
+    overwrite::Bool = false
 )
 
     ## Copyright (C) 2017, Bruce Minaker
@@ -36,7 +38,12 @@ function write_output(
     dirs = setup(folder = folder, data = filename)
     dir_date = dirs[1]
     dir_time = dirs[2]
-    dir_data = joinpath(dir_date, dir_time)
+    
+    if overwrite
+        dir_data = joinpath(dir_date, filename)
+    else
+        dir_data = joinpath(dir_date, dir_time)
+    end
 
     # get names of inputs and outputs
     input_names = getfield.(systems[1].actuators, :name)
