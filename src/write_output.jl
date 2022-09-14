@@ -6,7 +6,7 @@ function write_output(
     filename::String = system.name,
     overwrite::Bool = false
 )
-    write_output([system], 0, [result], verbose; folder, filename)
+    write_output([system], 0, [result], verbose; folder, filename, overwrite)
 end
 
 function write_output(
