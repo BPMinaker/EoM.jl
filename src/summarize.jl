@@ -137,7 +137,7 @@ function summarize(
             header = ["Output/Input", "Gain"]
             if format == :html
                 println(output_f, "<h2>Steady state gains</h2>")
-                str = pretty_table(String,[labels my_round.(gain)]; header, backend = :html, standalone = false)
+                str = pretty_table(String,[labels my_round.(gain)]; header, backend = Val(:html), standalone = false)
                 println(output_f, str)
     
                 path = joinpath(dir_data, "sstf.html")
@@ -170,7 +170,7 @@ function summarize(
 
             if format == :html
                 println(output_f, "<h2>Eigenvalues of minimal system</h2>")
-                str=pretty_table(String,[1:1:l[1] my_round.([s omega zeta tau lambda])]; header, backend = :html, standalone = false)
+                str=pretty_table(String,[1:1:l[1] my_round.([s omega zeta tau lambda])]; header, backend = Val(:html), standalone = false)
                 println(output_f, str)
 
                 path = joinpath(dir_data, "eigen.html")
@@ -359,7 +359,7 @@ function summarize(
                 for i in 1:size(temp, 1)
                     push!(link, joinpath("<a href=\"$filename", "x3d", "mode_$(i)_s=$(round(results[1].mode_vals[i], digits=3)).html\">$i</a>"))
                 end
-                str = pretty_table(String, [link temp]; header, backend = :html, standalone = false,allow_html_in_cells = true)
+                str = pretty_table(String, [link temp]; header, backend = Val(:html), allow_html_in_cells = true, standalone = false)
                 println(output_f, str)
     
                 path = joinpath(dir_data, "centres.html")
@@ -543,7 +543,7 @@ function summarize(
 
     if format == :html
         println(output_f, "<h2>Preloads of first system</h2>")
-        str = pretty_table(String, temp; header, backend = :html, standalone = false)
+        str = pretty_table(String, temp; header, backend = Val(:html), standalone = false)
         println(output_f, str)
 
         path = joinpath(dir_data, "preloads.html")
