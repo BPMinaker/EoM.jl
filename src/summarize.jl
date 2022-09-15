@@ -46,6 +46,10 @@ function summarize(
     verbose && println("Printing summary of the analysis of: $(systems[1].name)...")
     noeigs = false
 
+    if format == :screen && !isdefined(Main, :VSCodeServer)
+        format = :html
+    end
+    
     if format == :html
 
         # set up the paths
