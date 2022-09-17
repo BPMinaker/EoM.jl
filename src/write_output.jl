@@ -54,7 +54,6 @@ function write_output(
     # get number of ins, outs, and number of vpts (velocity points)
     nin = length(input_names)
     nout = length(output_names)
-
     nvpts = length(vpts)
 
     ## Initialize output strings
@@ -84,8 +83,8 @@ function write_output(
     #hsv_f=open(joinpath(dir_output,"hsv.out"),"w")
     #println(hsv_f,"###### Hankel SVD\nnum speed hsv")
 
-    for i in 1:nvpts
-        for j in 1:length(results[i].mode_vals)
+    for i in eachindex(vpts)
+        for j in eachindex(results[i].mode_vals)
             rr = real(results[i].mode_vals[j])
             ii = imag(results[i].mode_vals[j])
             ## Write the number, the speed, then the eigenvalue
@@ -105,7 +104,7 @@ function write_output(
         end
         println(mode_f, "")
 
-        for j in 1:length(results[i].e_val)
+        for j in eachindex(results[i].e_val)
             realpt = real(results[i].e_val[j])
             imagpt = imag(results[i].e_val[j])
             ## Write the number, the speed, then the eigenvalue
@@ -120,11 +119,11 @@ function write_output(
     end
 
     if nin * nout > 0
-        for i in 1:nvpts
+        for i in eachindex(vpts)
             if nvpts == 1
                 println(sstf_f, "num outputtoinput gain")
-                for j in 1:nout
-                    for k in 1:nin
+                for j in eachindex(output_names)
+                    for k in eachindex(input_names)
                         print(sstf_f, "{", (j - 1) * nin + k, "} ")
                         print(sstf_f, "{", output_names[j], "/")
                         print(sstf_f, input_names[k], "} ")
@@ -149,10 +148,10 @@ function write_output(
         nr = maximum(length.(getfield.(results,:w)))
         nc = 3 * nvpts
 
-        for i in 1:nout
-            for j in 1:nin
+        for i in eachindex(output_names)
+            for j in eachindex(input_names)
                 temp = NaN * ones(nr, nc)
-                for k in 1:nvpts
+                for k in eachindex(vpts)
                     mag = cat(results[k].mag..., dims = 3)[i,j,:]
                     phs = cat(results[k].phase..., dims = 3)[i,j,:]
                     phs[phs .> 0] .-= 360
@@ -160,8 +159,8 @@ function write_output(
                 end
 
                 bode_f = open(joinpath(dir_data, "bode_o$(i)_i$(j).out"), "w")
-                println(bode_f, "###### Bode #####")
-                for k in 1:nvpts
+                println(bode_f, "###### Bode ##### vpts: $(collect(vpts))")
+                for k in eachindex(vpts)
                     print(bode_f, "frequency$k ", "m$k ", "p$k ")
                 end
                 println(bode_f, "")

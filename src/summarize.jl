@@ -194,14 +194,14 @@ function summarize(
 
             # eliminate all zero rows
             tr = []
-            for i in 1:size(sr, 1)
+            for i in axes(sr, 1)
                 if any(sr[i, :] .!= 0)
                     push!(tr, i)
                 end
             end
             sr = sr[tr, :]
             tr = []
-            for i in 1:size(si, 1)
+            for i in axes(si, 1)
                 if any(si[i, :] .!= 0)
                     push!(tr, i)
                 end
@@ -360,7 +360,7 @@ function summarize(
             if format == :html
                 println(output_f, "<h2>Rotation centres of first body for all modes</h2>")
                 link = []
-                for i in 1:size(temp, 1)
+                for i in axes(temp, 1)
                     push!(link, joinpath("<a href=\"$filename", "x3d", "mode_$(i)_s=$(round(results[1].mode_vals[i], digits=3)).html\">$i</a>"))
                 end
                 str = pretty_table(String, [link temp]; header, backend = Val(:html), allow_html_in_cells = true, standalone = false)
@@ -516,7 +516,7 @@ function summarize(
         display.(plots)
     elseif length(plots) > 0
         println(output_f, "<h2>Time history and other plots</h2>")
-        for i in 1:length(plots)
+        for i in eachindex(plots)
             path = joinpath(dir_data, "plot_$i.html")
             savefig(plots[i], path)
             f = open(path, "r")

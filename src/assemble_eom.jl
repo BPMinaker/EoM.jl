@@ -52,7 +52,7 @@ function assemble_eom!(data::eom_data, verb::Bool = false)
     B = l_orth' * [zeros(2 * dim, nin); I]
     C = zeros(nout, 2 * dim + nin)
 
-    for i = 1:nout
+    for i in 1:nout
         if data.column[i] == 1 ## p
             mask = [I zeros(dim, dim + nin)]
 

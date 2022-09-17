@@ -20,11 +20,9 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
     result.mode_vals= F.values[abs.(F.values) .< 1e9] # discard modes with Inf or Nan vals
     result.modes = dss_eqns.phys *  F.vectors[:, abs.(F.values) .< 1e9] # convert vector to physical coordinates
     nb = div(size(result.modes, 1), 6)
-    nm = size(result.modes, 2)
-
     result.centre = zeros(size(result.modes))
 
-    for j in 1:nm # for each mode
+    for j in axes(result.modes, 2) # for each mode
         if norm(result.modes[:, j]) > 0 # check for non-zero displacement modes
             k = argmax(abs.(result.modes[:, j])) # find max entry
             result.modes[:, j] /= (2 * result.modes[k, j]) # scale motions to unity by diving by max value, but not abs of max, as complex possible

@@ -18,7 +18,7 @@ function mass(the_system::mbd_system, verb::Bool = false)
     n = length(temp)
     mtx = zeros(6 * n, 6 * n)
 
-    for i = 1:n
+    for i in eachindex(temp)
         mtx[6*i-5:6*i, 6*i-5:6*i] = temp[i]
     end
 
