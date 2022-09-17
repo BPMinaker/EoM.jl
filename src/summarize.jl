@@ -397,7 +397,7 @@ function summarize(
                 # fill in for each selected vpt
                 r = findall(bode[:, i] .== 1)
                 if length(r) > 0
-                    w = results[l[1]].w / 2 / pi
+                    w = results[l[1]].w / 2π
                     mag = cat(results[l[1]].mag..., dims = 3)[r, i, :]
                     mag[findall(mag .> 100)] .= Inf
                     phs = cat(results[l[1]].phase..., dims = 3)[r, i, :]
@@ -407,6 +407,7 @@ function summarize(
                     label = hcat(output_names[r]...)
                     label .*= "/" * input_names[i]
                     xscale = :log10
+                    xticks = w[isinteger.(log10.(w))]
                     p1 = plot(
                         w,
                         mag';
@@ -415,7 +416,7 @@ function summarize(
                         xlabel = "",
                         ylabel = "Gain [dB]",
                         xscale,
-                        xlims = (w[1], w[end]),
+                        xticks,
                         ylims = (-40, Inf),
                         bottom_margin = 5mm,
                     )
@@ -427,7 +428,7 @@ function summarize(
                         xlabel = "Frequency [Hz]",
                         ylabel = "Phase [deg]",
                         xscale,
-                        xlims = (w[1], w[end]),
+                        xticks,
                         ylims = (-365, 5),
                         yticks = -360:60:0,
                     )
@@ -456,13 +457,14 @@ function summarize(
                     if bode[i,j] == 1
                         # make empty plots of magnitude and phase
                         xscale = :log10
-                        w = results[l[1]].w / 2 / pi
+                        w = results[l[1]].w / 2π
+                        xticks = w[isinteger.(log10.(w))]
                         ylabel = "|$(output_names[i])|/|$(input_names[j])| [dB]"
                         p1 = plot(;
                             xlabel = "",
                             ylabel,
                             xscale,
-                            xlims = (w[1], w[end]),
+                            xticks,
                             ylims = (-40, Inf),
                             bottom_margin = 5mm,
                         )
@@ -471,13 +473,13 @@ function summarize(
                             xlabel = "Frequency [Hz]",
                             ylabel,
                             xscale,
-                            xlims = (w[1], w[end]),
+                            xticks,
                             ylims = (-365, 5),
                             yticks = -360:60:0,
                         )
                         # fill in for each selected vpt
                         for k in l
-                            w = results[k].w / 2 / pi
+                            w = results[k].w / 2π
                             mag = cat(results[k].mag..., dims = 3)[i, j, :]
                             mag[findall(mag .> 100)] .= Inf
                             phs = cat(results[k].phase..., dims = 3)[i, j, :]
