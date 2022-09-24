@@ -346,7 +346,8 @@ function input_full_car_rc(; u=0, a=1.189, b=2.885 - 1.189, tf=1.595, tr=1.631, 
     item.body[2] = "ground"
     item.location[1] = [0, 0, 0.25]
     item.location[2] = [0, 0, 0]
-    item.units = "m"
+    item.gain = 1000
+    item.units = "mm"
     add_item!(item, the_system)
 
     item = sensor("phi")
