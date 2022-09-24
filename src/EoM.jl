@@ -47,7 +47,6 @@ include("eom_structs.jl")
 
 include("run_eom.jl")
 include("setup.jl")
-include("build_examples.jl")
 include("mass.jl")
 include("sort_system.jl")
 include("find_bodynum.jl")
