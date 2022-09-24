@@ -9,7 +9,6 @@ using DelimitedFiles
 using Plots
 using PrettyTables
 
-export build_examples
 export setup
 export run_eom!
 export analyze
