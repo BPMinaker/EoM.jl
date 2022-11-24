@@ -91,9 +91,9 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
     high = ceil(log10(2.0 * maximum(t) / 2π))
     # highest high eigenvalue, round number in Hz
     nw = Int(high - low)
-    if nw == 0
+    if nw < 1
         nw = 1
-        high += 1
+        low = high - 1  #high += 1
     end
     wpts = 200 * nw + 1
     # compute evenly spaced range of frequncies in log space to consider
