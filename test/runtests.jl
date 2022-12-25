@@ -3,21 +3,16 @@ using Test
 
 verbose = true
 
-fldr = joinpath("..", "examples")
-exps = readdir(fldr)
-for i in exps
-    include(joinpath(fldr, i))
-end
+include("input_ex_smd.jl")
+include("input_ex_pendulum.jl")
+include("input_ex_disk.jl")
+include("input_ex_top.jl")
 
 systems=[
 input_ex_smd,
-input_ex_drag_race,
-input_ex_yaw_plane,
-input_ex_truck_trailer,
-input_ex_quarter_car,
-input_ex_bounce_pitch,
-input_ex_half_car,
-input_ex_full_car
+input_ex_pendulum,
+input_ex_disk,
+input_ex_top
 ]
 
 for system in systems
