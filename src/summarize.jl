@@ -220,21 +220,21 @@ function summarize(
                 size = (600, 300),
             )
 
-            rr = vec(sr')
+            vsr = vec(sr')
             mc = RGB(0 / 255, 154 / 255, 250 / 255)
             label = "Real"
             u = size(sr, 1)
             vv = vcat(fill(vpts, u)...)
-            if length(rr) > 0
-                plot!(p, vv, rr; seriestype, mc, ms, label)
+            if length(vsr) > 0
+                plot!(p, vv, vsr; seriestype, mc, ms, label)
             end
-            rr = vec(si')
+            vsi = vec(si')
             mc = RGB(227 / 255, 111 / 255, 71 / 255)
             label = "Imaginary"
             u = size(si, 1)
             vv = vcat(fill(vpts, u)...)
-            if length(rr) > 0
-                plot!(p, vv, rr; seriestype, mc, ms, label)
+            if length(vsi) > 0
+                plot!(p, vv, vsi; seriestype, mc, ms, label)
             end
 
             if format == :html
@@ -249,6 +249,34 @@ function summarize(
             end
 
             label = ""
+            mc = RGB(0 / 255, 154 / 255, 250 / 255)
+
+            sr = real.(s)
+            si = imag.(s)
+            vsr = vec(sr')
+            vsi = vec(si')
+
+            p = plot(vsr, vsi;
+                seriestype,
+                aspect_ratio = :equal,
+                mc,
+                ms,
+                label,
+                xlabel = "Real part [1/s]",
+                ylabel = "Imaginary part [1/s]",
+                size = (600, 300),
+            )
+
+            if format == :html
+                println(output_f, "<h2>Locus plots</h2>")
+                path = joinpath(dir_data, "locus.html")
+                savefig(p, path)
+                f = open(path, "r")
+                println(output_f, read(f, String))
+                close(f)
+            else
+                display(p)
+            end
 
             omega = treat(getfield.(results, :omega_n))
             mc = RGB(0 / 255, 154 / 255, 250 / 255)
