@@ -1,18 +1,5 @@
 function setup(; folder::String = "output", data::String = "data")
 
-    ## Copyright (C) 2017, Bruce Minaker
-    ## setup.jl is free software; you can redistribute it and/or modify it
-    ## under the terms of the GNU General Public License as published by
-    ## the Free Software Foundation; either version 2, or (at your option)
-    ## any later version.
-    ##
-    ## setup.jl is distributed in the hope that it will be useful, but
-    ## WITHOUT ANY WARRANTY; without even the implied warranty of
-    ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    ## General Public License for more details at www.gnu.org/copyleft/gpl.html.
-    ##
-    ##--------------------------------------------------------------------
-
     if ~isdir(folder)  # if no output folder exists
         mkdir(folder)  # create new empty output folder
     end

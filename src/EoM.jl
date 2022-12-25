@@ -1,13 +1,15 @@
-# __precompile__()
+__precompile__()
 
 module EoM
 
 using LinearAlgebra
 using Dates
 using DelimitedFiles
-#using ForwardDiff
 using Plots
+using Plots.Measures
 using PrettyTables
+using SparseArrays
+#using ForwardDiff # only for auto diff Jacobian
 
 export setup
 export run_eom!
@@ -41,7 +43,6 @@ types = readdir(fldr)
 for i in types
     include(joinpath(fldr, i))
 end
-
 
 include("eom_structs.jl")
 
@@ -117,11 +118,11 @@ end
 # Let's define some helper functions to make piecewise functions easier to define
 function step(t)
     0.5 * (sign(t) + 1)
- end
+end
 
- function pulse(t, a, b)
+function pulse(t, a, b)
     step(t-a) - step(t-b)
- end
+end
 
 end  # end module
 

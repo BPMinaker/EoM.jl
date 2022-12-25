@@ -1,17 +1,5 @@
 function centngyro(items::Vector{body})
-    ## Copyright (C) 2017, Bruce Minaker
-    ## centngyro.jl is free software; you can redistribute it and/or modify it
-    ## under the terms of the GNU General Public License as published by
-    ## the Free Software Foundation; either version 2, or (at your option)
-    ## any later version.
-    ##
-    ## centngyro.jl is distributed in the hope that it will be useful, but
-    ## WITHOUT ANY WARRANTY; without even the implied warranty of
-    ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    ## General Public License for more details at www.gnu.org/copyleft/gpl.html.
-    ##
-    ##--------------------------------------------------------------------
-
+  
     n = length(items) - 1 ## Length of in is the number of bodies
     v_mtx = zeros(6 * n, 6 * n)  ## Set up initial empty matrix
     mv_mtx = zeros(6 * n, 6 * n)

@@ -1,4 +1,3 @@
-using Plots.Measures
 function summarize(
     system::mbd_system,
     results::EoM.analysis,
@@ -14,6 +13,8 @@ function summarize(
     summarize([system], 0, [results], verbose; plots, ss, bode, vpt_name, format, folder, filename)
 end
 
+    # Copyright (C) 2020, Bruce Minaker
+
 function summarize(
     systems::Vector{mbd_system},
     vpts,
@@ -27,19 +28,6 @@ function summarize(
     folder::String = "output",
     filename::String = systems[1].name,
     )
-
-    ## Copyright (C) 2020, Bruce Minaker
-    ## summarize.jl is free software; you can redistribute it and/or modify it
-    ## under the terms of the GNU General Public License as published by
-    ## the Free Software Foundation; either version 2, or (at your option)
-    ## any later version.
-    ##
-    ## summarize.jl is distributed in the hope that it will be useful, but
-    ## WITHOUT ANY WARRANTY; without even the implied warranty of
-    ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    ## General Public License for more details at www.gnu.org/copyleft/gpl.html.
-    ##
-    ##--------------------------------------------------------------------
 
     plotly()
 

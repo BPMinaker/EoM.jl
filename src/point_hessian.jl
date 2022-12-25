@@ -1,18 +1,6 @@
 function hessian(items::Union{Vector{flex_point}, Vector{rigid_point}, Vector{nh_point}}, num::Int64)
-    ## Copyright (C) 2017, Bruce Minaker
-    ## point_hessian.jl is free software; you can redistribute it and/or modify it
-    ## under the terms of the GNU General Public License as published by
-    ## the Free Software Foundation; either version 2, or (at your option)
-    ## any later version.
-    ##
-    ## point_hessian.jl is distributed in the hope that it will be useful, but
-    ## WITHOUT ANY WARRANTY; without even the implied warranty of
-    ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    ## General Public License for more details at www.gnu.org/copyleft/gpl.html.
-    ##
-    ##--------------------------------------------------------------------
-    ##
-    ## in=flex_points or rigid_points, num=number of bodys, mtx=stiffness
+
+    # in=flex_points or rigid_points, num=number of bodys, mtx=stiffness
 
     mtx = zeros(6 * num, 6 * num) ## Initially define blank matrix
     n = 6 * (num - 1) ## n excludes the ground body

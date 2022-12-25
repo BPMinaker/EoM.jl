@@ -1,18 +1,6 @@
 function dss2ss(dss_eqns::EoM.dss_data, verb::Bool = false)
 
-## Copyright (C) 2020, Bruce Minaker
-## dss2ss.jl is free software; you can redistribute it and/or modify it
-## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
-## any later version.
-##
-## dss2ss.jl is distributed in the hope that it will be useful, but
-## WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-## General Public License for more details at www.gnu.org/copyleft/gpl.html.
-##
-##--------------------------------------------------------------------
-
+# Copyright (C) 2020, Bruce Minaker
 
 verb && println("System is of dimension ",size(dss_eqns.A,1),".")
 verb && println("Converting from descriptor form to standard state space...")

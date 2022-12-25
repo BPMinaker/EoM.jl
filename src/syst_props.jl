@@ -1,21 +1,9 @@
 function syst_props(the_system::mbd_system, dir_output::String)
-    ## Copyright (C) 2017, Bruce Minaker
-    ## syst_props.jl is free software; you can redistribute it and/or modify it
-    ## under the terms of the GNU General Public License as published by
-    ## the Free Software Foundation; either version 2, or (at your option)
-    ## any later version.
-    ##
-    ## syst_props.jl is distributed in the hope that it will be useful, but
-    ## WITHOUT ANY WARRANTY; without even the implied warranty of
-    ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    ## General Public License for more details at www.gnu.org/copyleft/gpl.html.
-    ##
-    ##--------------------------------------------------------------------
 
     body_f = open(joinpath(dir_output, "bodydata.out"), "w")
     println(body_f, "###### Body Data\nnum name mass rx ry rz ixx iyy izz ixy iyz ixz")
 
-    ## Body data
+    # Body data
     idx = 1
     for item in the_system.bodys[1:end-1]
         print(
@@ -64,7 +52,7 @@ function syst_props(the_system::mbd_system, dir_output::String)
         "###### Connection Data\nnum name stiffness damping t_stiffness t_damping",
     )
 
-    ## Connection data
+    # Connection data
     idx = 1
     for item in the_system.rigid_points
         print(

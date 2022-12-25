@@ -1,16 +1,4 @@
 function load_defln(the_system::mbd_system, dir_output::String)
-    ## Copyright (C) 2017, Bruce Minaker
-    ## load_defln.jl is free software; you can redistribute it and/or modify it
-    ## under the terms of the GNU General Public License as published by
-    ## the Free Software Foundation; either version 2, or (at your option)
-    ## any later version.
-    ##
-    ## load_defln.jl is distributed in the hope that it will be useful, but
-    ## WITHOUT ANY WARRANTY; without even the implied warranty of
-    ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    ## General Public License for more details at www.gnu.org/copyleft/gpl.html.
-    ##
-    ##--------------------------------------------------------------------
 
     preload_f = open(joinpath(dir_output, "preload.out"), "w")
     println(preload_f, "###### Preload\nnum name type fx fy fz fxyz")

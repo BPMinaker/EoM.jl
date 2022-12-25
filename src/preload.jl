@@ -1,17 +1,6 @@
 function preload!(data::EoM.eom_data, verb::Bool = false)
-    ## Copyright (C) 2017, Bruce Minaker
-    ## preload.jl is free software; you can redistribute it and/or modify it
-    ## under the terms of the GNU General Public License as published by
-    ## the Free Software Foundation; either version 2, or (at your option)
-    ## any later version.
-    ##
-    ## preload.jl is distributed in the hope that it will be useful, but
-    ## WITHOUT ANY WARRANTY; without even the implied warranty of
-    ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    ## General Public License for more details at www.gnu.org/copyleft/gpl.html.
-    ##
-    ##--------------------------------------------------------------------
-    ## Use the Jacobian and deflection matrices to determine the forces of constraint and the preload reactions in the elastic items.  The assumption of equilibrium is necessary.
+
+    # Use the Jacobian and deflection matrices to determine the forces of constraint and the preload reactions in the elastic items.  The assumption of equilibrium is necessary.
 
     verb && println("Checking whether the system is determinate...")
 

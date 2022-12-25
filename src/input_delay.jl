@@ -23,4 +23,3 @@ function input_delay!(system::EoM.mbd_system, result::EoM.analysis, delay::Float
     deleteat!(system.actuators, inp[2])
 
 end
-
