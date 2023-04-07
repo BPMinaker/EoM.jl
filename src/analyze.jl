@@ -18,8 +18,8 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
 
         for k in 1:nb # for each body
             mtn = result.modes[6 * k .+ (-5:0), j] # motion of body k
-            l = argmax(abs.(mtn)) # find max coordinate
-            phi = angle(mtn[l]) # find angle of that coordinate
+            l = argmax(abs.(mtn[4:6])) # find max angular coordinate
+            phi = angle(mtn[l+3]) # find angle of that coordinate
             mtn *= exp(-phi * 1im) # rotate by negative of that angle to remove unnecessary imag parts
             result.centre[6 * k .+ (-5:0), j] = [-pinv(skew(mtn[4:6])) * mtn[1:3]; mtn[4:6] / (norm(mtn[4:6]) + eps(1.0))]
             # radius to the instantaneous center of rotation of the body (rad=omega\v)
@@ -71,11 +71,10 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
     end
 
     t = unique(abs.(result.e_val))
-    # t = t[t .> 4π / 100]
+    t = t[t .> 4π / 10000]
     # t = t[t .< π * 1000]
-    # low = floor(log10(0.5 * minimum(t) / 2π))
+    low = floor(log10(0.5 * minimum(t) / 2π))
     # lowest low eigenvalue, round number in Hz
-    low = -1
     high = ceil(log10(2.0 * maximum(t) / 2π))
     # highest high eigenvalue, round number in Hz
     nw = Int(high - low)
