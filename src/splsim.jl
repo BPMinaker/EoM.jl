@@ -3,7 +3,7 @@ function splsim(
     u::Function,
     t::StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}},
     x0 = zeros(size(ss.A, 2), 1);
-    flag = false
+    flag::Bool = false
 )
 
     # Copyright (C) 2020, Bruce Minaker
