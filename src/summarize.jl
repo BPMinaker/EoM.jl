@@ -417,9 +417,8 @@ function summarize(
                     mag = cat(results[l[1]].mag..., dims = 3)[r, i, :]
                     mag[findall(mag .> 100)] .= Inf
                     phs = cat(results[l[1]].phase..., dims = 3)[r, i, :]
-                    phs[phs .> 0] .-= 360
-                    phs[findall(diff(phs, dims = 2) .> 300)] .= Inf
-                    phs[findall(diff(phs, dims = 2) .< -300)] .= Inf
+                    phs[phs .> 0.1] .-= 360
+                    phs[findall(abs.(diff(phs, dims = 2)) .> 250)] .= Inf
                     label = hcat(output_names[r]...)
                     label .*= "/" * input_names[i]
                     xscale = :log10
