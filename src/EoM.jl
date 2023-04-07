@@ -13,6 +13,7 @@ using SparseArrays
 
 export setup
 export run_eom!
+export diagnose!
 export analyze
 export full_ss
 export write_output
