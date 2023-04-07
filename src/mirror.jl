@@ -1,12 +1,15 @@
 function mirror!(the_system::mbd_system)
 
     for old in the_system.item
-        if occursin("LF ", old.name) || occursin("LR ", old.name)
+        if occursin("LF ", old.name) || occursin("LR ", old.name) || occursin("_lf", old.name) || occursin("_lr", old.name)
 
             item = deepcopy(old)
 
             item.name = replace(item.name, "LF" => "RF")
             item.name = replace(item.name, "LR" => "RR")
+
+            item.name = replace(item.name, "lf" => "rf")
+            item.name = replace(item.name, "lr" => "rr")
 
             if isa(item, body)
 
