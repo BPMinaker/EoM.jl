@@ -108,7 +108,7 @@ function summarize(
                             xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
                             ylabel = lb,
                             label = "",
-                            size = (600, 300),
+                            size = (800, 400),
                         )
                         if format == :html
                             path = joinpath(dir_data, "sstf_$(i)_$(j).html")
@@ -152,6 +152,13 @@ function summarize(
             s[1:l[i], i] = results[i].e_val
         end
 
+        lz = length.(getfield.(results, :t_zero))
+        mz = maximum(lz)
+        sz = zeros(mz, nvpts) * 1im
+        for i in 1:nvpts
+            sz[1:lz[i], i] = results[i].t_zero
+        end
+
         # for one velocity, chart of calcs from eigenvalues, otherwise plot eigenvalues
         if nvpts == 1
             omega = results[1].omega_n
@@ -162,7 +169,7 @@ function summarize(
 
             if format == :html
                 println(output_f, "<h2>Eigenvalues of minimal system</h2>")
-                str=pretty_table(String,[1:1:l[1] my_round.([s omega zeta tau lambda])]; header, backend = Val(:html), standalone = false)
+                str = pretty_table(String,[1:1:l[1] my_round.([s omega zeta tau lambda])]; header, backend = Val(:html), standalone = false)
                 println(output_f, str)
 
                 path = joinpath(dir_data, "eigen.html")
@@ -174,6 +181,23 @@ function summarize(
                 pretty_table([1:1:l[1] my_round.([s omega zeta tau lambda])]; header, vlines = :none)
             end
 
+            t_zero = results[1].t_zero
+            t_zero_f = results[1].t_zero_f
+
+            header = ["No.", "σ±ωi [1/s]", "ω [Hz]"]
+            if format == :html
+                println(output_f, "<h2>Zeros of minimal system</h2>")
+                str = pretty_table(String,[1:1:lz[1] my_round.([t_zero t_zero_f])]; header, backend = Val(:html), standalone = false)
+                println(output_f, str)
+
+                path = joinpath(dir_data, "zeros.html")
+                temp = open(path, "w")
+                println(temp, str_open, str, str_close)
+                close(temp)
+            else
+                println("Zeros of minimal system:")
+                pretty_table([1:1:lz[1] my_round.([t_zero t_zero_f])]; header, vlines = :none)
+            end
         else
 
             # plot real and imaginary seperately
@@ -205,7 +229,7 @@ function summarize(
             p = plot(;
                 xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
                 ylabel = "Eigenvalue [1/s]",
-                size = (600, 300),
+                size = (800, 400),
             )
 
             vsr = vec(sr')
@@ -252,7 +276,7 @@ function summarize(
                 label,
                 xlabel = "Real part [1/s]",
                 ylabel = "Imaginary part [1/s]",
-                size = (600, 300),
+                size = (800, 400),
             )
 
             if format == :html
@@ -279,7 +303,7 @@ function summarize(
                     xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
                     ylabel = "Natural frequency [Hz]",
                     ylims = (0, Inf),
-                    size = (600, 300),
+                    size = (800, 400),
                 )
                 if format == :html
                     path = joinpath(dir_data, "omega.html")
@@ -304,7 +328,7 @@ function summarize(
                     label,
                     xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
                     ylabel = "Damping ratio",
-                    size = (600, 300),
+                    size = (800, 400),
                 )
                 if format == :html
                     path = joinpath(dir_data, "zeta.html")
@@ -329,7 +353,7 @@ function summarize(
                     label,
                     xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
                     ylabel = "Time constant [s]",
-                    size = (600, 300),
+                    size = (800, 400),
                 )
                 if format == :html
                     path = joinpath(dir_data, "tau.html")
@@ -355,7 +379,7 @@ function summarize(
                     xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
                     ylabel = "Wavelength [s]",
                     ylims = (0, Inf),
-                    size = (600, 300),
+                    size = (800, 400),
                 )
                 if format == :html
                     path = joinpath(dir_data, "lambda.html")
@@ -452,7 +476,7 @@ function summarize(
                         p1,
                         p2,
                         layout = grid(2, 1, heights = [0.66, 0.33]),
-                        size = (600, 450),
+                        size = (800, 600),
                     )
                     if format == :html
                         path = joinpath(dir_data, "bode_$i.html")
@@ -510,7 +534,7 @@ function summarize(
                             p1,
                             p2,
                             layout = grid(2, 1, heights = [0.66, 0.33]),
-                            size = (600, 450),
+                            size = (800, 600),
                         )
                         if format == :html
                             path = joinpath(dir_data, "bode_$(i)_$(j).html")
