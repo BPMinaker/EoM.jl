@@ -114,7 +114,9 @@ function write_output(
                         print(sstf_f, "{", (j - 1) * nin + k, "} ")
                         print(sstf_f, "{", output_names[j], "/")
                         print(sstf_f, input_names[k], "} ")
-                        println(sstf_f, results[i].ss_resp[j, k])
+                        print(sstf_f, results[i].ss_resp[j, k])
+                        mag = cat(results[i].mag..., dims = 3)[j,k,:]
+                        println(sstf_f, maximum(mag))
                     end
                 end
             else
@@ -122,6 +124,12 @@ function write_output(
                 print(sstf_f, vpts[i], " ")
                 for k in vec(results[i].ss_resp[:, :])
                     print(sstf_f, k, " ")
+                end
+                for j in eachindex(output_names)
+                    for k in eachindex(input_names)
+                        mag = cat(results[i].mag..., dims = 3)[j,k,:]
+                        print(sstf_f, maximum(mag), " ")
+                    end
                 end
                 println(sstf_f, "")
             end
