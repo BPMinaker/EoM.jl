@@ -5,7 +5,7 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
     result = analysis()
 
     F = eigen(dss_eqns.A, dss_eqns.E) # find the eigen
-    result.mode_vals= F.values[abs.(F.values) .< 1e9] # discard modes with Inf or Nan vals
+    result.mode_vals = F.values[abs.(F.values) .< 1e9] # discard modes with Inf or Nan vals
     result.modes = dss_eqns.phys *  F.vectors[:, abs.(F.values) .< 1e9] # convert vector to physical coordinates
     nb = div(size(result.modes, 1), 6)
     result.centre = zeros(size(result.modes))
@@ -43,10 +43,10 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
         end
     end
 
-    result.omega_n = abs.(result.e_val) / 2 / pi
+    result.omega_n = abs.(result.e_val) / 2π
     result.zeta = -real.(result.e_val) ./ abs.(result.e_val)
     result.tau = -1.0 ./ real.(result.e_val)
-    result.lambda = abs.(2 * pi ./ imag.(result.e_val))
+    result.lambda = abs.(2π ./ imag.(result.e_val))
 
     idx = abs.(real.(result.e_val)) .< 1e-10
     result.tau[idx] .= Inf
@@ -61,6 +61,13 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
     B = result.ss_eqns.B
     C = result.ss_eqns.C
     D = result.ss_eqns.D
+
+    temp = [A B; C D]
+    if size(temp, 1) == size(temp, 2)
+        F = eigen(temp, [I zeros(size(B)); zeros(size(C)) zeros(size(D))])
+        result.t_zero = F.values[abs.(F.values) .< 1e9]
+        result.t_zero_f = abs.(result.t_zero) / 2π
+    end
 
     try
         WC = lyap(A, B * B')
