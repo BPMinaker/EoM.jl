@@ -25,7 +25,7 @@ function splsim(
     Ad = zeros(size(ss.A)) + I
     Bd = zeros(size(ss.A)) + I
 
-    for i = 1:10
+    for i in 1:10
         term1 *= AT / i
         term2 *= AT / (i + 1)
         Ad += term1
@@ -46,7 +46,7 @@ function splsim(
     xu[ns+1:ns+ni, 1] .= u(x0, t[1])
     y[1] = ZZ * xu[:,1]
 
-    for i = 2:n
+    for i in 2:n
         xu[1:ns, i] .= Z * xu[:, i-1]
         xu[ns+1:ns+ni, i] .= u(xu[1:ns, i], t[i])
         y[i] = ZZ * xu[:,i]

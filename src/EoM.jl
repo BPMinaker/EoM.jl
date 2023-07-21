@@ -18,7 +18,8 @@ export analyze
 export full_ss
 export write_output
 export summarize
-export lsim
+#export lsim
+export impulse
 export splsim
 export random_road
 export input_delay!
@@ -82,11 +83,12 @@ include("summarize.jl")
 
 include("mirror.jl")
 include("thin_rod.jl")
-include("lsim.jl")
+include("impulse.jl")
 include("splsim.jl")
 include("random_road.jl")
 include("input_delay.jl")
 
+#include("lsim.jl")
 #include("phi.jl")
 
 function my_round(x; dig = 4, lim = 1e-7)
