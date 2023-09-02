@@ -17,7 +17,7 @@ function input_delay!(system::EoM.mbd_system, result::EoM.analysis, delay::Float
 
     mag(x) =  20 * log10.(abs.(x)) .+ eps(1.0)
     result.mag = mag.(result.freq_resp)
-    phs(x) = 180 / pi * angle.(x)
+    phs(x) = 180 / π * angle.(x)
     result.phase = phs.(result.freq_resp)
 
     deleteat!(system.actuators, inp[2])
