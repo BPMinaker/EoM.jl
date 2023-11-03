@@ -155,7 +155,7 @@ function summarize(
             zeta = results[1].zeta
             tau = results[1].tau
             lambda = results[1].lambda
-            header = ["No.", "σ±ωi [s^-1]", "ω_n [Hz]", "ζ", "τ [s]", "λ [s]"]
+            header = ["No.", "σ±ωi [rad/s]", "ω_n [Hz]", "ζ", "τ [s]", "λ [s]"]
 
             if format == :html
                 println(output_f, "<h2>Eigenvalues of minimal system</h2>")
@@ -174,7 +174,7 @@ function summarize(
             t_zero = results[1].t_zero
             t_zero_f = results[1].t_zero_f
 
-            header = ["No.", "σ±ωi [s^-1]", "ω [Hz]"]
+            header = ["No.", "σ±ωi [rad/s]", "ω [Hz]"]
             if format == :html
                 println(output_f, "<h2>Zeros of minimal system</h2>")
                 str = pretty_table(String,[1:1:lz[1] my_round.([t_zero t_zero_f])]; header, backend = Val(:html), standalone = false)
@@ -218,7 +218,7 @@ function summarize(
             ms = 3
             p = plot(;
                 xlabel = vpt_name[2] * " [$(vpt_name[3])]",
-                ylabel = "Eigenvalue [s^-1]",
+                ylabel = "Eigenvalue [rad/s]",
                 size = (800, 400),
                 title,
                 titlefontsize,
@@ -268,8 +268,8 @@ function summarize(
                 mc,
                 ms,
                 label,
-                xlabel = "Real part [s^-1]",
-                ylabel = "Imaginary part [s^-1]",
+                xlabel = "Real part [rad/s]",
+                ylabel = "Imaginary part [rad/s]",
                 size = (800, 400),
                 title,
                 titlefontsize,
