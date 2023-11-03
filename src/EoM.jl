@@ -9,7 +9,7 @@ using Plots
 using Plots.Measures
 using PrettyTables
 using SparseArrays
-#using ForwardDiff # only for auto diff Jacobian
+using Unitful
 
 export setup
 export run_eom!
@@ -18,7 +18,6 @@ export analyze
 export full_ss
 export write_output
 export summarize
-#export lsim
 export impulse
 export splsim
 export random_road
@@ -92,7 +91,7 @@ include("input_delay.jl")
 #include("phi.jl")
 
 function my_round(x; dig = 4, lim = 1e-7)
-    x = round(x,sigdigits=dig)
+    x = round(x, sigdigits = dig)
     abs(real(x)) < lim  && (x = 0 + imag(x)im )
     abs(imag(x)) < lim  && (x = real(x))
     x
@@ -102,20 +101,20 @@ function treat(vec_in)
     vect = unique.(vec_in)
     nf = maximum(length.(vect))
     len = length(vect)
-    for i in 1:len
-        if length(vect[i]) < nf
-            pushfirst!(vect[i], NaN * zeros(nf - length(vect[i]))...)
+    for i in vect
+        if length(i) < nf
+            pushfirst!(i, NaN * zeros(nf - length(i))...)
         end
     end
     vect = hcat(vect...)'
-    vect[vect.==0] .= NaN
+    vect[vect .== 0] .= NaN
     rcol = []
-    for i in 1:size(vect, 2)
-        if sum(isnan.(vect[:, i])) < len && sum(isinf.(vect[:, i])) < len
+    for i in eachcol(vect)
+        if sum(isnan.(i)) < len && sum(isinf.(i)) < len
             push!(rcol, i)
         end
     end
-    vect[:, rcol]
+    hcat(rcol...)
 end
 
 # Let's define some helper functions to make piecewise functions easier to define
@@ -129,6 +128,15 @@ end
 
 end  # end module
 
+
+
+    # rcol = []
+    # for i in 1:size(vect,2)
+    #     if sum(isnan.(vect[:,i])) < len && sum(isinf.(vect[:,i])) < len
+    #         push!(rcol, i)
+    #     end
+    # end
+    # vect[:, rcol]
 
 
 # macro def(name, definition)

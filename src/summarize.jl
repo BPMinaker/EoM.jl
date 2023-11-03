@@ -1,16 +1,14 @@
 function summarize(
     system::mbd_system,
-    results::EoM.analysis,
-    verbose::Bool = false;
+    results::EoM.analysis;
     plots = [],
     ss = ones(Int64, length(system.sensors), length(system.actuators)),
-    bode = ones(Int64, length(system.sensors), length(system.actuators)),
-    vpt_name = ["u" "Speed" "m/s"],
-    format = :screen,
+    bode = :default,
+    format::Symbol = :screen,
     folder::String = "output",
     filename::String = system.name,
 )
-    summarize([system], 0, [results], verbose; plots, ss, bode, vpt_name, format, folder, filename)
+    summarize([system], 0, [results]; plots, ss, bode, format, folder, filename)
 end
 
     # Copyright (C) 2020, Bruce Minaker
@@ -18,28 +16,28 @@ end
 function summarize(
     systems::Vector{mbd_system},
     vpts,
-    results::Vector{EoM.analysis},
-    verbose::Bool = false;
+    results::Vector{EoM.analysis};
     plots = [],
     ss = ones(Int64, length(systems[1].sensors), length(systems[1].actuators)),
-    bode = ones(Int64, length(systems[1].sensors), length(systems[1].actuators)),
+    bode = :default,
     vpt_name = ["u" "Speed" "m/s"],
-    format = :screen,
+    format::Symbol = :screen,
     folder::String = "output",
     filename::String = systems[1].name,
     )
 
-    plotly()
-
-    verbose && println("Printing summary of the analysis of: $(systems[1].name)...")
+    println("Printing summary of the analysis of: $(systems[1].name)...")
     noeigs = false
 
-    if format == :screen && !isdefined(Main, :VSCodeServer)
-        format = :html
-    end
-    
+    title = "EoM " * Dates.format(now(), "yyyy-mm-dd")
+    titlefontsize = 7
+    titlelocation = :left
+
+    extra_kwargs = Dict(:subplot => (; width = 20))
+
     if format == :html
 
+        plotly()
         # set up the paths
         dirs = setup(folder = folder, data = filename)
         dir_date = dirs[1]
@@ -61,9 +59,9 @@ function summarize(
 
     # get names of inputs and outputs
     input_names = getfield.(systems[1].actuators, :name)
-    input_units = getfield.(systems[1].actuators, :units)
+    input_units = uparse.(getfield.(systems[1].actuators, :units))
     output_names = getfield.(systems[1].sensors, :name)
-    output_units = getfield.(systems[1].sensors, :units)
+    output_units = uparse.(getfield.(systems[1].sensors, :units))
 
     # get number of ins, outs, and number of vpts (velocity points)
     nin = length(input_names)
@@ -85,19 +83,7 @@ function summarize(
                         x[k] = my_round(results[k].ss_resp[i, j])
                     end
                     push!(gain, x[1])
-
-                    if output_units[i] == input_units[j]
-                        str_u = ""
-                    elseif contains(output_units[i], input_units[j])
-                        if contains(output_units[i], "/")
-                            str_u = " [$(replace(output_units[i], input_units[j] => "1"))]"
-                        else
-                            str_u = " [$(replace(output_units[i], input_units[j] => ""))]"
-                        end
-                    else
-                        str_u = " [$(output_units[i])/$(input_units[j])]"
-                    end
-                    lb = "$(output_names[i])/$(input_names[j])$str_u"
+                    lb = "$(output_names[i])/$(input_names[j]) [$(output_units[i]/input_units[j])]"
                     push!(labels, lb)
                     # if many vpts, make plot vs velocity
                     if nvpts > 1
@@ -105,10 +91,14 @@ function summarize(
                             vpts,
                             x;
                             lw = 2,
-                            xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
+                            xlabel = vpt_name[2] * " [$(vpt_name[3])]",
                             ylabel = lb,
                             label = "",
                             size = (800, 400),
+                            title,
+                            titlefontsize,
+                            titlelocation,
+                            extra_kwargs
                         )
                         if format == :html
                             path = joinpath(dir_data, "sstf_$(i)_$(j).html")
@@ -165,7 +155,7 @@ function summarize(
             zeta = results[1].zeta
             tau = results[1].tau
             lambda = results[1].lambda
-            header = ["No.", "σ±ωi [1/s]", "ω_n [Hz]", "ζ", "τ [s]", "λ [s]"]
+            header = ["No.", "σ±ωi [s^-1]", "ω_n [Hz]", "ζ", "τ [s]", "λ [s]"]
 
             if format == :html
                 println(output_f, "<h2>Eigenvalues of minimal system</h2>")
@@ -184,7 +174,7 @@ function summarize(
             t_zero = results[1].t_zero
             t_zero_f = results[1].t_zero_f
 
-            header = ["No.", "σ±ωi [1/s]", "ω [Hz]"]
+            header = ["No.", "σ±ωi [s^-1]", "ω [Hz]"]
             if format == :html
                 println(output_f, "<h2>Zeros of minimal system</h2>")
                 str = pretty_table(String,[1:1:lz[1] my_round.([t_zero t_zero_f])]; header, backend = Val(:html), standalone = false)
@@ -227,9 +217,13 @@ function summarize(
             seriestype = :scatter
             ms = 3
             p = plot(;
-                xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
-                ylabel = "Eigenvalue [1/s]",
+                xlabel = vpt_name[2] * " [$(vpt_name[3])]",
+                ylabel = "Eigenvalue [s^-1]",
                 size = (800, 400),
+                title,
+                titlefontsize,
+                titlelocation,
+                extra_kwargs
             )
 
             vsr = vec(sr')
@@ -274,9 +268,13 @@ function summarize(
                 mc,
                 ms,
                 label,
-                xlabel = "Real part [1/s]",
-                ylabel = "Imaginary part [1/s]",
+                xlabel = "Real part [s^-1]",
+                ylabel = "Imaginary part [s^-1]",
                 size = (800, 400),
+                title,
+                titlefontsize,
+                titlelocation,
+                extra_kwargs
             )
 
             if format == :html
@@ -300,10 +298,14 @@ function summarize(
                     mc,
                     ms,
                     label,
-                    xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
+                    xlabel = vpt_name[2] * " [$(vpt_name[3])]",
                     ylabel = "Natural frequency [Hz]",
                     ylims = (0, Inf),
                     size = (800, 400),
+                    title,
+                    titlefontsize,
+                    titlelocation,
+                    extra_kwargs
                 )
                 if format == :html
                     path = joinpath(dir_data, "omega.html")
@@ -326,9 +328,13 @@ function summarize(
                     mc,
                     ms,
                     label,
-                    xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
+                    xlabel = vpt_name[2] * " [$(vpt_name[3])]",
                     ylabel = "Damping ratio",
                     size = (800, 400),
+                    title,
+                    titlefontsize,
+                    titlelocation,
+                    extra_kwargs
                 )
                 if format == :html
                     path = joinpath(dir_data, "zeta.html")
@@ -351,9 +357,13 @@ function summarize(
                     mc,
                     ms,
                     label,
-                    xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
+                    xlabel = vpt_name[2] * " [$(vpt_name[3])]",
                     ylabel = "Time constant [s]",
                     size = (800, 400),
+                    title,
+                    titlefontsize,
+                    titlelocation,
+                    extra_kwargs
                 )
                 if format == :html
                     path = joinpath(dir_data, "tau.html")
@@ -376,10 +386,14 @@ function summarize(
                     mc,
                     ms,
                     label,
-                    xlabel = vpt_name[2] * " [" * vpt_name[3] * "]",
+                    xlabel = vpt_name[2] * " [$(vpt_name[3])]",
                     ylabel = "Wavelength [s]",
                     ylims = (0, Inf),
                     size = (800, 400),
+                    title,
+                    titlefontsize,
+                    titlelocation,
+                    extra_kwargs
                 )
                 if format == :html
                     path = joinpath(dir_data, "lambda.html")
@@ -417,12 +431,17 @@ function summarize(
         end
     end
 
+    if bode == :default
+        isok(x) = (x == NoDims) 
+        bode = isok.(dimension.(output_units * transpose(1 ./ input_units)))
+    end
+
     if size(bode, 1) > nout || size(bode, 2) > nin
         error("Bode plot request dimensions are incompatible with system!")
     end
 
     # if there are too many inputs and outputs, skip
-    if nin * nout > 0 && any(bode .== 1) && sum(bode .== 1) < 16
+    if nin * nout > 0 && any(bode .== 1) && sum(bode .== 1) < 32
         
         if format == :html
             println(output_f, "<h2>Bode plots</h2>")
@@ -457,7 +476,11 @@ function summarize(
                         xscale,
                         xticks,
                         ylims = (-40, Inf),
+                        title,
+                        titlefontsize,
+                        titlelocation,
                         bottom_margin = 5mm,
+                        extra_kwargs
                     )
                     p2 = plot(
                         w,
@@ -465,18 +488,19 @@ function summarize(
                         lw = 2,
                         label = "",
                         xlabel = "Frequency [Hz]",
-                        ylabel = "Phase [deg]",
+                        ylabel = "Phase [°]",
                         xscale,
                         xticks,
                         ylims = (-365, 5),
                         yticks = -360:60:0,
+                        extra_kwargs
                     )
                     # merge two subplots
                     p = plot(
                         p1,
                         p2,
                         layout = grid(2, 1, heights = [0.66, 0.33]),
-                        size = (800, 600),
+                        size = (800, 600)
                     )
                     if format == :html
                         path = joinpath(dir_data, "bode_$i.html")
@@ -506,8 +530,12 @@ function summarize(
                             xticks,
                             ylims = (-40, Inf),
                             bottom_margin = 5mm,
+                            title,
+                            titlefontsize,
+                            titlelocation,
+                            extra_kwargs
                         )
-                        ylabel = "∠ $(output_names[i])/$(input_names[j]) [deg]"
+                        ylabel = "∠ $(output_names[i])/$(input_names[j]) [°]"
                         p2 = plot(;
                             xlabel = "Frequency [Hz]",
                             ylabel,
@@ -515,6 +543,7 @@ function summarize(
                             xticks,
                             ylims = (-365, 5),
                             yticks = -360:60:0,
+                            extra_kwargs
                         )
                         # fill in for each selected vpt
                         for k in l
@@ -525,7 +554,7 @@ function summarize(
                             phs[phs .> 0] .-= 360
                             # set wrap arounds in phase to Inf to avoid jumps in plot
                             phs[findall(abs.(diff(phs)) .> 180)] .= Inf
-                            lb = vpt_name[1] * "=$(my_round(vpts[k])) " * vpt_name[3]
+                            lb = vpt_name[1] * "=$(my_round(vpts[k]))  $(vpt_name[3])"
                             p1 = plot!(p1, w, mag; lw = 2, label = lb)
                             p2 = plot!(p2, w, phs; lw = 2, label = "")
                         end
@@ -534,7 +563,7 @@ function summarize(
                             p1,
                             p2,
                             layout = grid(2, 1, heights = [0.66, 0.33]),
-                            size = (800, 600),
+                            size = (800, 600)
                         )
                         if format == :html
                             path = joinpath(dir_data, "bode_$(i)_$(j).html")
@@ -550,22 +579,24 @@ function summarize(
             end
         end
     end
-
-    if format == :screen
-        display.(plots)
-    elseif length(plots) > 0
-        println(output_f, "<h2>Time history and other plots</h2>")
-        for i in eachindex(plots)
-            path = joinpath(dir_data, "plot_$i.html")
-            savefig(plots[i], path)
-            f = open(path, "r")
-            println(output_f, read(f, String))
-            close(f)
+    
+    if length(plots) > 0
+        if format == :html
+            println(output_f, "<h2>Time history and other plots</h2>")
+            for i in eachindex(plots)
+                path = joinpath(dir_data, "plot_$i.html")
+                savefig(plots[i], path)
+                f = open(path, "r")
+                println(output_f, read(f, String))
+                close(f)
+            end
+        else
+            display.(plots)
         end
     end
 
     # add the static preloads
-    header = ["Connector", "f_x", "f_y", "f_z", "m_x", "m_y", "m_z"]
+    header = ["Connector", "X", "Y", "Z", "L", "M", "N"]
     items = [
         systems[1].rigid_points
         systems[1].flex_points
@@ -606,3 +637,15 @@ function summarize(
 end
 
 #   xticks = 10.0 .^ collect(Int(round(log10(w[1]))):1:Int(round(log10(w[end]))))
+
+#=                     if output_units[i] == input_units[j]
+                        str_u = ""
+                    elseif contains(output_units[i], input_units[j])
+                        if contains(output_units[i], "/")
+                            str_u = " [$(replace(output_units[i], input_units[j] => "1"))]"
+                        else
+                            str_u = " [$(replace(output_units[i], input_units[j] => ""))]"
+                        end
+                    else
+                        str_u = " [$(output_units[i])/$(input_units[j])]"
+                    end =#

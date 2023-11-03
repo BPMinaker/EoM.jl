@@ -2,6 +2,12 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
 
     verb && println("Running linear analysis...")
 
+    if isdefined(Main, :VSCodeServer)
+        plotly()
+    else
+        unicodeplots()
+    end
+
     result = analysis()
 
     F = eigen(dss_eqns.A, dss_eqns.E) # find the eigen
@@ -48,11 +54,11 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
     result.tau = -1.0 ./ real.(result.e_val)
     result.lambda = abs.(2π ./ imag.(result.e_val))
 
-    idx = abs.(real.(result.e_val)) .< 1e-10
+    idx = abs.(real.(result.e_val)) .< 1e-7
     result.tau[idx] .= Inf
     result.zeta[idx] .= 0
 
-    idx = abs.(imag.(result.e_val)) .< 1e-10
+    idx = abs.(imag.(result.e_val)) .< 1e-7
     result.lambda[idx] .= Inf
     result.omega_n[idx] .= 0
     result.zeta[idx] .= NaN
@@ -95,7 +101,18 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
 
     # compute frequency response
     G(x) = C * ((I * x * 1im - A) \ B) + D
-    result.freq_resp = G.(result.w)
+    try
+        result.freq_resp = G.(result.w)
+    catch
+        result.freq_resp = Vector{Matrix{ComplexF64}}(undef,size(result.w))
+        for i in 1:length(result.w)
+            try
+                result.freq_resp[i] = G(result.w[i])
+            catch
+                result.freq_resp[i] = ones(size(D)) * Inf
+            end
+        end
+    end
     mag(x) =  20 * log10.(abs.(x)) .+ eps(1.0)
     result.mag = mag.(result.freq_resp)
     phs(x) = 180 / π * angle.(x)
@@ -105,7 +122,7 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
     if cond(A) < 1e6
         result.ss_resp = -C * (A \ B) + D
     else
-        verb && println("System matrix is near singular.  Substituting real part of low frequency response ($(10.0 ^ (low - 1)) Hz) for steady state...")
+        verb && println("System matrix is near singular.  Substituting real part of low frequency response ($(my_round(10.0 ^ (low - 1))) Hz) for steady state...")
         result.ss_resp = real.(G(2π * 10.0 ^ (low - 1)))
     end
 

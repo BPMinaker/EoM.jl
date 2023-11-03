@@ -42,6 +42,7 @@ Base.@kwdef mutable struct mbd_system
     loads::Vector{load} = Vector{load}(undef, 0)
     sensors::Vector{sensor} = Vector{sensor}(undef, 0)
     actuators::Vector{actuator} = Vector{actuator}(undef, 0)
+    scratch::Any = 0
 end
 
 mbd_system(str::String) = mbd_system(; name = str)
