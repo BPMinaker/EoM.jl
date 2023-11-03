@@ -119,7 +119,7 @@ function summarize(
             header = ["Output/Input", "Gain"]
             if format == :html
                 println(output_f, "<h2>Steady state gains</h2>")
-                str = pretty_table(String,[labels my_round.(gain)]; header, backend = Val(:html), standalone = false)
+                str = pretty_table(String, [labels my_round.(gain)]; header, backend = Val(:html), standalone = false)
                 println(output_f, str)
     
                 path = joinpath(dir_data, "sstf.html")
@@ -196,23 +196,23 @@ function summarize(
 
             # eliminate all zero rows
             tr = []
-            for i in axes(sr, 1)
-                if any(sr[i, :] .!= 0)
+            for i in eachrow(sr)
+                if any(i .!= 0)
                     push!(tr, i)
                 end
             end
-            sr = sr[tr, :]
+            sr = hcat(tr...)'
             tr = []
-            for i in axes(si, 1)
-                if any(si[i, :] .!= 0)
+            for i in eachrow(si)
+                if any(i .!= 0)
                     push!(tr, i)
                 end
             end
-            si = si[tr, :]
+            si = hcat(tr...)'
 
             # don't plot zeros - but can't have entire row of NaN
-            sr[sr.==0] .= NaN
-            si[si.==0] .= NaN
+            sr[sr .== 0] .= NaN
+            si[si .== 0] .= NaN
 
             seriestype = :scatter
             ms = 3
@@ -635,6 +635,13 @@ function summarize(
         pretty_table(temp; header, vlines = :none)
     end
 end
+
+            # for i in axes(si, 1)
+            #     if any(si[i, :] .!= 0)
+            #         push!(tr, i)
+            #     end
+            # end
+            # si = si[tr, :]
 
 #   xticks = 10.0 .^ collect(Int(round(log10(w[1]))):1:Int(round(log10(w[end]))))
 

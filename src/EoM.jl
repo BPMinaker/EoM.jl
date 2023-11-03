@@ -107,7 +107,7 @@ function treat(vec_in)
         end
     end
     vect = hcat(vect...)'
-    vect[vect .== 0] .= NaN
+    any(vect .!= 0 .&& .!(isnan.(vect))) && (vect[vect .== 0] .= NaN)
     rcol = []
     for i in eachcol(vect)
         if sum(isnan.(i)) < len && sum(isinf.(i)) < len
