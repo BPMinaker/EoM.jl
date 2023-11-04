@@ -108,6 +108,7 @@ function treat(vec_in)
     end
     vect = hcat(vect...)'
     any(vect .!= 0 .&& .!(isnan.(vect))) && (vect[vect .== 0] .= NaN)
+    vect[abs.(vect) .> 1e5] .= Inf
     rcol = []
     for i in eachcol(vect)
         if sum(isnan.(i)) < len && sum(isinf.(i)) < len
