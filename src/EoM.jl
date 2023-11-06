@@ -90,14 +90,14 @@ include("input_delay.jl")
 #include("lsim.jl")
 #include("phi.jl")
 
-function my_round(x; dig = 4, lim = 1e-7)
+function my_round(x::Union{Float64, Complex{Float64}}; dig = 4, lim = 1e-7)
     x = round(x, sigdigits = dig)
     abs(real(x)) < lim  && (x = 0 + imag(x)im )
     abs(imag(x)) < lim  && (x = real(x))
     x
 end
 
-function treat(vec_in)
+function treat(vec_in::Vector{Vector{Float64}})
     vect = unique.(vec_in)
     nf = maximum(length.(vect))
     len = length(vect)
@@ -119,11 +119,11 @@ function treat(vec_in)
 end
 
 # Let's define some helper functions to make piecewise functions easier to define
-function step(t)
+function step(t::Float64)
     0.5 * (sign(t) + 1)
 end
 
-function pulse(t, a, b)
+function pulse(t::Float64, a::Float64, b::Float64)
     step(t-a) - step(t-b)
 end
 

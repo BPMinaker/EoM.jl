@@ -32,8 +32,8 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
         end
     end
 
-    temp_ss = dss2ss(dss_eqns, verb) # reduce to standard form
-    min_ss =  minreal(temp_ss, verb)
+    temp_ss = dss2ss(dss_eqns::dss_data, verb) # reduce to standard form
+    min_ss =  minreal(temp_ss::ss_data, verb)
 
     if size(min_ss.A, 1) < size(temp_ss.A,1)
         result.ss_eqns = min_ss
@@ -63,10 +63,7 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
     result.omega_n[idx] .= 0
     result.zeta[idx] .= NaN
 
-    A = result.ss_eqns.A
-    B = result.ss_eqns.B
-    C = result.ss_eqns.C
-    D = result.ss_eqns.D
+    (; A, B, C, D) = result.ss_eqns
 
     temp = [A B; C D]
     if size(temp, 1) == size(temp, 2)
@@ -100,7 +97,7 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
     result.w = 2π * (10.0 .^ range(low, stop = high, length = wpts))
 
     # compute frequency response
-    G(x) = C * ((I * x * 1im - A) \ B) + D
+    G(x::Float64) = C * ((I * x * 1im - A) \ B) + D
     try
         result.freq_resp = G.(result.w)
     catch
@@ -113,9 +110,9 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
             end
         end
     end
-    mag(x) =  20 * log10.(abs.(x)) .+ eps(1.0)
+    mag(x::Matrix{Complex{Float64}}) =  20 * log10.(abs.(x)) .+ eps(1.0)
     result.mag = mag.(result.freq_resp)
-    phs(x) = 180 / π * angle.(x)
+    phs(x::Matrix{Complex{Float64}}) = 180 / π .* angle.(x)
     result.phase = phs.(result.freq_resp)
 
     # compute steady state response
@@ -128,34 +125,3 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
 
     result
 end
-
-#p = sortperm(round.(tmp_vals, digits = 5), by = x -> (isreal(x), real(x) > 0, abs(x), real(x), abs(imag(x)), -imag(x)
-
-#    nin = size(result.ss_eqns.B, 2)
-#    nout = size(result.ss_eqns.C, 1)
-#    nn = size(result.ss_eqns.A, 1)
-#    result.ss_resp = zeros(nout, nin)
-
-
-        # verb && println("No system inverse exists, trying individual input-output pairs...")
-        # result.ss_resp = zeros(nout, nin)
-        # for m in 1:nin
-        #     for n in 1:nout
-        #         temp_mn = ss_data(temp_ss.A, temp_ss.B[:, m:m], temp_ss.C[n:n, :], temp_ss.D[n:n, m:m]) # eliminate all the other inputs and outputs
-        #         ss_eqns = minreal(temp_mn, verb)
-        #         if size(ss_eqns.A, 1) < nn
-        #             try
-        #                 result.ss_resp[n, m] = -(ss_eqns.C * (ss_eqns.A \ ss_eqns.B))[1, 1] + ss_eqns.D[1, 1] # note only one input and one output here
-        #             catch
-        #                 result.ss_resp[n, m] = Inf
-        #                 verb && println("No steady state exists for at least one input-output pair.")
-        #             end
-        #         else
-        #             verb && println("No steady state exists for at least one input-output pair.  Trying real part of low frequency response...")
-        #             result.ss_resp[n, m] = real(G(0.1 * 2π)[n,m])
-        #         end
-        #     end
-        # end
-
-
-

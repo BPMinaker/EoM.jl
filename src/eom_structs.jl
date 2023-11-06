@@ -1,4 +1,4 @@
-Base.@kwdef mutable struct eom_data
+@kwdef mutable struct eom_data
     mass::Array{Float64,2} =  zeros(0, 0) ## mass matrix from bodies
     inertia::Array{Float64,2} =  zeros(0, 0) ## mass matrix from springs
     damping::Array{Float64,2} =  zeros(0, 0) ## damping matrix from dampers
@@ -28,7 +28,7 @@ Base.@kwdef mutable struct eom_data
     column::Vector{Int64} = zeros(0)
 end
 
-Base.@kwdef mutable struct mbd_system
+@kwdef mutable struct mbd_system
     name::String = "Unnamed System"
     vpt::Number = 0
     item::Vector{Any} = Vector{Any}(undef, 0)
@@ -127,11 +127,11 @@ function Base.show(io::IO, obj::dss_data)
     println(io)
 end
 
-struct ss_data
-    A::Array{Float64,2}
-    B::Array{Float64,2}
-    C::Array{Float64,2}
-    D::Array{Float64,2}
+@kwdef struct ss_data
+    A::Array{Float64,2} = zeros(0, 0)
+    B::Array{Float64,2} = zeros(0, 0)
+    C::Array{Float64,2} = zeros(0, 0)
+    D::Array{Float64,2} = zeros(0, 0)
 end
 
 function Base.show(io::IO, obj::ss_data)
@@ -150,9 +150,7 @@ function Base.show(io::IO, obj::ss_data)
     println(io)
 end
 
-ss_data() = ss_data(zeros(0, 0), zeros(0, 0), zeros(0, 0), zeros(0, 0))
-
-Base.@kwdef mutable struct analysis
+@kwdef mutable struct analysis
     ss_eqns::ss_data = ss_data()
     mode_vals::Vector{Complex{Float64}} = zeros(0)
     modes::Array{Complex{Float64},2} = zeros(0,0) * 1im

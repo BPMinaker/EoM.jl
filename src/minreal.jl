@@ -4,18 +4,15 @@ function minreal(ss_eqns::EoM.ss_data, verb::Bool = false)
     # IEEE Transactions on Automatic Control, June 1973
 
     ss_1 = cont_part(ss_eqns)
-    ss_2 = cont_part(ss_data(ss_1.A', ss_1.C', ss_1.B', ss_eqns.D'))
-    ss_2 = ss_data(ss_2.A', ss_2.C', ss_2.B', ss_eqns.D)
+    ss_2 = cont_part(ss_data(; A=ss_1.A', B=ss_1.C', C=ss_1.B', D=ss_eqns.D'))
+    ss_2 = ss_data(; A=ss_2.A', B=ss_2.C', C=ss_2.B', D=ss_eqns.D)
     verb && println("Minimal system is of dimension ", size(ss_2.A,2), ".")
     ss_2
 end
 
 function cont_part(ss_eqns::EoM.ss_data)
 
-    A = ss_eqns.A
-    B = ss_eqns.B
-    C = ss_eqns.C
-    D = ss_eqns.D
+    (;A, B, C, D) = ss_eqns
 
     H = [A B; C zeros(size(D))]
     #display(H)
@@ -56,11 +53,11 @@ function cont_part(ss_eqns::EoM.ss_data)
     if  j == 0
         return ss_eqns
     else
-        return ss_data(H[j+1:n, j+1:n], H[j+1:n, n+1:end], H[n+1:end, j+1:n], D)
+        return ss_data(; A=H[j+1:n, j+1:n], B=H[j+1:n, n+1:end], C=H[n+1:end, j+1:n], D)
     end
 end
 
-function zero_out!(H, r, i, j)
+function zero_out!(H::Array{Float64,2}, r::Int64, i::Int64, j::Int64)
     a = -H[r, j] / H[i, j]
     H[r, :] .+= a * H[i, :]
     H[:, i] .-= a * H[:, r]
