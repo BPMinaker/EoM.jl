@@ -182,10 +182,10 @@ function write_output(
     ss_path = joinpath(dir_data, "ss")
     ~isdir(ss_path) && (mkdir(ss_path))
 
-    writedlm(joinpath(ss_path, "A.out"), results[1].ss_eqns.A)
-    writedlm(joinpath(ss_path, "B.out"), results[1].ss_eqns.B)
-    writedlm(joinpath(ss_path, "C.out"), results[1].ss_eqns.C)
-    writedlm(joinpath(ss_path, "D.out"), results[1].ss_eqns.D)
+    writedlm(joinpath(ss_path, "A.out"), my_round.(results[1].ss_eqns.A, dig=8))
+    writedlm(joinpath(ss_path, "B.out"), my_round.(results[1].ss_eqns.B, dig=8))
+    writedlm(joinpath(ss_path, "C.out"), my_round.(results[1].ss_eqns.C, dig=8))
+    writedlm(joinpath(ss_path, "D.out"), my_round.(results[1].ss_eqns.D, dig=8))
 
     dir_data
 

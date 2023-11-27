@@ -123,5 +123,23 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
         result.ss_resp = real.(G(2π * 10.0 ^ (low - 1)))
     end
 
+    # compute impulse response
+    tt = min(3 * maximum(result.tau), 3 * maximum(result.lambda))
+    tt == Inf && (tt = 1)
+    steps = 251
+    result.impulse_t = collect(range(0, tt; length = steps))
+    dt = tt / (steps - 1)
+
+    result.impulse = fill(zeros(size(C, 1), size(B, 2)), steps)
+    temp = fill(zeros(size(A)), steps)
+    temp[1] += I
+    result.impulse[1] = C * B
+
+    ϕ = exp(A * dt)
+    for i in 2:steps
+        temp[i] = temp[i-1] * ϕ
+        result.impulse[i] = C * temp[i] * B
+    end
+
     result
 end

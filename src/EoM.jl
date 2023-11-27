@@ -82,7 +82,6 @@ include("summarize.jl")
 
 include("mirror.jl")
 include("thin_rod.jl")
-include("impulse.jl")
 include("splsim.jl")
 include("random_road.jl")
 include("input_delay.jl")
@@ -90,7 +89,7 @@ include("input_delay.jl")
 #include("lsim.jl")
 #include("phi.jl")
 
-function my_round(x::Union{Float64, Complex{Float64}}; dig = 4, lim = 1e-7)
+function my_round(x::Number; dig = 4, lim = 1e-7)
     x = round(x, sigdigits = dig)
     abs(real(x)) < lim  && (x = 0 + imag(x)im )
     abs(imag(x)) < lim  && (x = real(x))
@@ -119,11 +118,11 @@ function treat(vec_in::Vector{Vector{Float64}})
 end
 
 # Let's define some helper functions to make piecewise functions easier to define
-function step(t::Float64)
+function step(t::Number)
     0.5 * (sign(t) + 1)
 end
 
-function pulse(t::Float64, a::Float64, b::Float64)
+function pulse(t::Number, a::Number, b::Number)
     step(t-a) - step(t-b)
 end
 

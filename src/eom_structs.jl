@@ -168,6 +168,8 @@ end
     ss_resp::Array{Float64,2} = zeros(0,0)
     centre::Array{Complex{Float64},2} = zeros(0,0) * 1im
     hsv::Vector{Float64} = zeros(0)
+    impulse::Vector{Array{Float64,2}} = [zeros(0,0)]
+    impulse_t::Vector{Float64} = zeros(0)
 end
 
 function Base.show(io::IO, obj::analysis)

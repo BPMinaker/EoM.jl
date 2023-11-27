@@ -4,11 +4,12 @@ function summarize(
     plots = [],
     ss = ones(Int64, length(system.sensors), length(system.actuators)),
     bode = :default,
+    impulse = ones(Int64, length(system.sensors), length(system.actuators)),
     format::Symbol = :screen,
     folder::String = "output",
     filename::String = system.name,
 )
-    summarize([system], 0, [results]; plots, ss, bode, format, folder, filename)
+    summarize([system], 0, [results]; plots, ss, bode, impulse, format, folder, filename)
 end
 
     # Copyright (C) 2020, Bruce Minaker
@@ -20,6 +21,7 @@ function summarize(
     plots = [],
     ss = ones(Int64, length(systems[1].sensors), length(systems[1].actuators)),
     bode = :default,
+    impulse = ones(Int64, length(systems[1].sensors), length(systems[1].actuators)),
     vpt_name = ["u" "Speed" "m/s"],
     format::Symbol = :screen,
     folder::String = "output",
@@ -580,6 +582,95 @@ function summarize(
         end
     end
     
+
+
+
+    # impulse response
+
+
+    # if there are too many inputs and outputs, skip
+    if nin * nout > 0 && nin * nout < 32
+        
+        if format == :html
+            println(output_f, "<h2>Impulse response plots</h2>")
+        end
+        
+        # pick out up to four representative vpts from the list
+        l = unique(Int.(round.((nvpts - 1) .* [0, 1, 2, 3] / 3 .+ 1)))
+        ll = length(l)
+
+        if ll == 1
+            for i in 1:nin
+                # fill in for each selected vpt
+                r = findall(impulse[:, i] .== 1)
+                if length(r) > 0
+                    t = results[l[1]].impulse_t
+                    imp = cat(results[l[1]].impulse..., dims = 3)[r, i, :]
+                    label = hcat(output_names[r]...)
+                    label .*= "/" * input_names[i]
+                    p = plot(
+                        t,
+                        imp';
+                        lw = 2,
+                        label,
+                        xlabel = "Time [s]",
+                        ylabel = "Output",
+                        size = (800, 400),
+                        title,
+                        titlefontsize,
+                        titlelocation,
+                        extra_kwargs
+                    )
+                    if format == :html
+                        path = joinpath(dir_data, "impulse_$i.html")
+                        savefig(p, path)
+                        f = open(path, "r")
+                        println(output_f, read(f, String))
+                        close(f)
+                    else
+                        display(p)
+                    end
+                end
+            end
+        else
+            # loop over outputs and inputs and selected vpts
+            for i in 1:nout
+                for j in 1:nin
+                    if impulse[i,j] == 1
+                        # make empty plot
+                        ylabel = "|$(output_names[i])|/|$(input_names[j])| "
+                        p = plot(;
+                            xlabel = "Time [s]",
+                            ylabel,
+                            size = (800, 400),
+                            title,
+                            titlefontsize,
+                            titlelocation,
+                            extra_kwargs
+                        )
+                        # fill in for each selected vpt
+                        for k in l
+                            t = results[k].impulse_t
+                            imp = cat(results[k].impulse..., dims = 3)[i, j, :]
+                            lb = vpt_name[1] * "=$(my_round(vpts[k]))  $(vpt_name[3])"
+                            p = plot!(p, t, imp; lw = 2, label = lb)
+                        end
+                        if format == :html
+                            path = joinpath(dir_data, "impulse_$(i)_$(j).html")
+                            savefig(p, path)
+                            f = open(path, "r")
+                            println(output_f, read(f, String))
+                            close(f)
+                        else
+                            display(p)
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+
     if length(plots) > 0
         if format == :html
             println(output_f, "<h2>Time history and other plots</h2>")
