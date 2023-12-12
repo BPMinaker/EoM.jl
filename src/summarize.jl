@@ -450,7 +450,7 @@ function summarize(
         end
         
         # pick out up to four representative vpts from the list
-        l = unique(Int.(round.((nvpts - 1) .* [0, 1, 2, 3] / 3 .+ 1)))
+        l = unique(Int.(round.((nvpts - 1) .* [1, 3, 5, 7] / 8 .+ 1)))
         ll = length(l)
 
         if ll == 1
@@ -580,24 +580,10 @@ function summarize(
                 end
             end
         end
-    end
-    
 
-
-
-    # impulse response
-
-
-    # if there are too many inputs and outputs, skip
-    if nin * nout > 0 && nin * nout < 32
-        
         if format == :html
             println(output_f, "<h2>Impulse response plots</h2>")
         end
-        
-        # pick out up to four representative vpts from the list
-        l = unique(Int.(round.((nvpts - 1) .* [0, 1, 2, 3] / 3 .+ 1)))
-        ll = length(l)
 
         if ll == 1
             for i in 1:nin
