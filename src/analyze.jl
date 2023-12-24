@@ -115,6 +115,12 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
     phs(x::Matrix{Complex{Float64}}) = 180 / π .* angle.(x)
     result.phase = phs.(result.freq_resp)
 
+    small(x::Matrix{Float64}) = x .< -120
+    function set(x, idx)
+        x[idx] .= 0
+    end
+    set.(result.phase, small.(result.mag))
+
     # compute steady state response
     if cond(A) < 1e6
         result.ss_resp = -C * (A \ B) + D
@@ -125,11 +131,15 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
 
     # compute impulse response
     tt = min(3 * maximum(result.tau), 3 * maximum(result.lambda))
+    tt = abs(tt)
     tt == Inf && (tt = 1)
-    steps = 251
+    dt = min(minimum(result.tau), minimum(result.lambda))
+    dt = abs(dt)
+    dt /= 20
+    steps = min(1024, Int64(round(tt/dt)))
+    steps = max(steps, 128)
     result.impulse_t = collect(range(0, tt; length = steps))
     dt = tt / (steps - 1)
-
     result.impulse = fill(zeros(size(C, 1), size(B, 2)), steps)
     temp = fill(zeros(size(A)), steps)
     temp[1] += I
