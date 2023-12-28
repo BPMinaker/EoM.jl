@@ -130,8 +130,7 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
     end
 
     # compute impulse response
-    tt = min(3 * maximum(result.tau), 3 * maximum(result.lambda))
-    tt = abs(tt)
+    tt = π / result.w[1]
     tt == Inf && (tt = 1)
     dt = min(minimum(result.tau), minimum(result.lambda))
     dt = abs(dt)
