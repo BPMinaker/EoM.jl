@@ -130,13 +130,14 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
     end
 
     # compute impulse response
-    tt = π / result.w[1]
-    tt == Inf && (tt = 1)
-    dt = min(minimum(result.tau), minimum(result.lambda))
-    dt = abs(dt)
-    dt /= 20
-    steps = min(1024, Int64(round(tt/dt)))
-    steps = max(steps, 128)
+    # at least two of the longest wavelengths
+    tt = 4π / result.w[1]
+    tt == Inf && (tt = 10)
+    # try to get 20 steps in the shortest wavelength
+    dt = 0.1 * π / result.w[end]
+    steps = Int64(round(tt/dt)) + 1
+    # cap at 5000 steps, otherwise too much data
+    steps = min(5001, steps)
     result.impulse_t = collect(range(0, tt; length = steps))
     dt = tt / (steps - 1)
     result.impulse = fill(zeros(size(C, 1), size(B, 2)), steps)
