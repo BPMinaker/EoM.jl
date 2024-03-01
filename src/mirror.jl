@@ -1,7 +1,8 @@
 function mirror!(the_system::mbd_system)
 
     for old in the_system.item
-        if occursin("LF ", old.name) || occursin("LR ", old.name) || occursin("_lf", old.name) || occursin("_lr", old.name)
+        name = uppercase(old.name)
+        if occursin("LF ", name) || occursin("LR ", name) || occursin("_LF", name) || occursin("_LR", name) || occursin("LF_", name) || occursin("LR_", name)
 
             item = deepcopy(old)
 
@@ -20,10 +21,7 @@ function mirror!(the_system::mbd_system)
 
             elseif isa(item, rigid_point) || isa(item, flex_point)
 
-                item.body[1] = replace(item.body[1], "LF" => "RF")
-                item.body[1] = replace(item.body[1], "LR" => "RR")
-                item.body[2] = replace(item.body[2], "LF" => "RF")
-                item.body[2] = replace(item.body[2], "LR" => "RR")
+                mirror_name!(item)
 
                 item.location[2] = -item.location[2]
                 item.axis[2] = -item.axis[2]
@@ -32,10 +30,7 @@ function mirror!(the_system::mbd_system)
 
             elseif isa(item, link) || isa(item, spring) || isa(item, beam)
 
-                item.body[1] = replace(item.body[1], "LF" => "RF")
-                item.body[1] = replace(item.body[1], "LR" => "RR")
-                item.body[2] = replace(item.body[2], "LF" => "RF")
-                item.body[2] = replace(item.body[2], "LR" => "RR")
+                mirror_name!(item)
 
                 item.location[1][2] = -item.location[1][2]
                 item.location[2][2] = -item.location[2][2]
@@ -43,10 +38,7 @@ function mirror!(the_system::mbd_system)
 
             elseif isa(item, sensor) || isa(item, actuator)
 
-                item.body[1] = replace(item.body[1], "LF" => "RF")
-                item.body[1] = replace(item.body[1], "LR" => "RR")
-                item.body[2] = replace(item.body[2], "LF" => "RF")
-                item.body[2] = replace(item.body[2], "LR" => "RR")
+                mirror_name!(item)
 
                 del = item.location[2] - item.location[1]
                 item.location[1][2] = -item.location[1][2]
@@ -58,6 +50,9 @@ function mirror!(the_system::mbd_system)
                 item.body = replace(item.body, "LF" => "RF")
                 item.body = replace(item.body, "LR" => "RR")
 
+                item.body = replace(item.body, "lf" => "rf")
+                item.body = replace(item.body, "lr" => "rr")
+
                 item.location[2] = -item.location[2]
                 item.force[2] = -item.force[2]
                 item.moment[2] = -item.moment[2]
@@ -66,4 +61,19 @@ function mirror!(the_system::mbd_system)
             end
         end
     end
-end ## Leave
+end
+
+
+function mirror_name!(item)
+
+    item.body[1] = replace(item.body[1], "LF" => "RF")
+    item.body[1] = replace(item.body[1], "LR" => "RR")
+    item.body[2] = replace(item.body[2], "LF" => "RF")
+    item.body[2] = replace(item.body[2], "LR" => "RR")
+
+    item.body[1] = replace(item.body[1], "lf" => "rf")
+    item.body[1] = replace(item.body[1], "lr" => "rr")
+    item.body[2] = replace(item.body[2], "lf" => "rf")
+    item.body[2] = replace(item.body[2], "lr" => "rr")
+
+end
