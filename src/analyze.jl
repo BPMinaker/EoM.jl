@@ -2,11 +2,11 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
 
     verb && println("Running linear analysis...")
 
-    if isdefined(Main, :VSCodeServer)
-        plotly()
-    else
-        unicodeplots()
-    end
+    # if isdefined(Main, :VSCodeServer)
+    #     plotly()
+    # else
+    #     unicodeplots()
+    # end
 
     result = analysis()
 
