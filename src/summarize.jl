@@ -30,16 +30,16 @@ function summarize(
 
     println("Printing summary of the analysis of: $(systems[1].name)...")
     noeigs = false
+    plotly()
 
     title = "EoM " * Dates.format(now(), "yyyy-mm-dd")
     titlefontsize = 7
     titlelocation = :left
 
-    extra_kwargs = Dict(:subplot => (; ))#width = 20))
+#    extra_kwargs = Dict(:subplot => (; ))#width = 20))
 
     if format == :html
 
-        plotly()
         # set up the paths
         dirs = setup(folder = folder, data = filename)
         dir_date = dirs[1]
