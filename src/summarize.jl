@@ -36,7 +36,7 @@ function summarize(
     titlefontsize = 7
     titlelocation = :left
 
-#    extra_kwargs = Dict(:subplot => (; ))#width = 20))
+    extra_kwargs = Dict(:subplot => (; ))#width = 20))
 
     if format == :html
 
