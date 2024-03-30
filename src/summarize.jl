@@ -30,13 +30,12 @@ function summarize(
 
     println("Printing summary of the analysis of: $(systems[1].name)...")
     noeigs = false
-    plotly()
 
     title = "EoM " * Dates.format(now(), "yyyy-mm-dd")
     titlefontsize = 7
     titlelocation = :left
 
-    extra_kwargs = Dict(:subplot => (; ))#width = 20))
+    #extra_kwargs = Dict(:subplot => (; ))#width = 20))
 
     if format == :html
 
@@ -100,7 +99,7 @@ function summarize(
                             title,
                             titlefontsize,
                             titlelocation,
-                            extra_kwargs
+                            #extra_kwargs
                         )
                         if format == :html
                             path = joinpath(dir_data, "sstf_$(i)_$(j).html")
@@ -225,7 +224,7 @@ function summarize(
                 title,
                 titlefontsize,
                 titlelocation,
-                extra_kwargs
+                #extra_kwargs
             )
 
             vsr = vec(sr')
@@ -276,7 +275,7 @@ function summarize(
                 title,
                 titlefontsize,
                 titlelocation,
-                extra_kwargs
+                #extra_kwargs
             )
 
             if format == :html
@@ -307,7 +306,7 @@ function summarize(
                     title,
                     titlefontsize,
                     titlelocation,
-                    extra_kwargs
+                    #extra_kwargs
                 )
                 if format == :html
                     path = joinpath(dir_data, "omega.html")
@@ -336,7 +335,7 @@ function summarize(
                     title,
                     titlefontsize,
                     titlelocation,
-                    extra_kwargs
+                    #extra_kwargs
                 )
                 if format == :html
                     path = joinpath(dir_data, "zeta.html")
@@ -365,7 +364,7 @@ function summarize(
                     title,
                     titlefontsize,
                     titlelocation,
-                    extra_kwargs
+                    #extra_kwargs
                 )
                 if format == :html
                     path = joinpath(dir_data, "tau.html")
@@ -395,7 +394,7 @@ function summarize(
                     title,
                     titlefontsize,
                     titlelocation,
-                    extra_kwargs
+                    #extra_kwargs
                 )
                 if format == :html
                     path = joinpath(dir_data, "lambda.html")
@@ -482,7 +481,7 @@ function summarize(
                         titlefontsize,
                         titlelocation,
                         bottom_margin = 5mm,
-                        extra_kwargs
+                        #extra_kwargs
                     )
                     p2 = plot(
                         w,
@@ -495,7 +494,7 @@ function summarize(
                         xticks,
                         ylims = (-365, 5),
                         yticks = -360:60:0,
-                        extra_kwargs
+                        #extra_kwargs
                     )
                     # merge two subplots
                     p = plot(
@@ -535,7 +534,7 @@ function summarize(
                             title,
                             titlefontsize,
                             titlelocation,
-                            extra_kwargs
+                            #extra_kwargs
                         )
                         ylabel = "∠ $(output_names[i])/$(input_names[j]) [°]"
                         p2 = plot(;
@@ -545,7 +544,7 @@ function summarize(
                             xticks,
                             ylims = (-365, 5),
                             yticks = -360:60:0,
-                            extra_kwargs
+                            #extra_kwargs
                         )
                         # fill in for each selected vpt
                         for k in l
@@ -605,7 +604,7 @@ function summarize(
                         title,
                         titlefontsize,
                         titlelocation,
-                        extra_kwargs
+                        #extra_kwargs
                     )
                     if format == :html
                         path = joinpath(dir_data, "impulse_$i.html")
@@ -632,7 +631,7 @@ function summarize(
                             title,
                             titlefontsize,
                             titlelocation,
-                            extra_kwargs
+                            #extra_kwargs
                         )
                         # fill in for each selected vpt
                         for k in l
