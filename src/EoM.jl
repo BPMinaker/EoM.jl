@@ -5,11 +5,14 @@ module EoM
 using LinearAlgebra
 using Dates
 using DelimitedFiles
-using Plots
-using Plots.Measures
 using PrettyTables
 using SparseArrays
 using Unitful
+using StateSpaceSets: StateSpaceSet
+
+using Reexport
+@reexport using Plots
+using Plots.Measures
 
 export setup
 export run_eom!

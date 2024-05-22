@@ -500,7 +500,7 @@ function summarize(
                     p = plot(
                         p1,
                         p2,
-                        layout = grid(2, 1, heights = [0.66, 0.33]),
+                        layout = grid(2, 1, heights = [0.67, 0.33]),
                         size = (800, 600)
                     )
                     if format == :html
@@ -563,7 +563,7 @@ function summarize(
                         p = plot(
                             p1,
                             p2,
-                            layout = grid(2, 1, heights = [0.66, 0.33]),
+                            layout = grid(2, 1, heights = [0.67, 0.33]),
                             size = (800, 600)
                         )
                         if format == :html

@@ -53,8 +53,8 @@ function splsim(
     end
 
     if flag
-        return y, xu
+        return StateSpaceSet(y), xu
     else
-        return y
+        return StateSpaceSet(y)
     end
 end
