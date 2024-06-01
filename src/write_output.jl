@@ -21,16 +21,16 @@ function write_output(
 
     verbose && println("Writing output...")
 
-    # set up the paths
-    dirs = setup(folder = folder, data = filename)
-    dir_date = dirs[1]
-    dir_time = dirs[2]
-    
-    if overwrite
-        dir_data = joinpath(dir_date, filename)
-    else
-        dir_data = joinpath(dir_date, dir_time)
-    end
+    dir_date = setup(; folder)
+
+    dir_data = joinpath(dir_date, filename)
+    !isdir(dir_data) && (mkdir(dir_data))
+
+    # if overwrite
+    #     dir_data = joinpath(dir_date, filename)
+    # else
+    #     dir_data = joinpath(dir_date, dir_time)
+    # end
 
     # get names of inputs and outputs
     input_names = getfield.(systems[1].actuators, :name)
@@ -108,13 +108,13 @@ function write_output(
     if nin * nout > 0
         for i in eachindex(vpts)
             if nvpts == 1
-                println(sstf_f, "num outputtoinput gain")
+                println(sstf_f, "num outputtoinput ssgain maxgain")
                 for j in eachindex(output_names)
                     for k in eachindex(input_names)
                         print(sstf_f, "{", (j - 1) * nin + k, "} ")
                         print(sstf_f, "{", output_names[j], "/")
                         print(sstf_f, input_names[k], "} ")
-                        print(sstf_f, results[i].ss_resp[j, k])
+                        print(sstf_f, results[i].ss_resp[j, k], " ")
                         mag = cat(results[i].mag..., dims = 3)[j,k,:]
                         println(sstf_f, maximum(mag))
                     end
