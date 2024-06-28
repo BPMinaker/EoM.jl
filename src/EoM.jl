@@ -12,7 +12,7 @@ using Unitful
 using Reexport
 @reexport using Plots
 using Plots.Measures
-@reexport using StateSpaceSets : StateSpaceSet
+@reexport using StateSpaceSets:StateSpaceSet
 
 export setup
 export run_eom!
