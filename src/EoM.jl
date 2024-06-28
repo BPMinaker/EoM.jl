@@ -8,11 +8,11 @@ using DelimitedFiles
 using PrettyTables
 using SparseArrays
 using Unitful
-using StateSpaceSets: StateSpaceSet
 
 using Reexport
 @reexport using Plots
 using Plots.Measures
+@reexport using StateSpaceSets : StateSpaceSet
 
 export setup
 export run_eom!

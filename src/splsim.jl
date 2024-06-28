@@ -20,14 +20,19 @@ function splsim(
     # find the discrete time equivalent A and B matrices
     # use a sum to avoid problems in cases where A is singular
     AT = ss.A * T
-    term1 = zeros(size(ss.A)) + I
-    term2 = zeros(size(ss.A)) + I
-    Ad = zeros(size(ss.A)) + I
-    Bd = zeros(size(ss.A)) + I
+
+    sz = size(ss.A)
+    term1 = zeros(sz) + I
+    term2 = zeros(sz) + I
+    Ad = zeros(sz) + I
+    Bd = zeros(sz) + I
+
+    AToveri = [AT] ./ collect(2:11)
+    pushfirst!(AToveri, AT)
 
     for i in 1:10
-        term1 *= AT / i
-        term2 *= AT / (i + 1)
+        term1 *= AToveri[i]
+        term2 *= AToveri[i+1]
         Ad += term1
         Bd += term2
     end
