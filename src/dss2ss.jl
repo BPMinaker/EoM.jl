@@ -7,7 +7,7 @@ function dss2ss(dss_eqns::EoM.dss_data, verb::Bool=false)
 
     Q, S, P = svd(dss_eqns.E)  ##Q'*E*P should = S
 
-    S = S[S.>(maximum(size(dss_eqns.E))*eps(maximum(S)))]
+    S = S[S .> maximum(size(dss_eqns.E)) * eps(maximum(S))]
     n = length(S)
     Sinv = diagm(0 => 1.0 ./ S)
 
@@ -16,15 +16,15 @@ function dss2ss(dss_eqns::EoM.dss_data, verb::Bool=false)
     Ctilde = dss_eqns.C * P
 
     A11 = Atilde[1:n, 1:n]
-    A12 = Atilde[1:n, n+1:end]
+    A12 = Atilde[1:n, n + 1:end]
     A21 = Atilde[n+1:end, 1:n]
-    A22 = Atilde[n+1:end, n+1:end]
+    A22 = Atilde[n+1:end, n + 1:end]
 
     B1 = Btilde[1:n, :]
     B2 = Btilde[n+1:end, :]
 
     C1 = Ctilde[:, 1:n]
-    C2 = Ctilde[:, n+1:end]
+    C2 = Ctilde[:, n + 1:end]
 
     A221 = A22 \ A21
     A22B = A22 \ B2
