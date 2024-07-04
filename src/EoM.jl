@@ -31,6 +31,7 @@ export mbd_system
 export eom_output
 export thin_rod
 export mirror!
+export sensors_animate!
 export add_item!
 
 export e_val
@@ -84,6 +85,7 @@ include("syst_props.jl")
 include("summarize.jl")
 
 include("mirror.jl")
+include("sensors_animate.jl")
 include("thin_rod.jl")
 include("splsim.jl")
 include("random_road.jl")
