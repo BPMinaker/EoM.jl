@@ -2,9 +2,9 @@ function summarize(
     system::mbd_system,
     results::EoM.analysis;
     plots = [],
-    ss = ones(Int64, length(system.sensors), length(system.actuators)),
-    bode = :default,
-    impulse = ones(Int64, length(system.sensors), length(system.actuators)),
+    ss::Union{Symbol, Matrix, Vector} = :default,
+    bode::Union{Symbol, Matrix, Vector} = :default,
+    impulse::Union{Symbol, Matrix, Vector} = :default,
     format::Symbol = :screen,
     folder::String = "output",
     filename::String = system.name,
@@ -19,9 +19,9 @@ function summarize(
     vpts,
     results::Vector{EoM.analysis};
     plots = [],
-    ss = ones(Int64, length(systems[1].sensors), length(systems[1].actuators)),
-    bode = :default,
-    impulse = ones(Int64, length(systems[1].sensors), length(systems[1].actuators)),
+    ss::Union{Symbol, Matrix, Vector} = :default,
+    bode::Union{Symbol, Matrix, Vector} = :default,
+    impulse::Union{Symbol, Matrix, Vector} = :default,
     vpt_name = ["u" "Speed" "m/s"],
     format::Symbol = :screen,
     folder::String = "output",
@@ -65,6 +65,16 @@ function summarize(
     nin = length(input_names)
     nout = length(output_names)
     nvpts = length(vpts)
+
+    if ss == :default
+        ss = ones(nout, nin)
+    elseif typeof(ss) == Symbol
+        ss = zeros(nout, nin)
+    end
+
+    if size(ss, 1) != nout || size(ss, 2) != nin
+        error("Steady state plot request dimensions are incompatible with system!")
+    end
 
     # if there are too many inputs and outputs, skip
     if nin * nout > 0 && any(ss .== 1) && sum(ss .== 1) < 16
@@ -379,10 +389,22 @@ function summarize(
     if bode == :default
         isok(x) = (x == NoDims) 
         bode = isok.(dimension.(output_units * transpose(1 ./ input_units)))
+    elseif typeof(bode) == Symbol
+        bode = zeros(nout, nin)
     end
 
-    if size(bode, 1) > nout || size(bode, 2) > nin
+    if size(bode, 1) != nout || size(bode, 2) != nin
         error("Bode plot request dimensions are incompatible with system!")
+    end
+
+    if impulse == :default
+        impulse = ones(nout, nin)
+    elseif typeof(impulse) == Symbol
+        impulse = zeros(nout, nin)
+    end
+
+    if size(impulse, 1) != nout || size(impulse, 2) != nin
+        error("Impulse response plot request dimensions are incompatible with system!")
     end
 
     # if there are too many inputs and outputs, skip
