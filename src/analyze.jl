@@ -2,7 +2,7 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
 
     verb && println("Running linear analysis...")
 
-    plotly()
+    plotlyjs()
 
     # if isdefined(Main, :VSCodeServer)
     #     plotly()
