@@ -31,7 +31,7 @@ end
 @kwdef mutable struct mbd_system
     name::String = "Unnamed System"
     vpt::Number = 0
-    item::Vector{Any} = Vector{Any}(undef, 0)
+    item::Vector{Union{body, link, spring, rigid_point, flex_point, nh_point, beam, load, sensor, actuator}} = Vector{Union{body, link, spring, rigid_point, flex_point, nh_point, beam, load, sensor, actuator}}(undef, 0)
     bodys::Vector{body} = Vector{body}(undef, 0)
     links::Vector{link} = Vector{link}(undef, 0)
     springs::Vector{spring} = Vector{spring}(undef, 0)
