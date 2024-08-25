@@ -6,13 +6,12 @@ using LinearAlgebra
 using Dates
 using DelimitedFiles
 using PrettyTables
-using SparseArrays
 using Unitful
+using OrdinaryDiffEq
 
 using Reexport
 @reexport using Plots
 using Plots.Measures
-@reexport using StateSpaceSets:StateSpaceSet
 
 export setup
 export run_eom!
@@ -22,7 +21,7 @@ export full_ss
 export write_output
 export summarize
 export impulse
-export splsim
+export ltisim
 export random_road
 export input_delay!
 
@@ -83,11 +82,10 @@ include("write_output.jl")
 include("load_defln.jl")
 include("syst_props.jl")
 include("summarize.jl")
-
 include("mirror.jl")
 include("sensors_animate.jl")
 include("thin_rod.jl")
-include("splsim.jl")
+include("ltisim.jl")
 include("random_road.jl")
 include("input_delay.jl")
 
