@@ -13,6 +13,10 @@ using Reexport
 @reexport using Plots
 using Plots.Measures
 
+function __init__()
+    plotlyjs()
+end
+
 export setup
 export run_eom!
 export diagnose!
