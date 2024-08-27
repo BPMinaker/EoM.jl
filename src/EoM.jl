@@ -10,7 +10,7 @@ using Unitful
 using OrdinaryDiffEq
 
 using Reexport
-@reexport using Plots: plot, savefig
+@reexport using Plots: plot, savefig, grid
 using Plots.Measures
 
 import Pkg
