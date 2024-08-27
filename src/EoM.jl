@@ -8,7 +8,6 @@ using DelimitedFiles
 using PrettyTables
 using Unitful
 using OrdinaryDiffEq
-
 using Reexport
 @reexport using Plots
 using Plots.Measures
@@ -17,10 +16,12 @@ import Pkg
 function __init__()
     println("Initializing EoM...")
     if !any(x -> x.name == "PlotlyJS" && x.is_direct_dep, values(Pkg.dependencies()))
+        println("Installing Plots engine...")
         Pkg.add("PlotlyJS")
     end
     println("Choosing Plots engine...")
     plotlyjs()
+    println("Plots configured.")
 end
 
 export setup
