@@ -13,7 +13,13 @@ using Reexport
 @reexport using Plots
 using Plots.Measures
 
+import Pkg
 function __init__()
+    println("Initializing EoM...")
+    if !any(x -> x.name == "PlotlyJS" && x.is_direct_dep, values(Pkg.dependencies()))
+        Pkg.add("PlotlyJS")
+    end
+    println("Choosing Plots engine...")
     plotlyjs()
 end
 
