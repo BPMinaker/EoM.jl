@@ -31,6 +31,7 @@ export analyze
 export full_ss
 export write_output
 export summarize
+export summarize_pluto
 export impulse
 export ltisim
 export random_road
@@ -93,6 +94,7 @@ include("write_output.jl")
 include("load_defln.jl")
 include("syst_props.jl")
 include("summarize.jl")
+include("summarize_pluto.jl")
 include("mirror.jl")
 include("sensors_animate.jl")
 include("thin_rod.jl")
