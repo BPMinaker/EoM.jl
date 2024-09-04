@@ -517,8 +517,8 @@ function summarize_pluto(
     println("Preloads of first system:")
     pretty_table(temp; header, vlines = :none)
 
-    return Tuple(plots)
-
+#    return plots
+       println("sdfsd")
 end
 
             # for i in axes(si, 1)
