@@ -1,14 +1,6 @@
-function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
+function analyze(dss_eqns::EoM.dss_data, verb::Bool = false; freq::Tuple{Int64, Int64} = (0, 0))
 
     verb && println("Running linear analysis...")
-
-#    plotly()
-
-    # if isdefined(Main, :VSCodeServer)
-    #     plotly()
-    # else
-    #     unicodeplots()
-    # end
 
     result = analysis()
 
@@ -74,29 +66,30 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false)
         result.t_zero_f = abs.(result.t_zero) / 2π
     end
 
-    try
-        WC = lyap(A, B * B')
-        WO = lyap(I * A', C' * C)
-        result.hsv = sqrt.(eigvals(WC * WO))
-    catch
-        result.hsv = zeros(size(A,1))
-    end
+#    try
+#        WC = lyap(A, B * B')
+#        WO = lyap(I * A', C' * C)
+#        result.hsv = sqrt.(eigvals(WC * WO))
+#    catch
+#        result.hsv = zeros(size(A,1))
+#    end
 
-    t = unique(abs.(result.e_val))
-    t = t[t .> 4π / 10000]
-    # t = t[t .< π * 1000]
-    low = floor(log10(0.5 * minimum(t) / 2π))
-    # lowest low eigenvalue, round number in Hz
-    high = ceil(log10(2.0 * maximum(t) / 2π))
-    # highest high eigenvalue, round number in Hz
-    nw = Int(high - low)
-    if nw < 1
-        nw = 1
-        low = high - 1  #high += 1
+    if freq[1] == freq[2]
+        t = unique(abs.(result.e_val)) / 2π
+        t = t[t .> 2e-5]
+        low = Int(floor(log10(0.5 * minimum(t))))
+        # lowest low eigenvalue, round number in Hz
+        high = Int(ceil(log10(2.0 * maximum(t))))
+        # highest high eigenvalue, round number in Hz
+    else
+        low = freq[1]
+        high = freq[2]
     end
-    wpts = 200 * nw + 1
+    if (high - low) < 1 
+        low = high - 1
+    end
     # compute evenly spaced range of frequncies in log space to consider
-    result.w = 2π * (10.0 .^ range(low, stop = high, length = wpts))
+    result.w = 2π * 10.0 .^ (low:0.005:high)
 
     # compute frequency response
     G(x::Float64) = C * ((I * x * 1im - A) \ B) + D
