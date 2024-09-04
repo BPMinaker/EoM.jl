@@ -5,7 +5,7 @@ function summarize_pluto(
     bode::Union{Symbol, Matrix, Vector} = :default,
     impulse::Union{Symbol, Matrix, Vector} = :default,
 )
-    summarize([system], 0, [results]; ss, bode, impulse)
+    summarize_pluto([system], 0, [results]; ss, bode, impulse)
 end
 
     # Copyright (C) 2020, Bruce Minaker
@@ -517,8 +517,7 @@ function summarize_pluto(
     println("Preloads of first system:")
     pretty_table(temp; header, vlines = :none)
 
-#    return plots
-       println("sdfsd")
+    return plots
 end
 
             # for i in axes(si, 1)
