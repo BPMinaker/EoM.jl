@@ -76,7 +76,6 @@ function summarize_pluto(
                             xlabel = vpt_name[2] * " [$(vpt_name[3])]",
                             ylabel = lb,
                             label = "",
-                            size = (800, 400),
                             title,
                             titlefontsize,
                             titlelocation,
@@ -147,7 +146,6 @@ function summarize_pluto(
                 label,
                 xlabel = "Real part [rad/s]",
                 ylabel = "Imaginary part [rad/s]",
-                size = (800, 400),
                 title,
                 titlefontsize,
                 titlelocation,
@@ -178,7 +176,6 @@ function summarize_pluto(
             p = plot(;
                 xlabel = vpt_name[2] * " [$(vpt_name[3])]",
                 ylabel = "Eigenvalue [rad/s]",
-                size = (800, 400),
                 title,
                 titlefontsize,
                 titlelocation,
@@ -219,7 +216,6 @@ function summarize_pluto(
                     xlabel = vpt_name[2] * " [$(vpt_name[3])]",
                     ylabel = "Natural frequency [Hz]",
                     ylims = (0, Inf),
-                    size = (800, 400),
                     title,
                     titlefontsize,
                     titlelocation,
@@ -239,7 +235,6 @@ function summarize_pluto(
                     label,
                     xlabel = vpt_name[2] * " [$(vpt_name[3])]",
                     ylabel = "Damping ratio",
-                    size = (800, 400),
                     title,
                     titlefontsize,
                     titlelocation,
@@ -259,7 +254,6 @@ function summarize_pluto(
                     label,
                     xlabel = vpt_name[2] * " [$(vpt_name[3])]",
                     ylabel = "Time constant [s]",
-                    size = (800, 400),
                     title,
                     titlefontsize,
                     titlelocation,
@@ -280,7 +274,6 @@ function summarize_pluto(
                     xlabel = vpt_name[2] * " [$(vpt_name[3])]",
                     ylabel = "Wavelength [s]",
                     ylims = (0, Inf),
-                    size = (800, 400),
                     title,
                     titlefontsize,
                     titlelocation,
@@ -375,7 +368,6 @@ function summarize_pluto(
                         p1,
                         p2,
                         layout = grid(2, 1, heights = [0.67, 0.33]),
-                        size = (800, 600)
                     )
                     push!(plots, p)
                 end
@@ -430,7 +422,6 @@ function summarize_pluto(
                             p1,
                             p2,
                             layout = grid(2, 1, heights = [0.67, 0.33]),
-                            size = (800, 600)
                         )
                         push!(plots, p)
                     end
@@ -454,7 +445,6 @@ function summarize_pluto(
                         label,
                         xlabel = "Time [s]",
                         ylabel = "Output",
-                        size = (800, 400),
                         title,
                         titlefontsize,
                         titlelocation,
@@ -473,7 +463,6 @@ function summarize_pluto(
                         p = plot(;
                             xlabel = "Time [s]",
                             ylabel,
-                            size = (800, 400),
                             title,
                             titlefontsize,
                             titlelocation,
