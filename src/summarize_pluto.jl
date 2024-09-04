@@ -279,7 +279,7 @@ function summarize_pluto(
                     titlelocation,
                     #extra_kwargs
                 )
-                push!(plots, pt)
+                push!(plots, pl)
             end
         end
 
