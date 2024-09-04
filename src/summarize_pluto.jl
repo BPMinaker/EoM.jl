@@ -343,7 +343,8 @@ function summarize_pluto(
                         ylabel = "Gain [dB]",
                         xscale,
                         xticks,
-                        ylims = (-40, Inf),
+                        xlims = (0.01, 100),
+                        ylims = (-40, 40),
                         title,
                         titlefontsize,
                         titlelocation,
@@ -359,6 +360,7 @@ function summarize_pluto(
                         ylabel = "Phase [°]",
                         xscale,
                         xticks,
+                        xlims = (0.01, 100),
                         ylims = (-365, 5),
                         yticks = -360:60:0,
                         #extra_kwargs
