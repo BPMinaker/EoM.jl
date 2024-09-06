@@ -427,8 +427,8 @@ function summarize(
                     mag = cat(results[l[1]].mag..., dims = 3)[r, i, :]
                     mag[findall(mag .> 100)] .= Inf
                     phs = cat(results[l[1]].phase..., dims = 3)[r, i, :]
-                    phs[phs .> 0.1] .-= 360
-                    phs[findall(abs.(diff(phs, dims = 2)) .> 250)] .= Inf
+                    phs[phs .> 1] .-= 360
+                    phs[findall(abs.(diff(phs, dims = 2)) .> 181)] .= Inf
                     label = hcat(output_names[r]...)
                     label .*= "/" * input_names[i]
                     xscale = :log10
@@ -514,9 +514,9 @@ function summarize(
                             mag = cat(results[k].mag..., dims = 3)[i, j, :]
                             mag[findall(mag .> 100)] .= Inf
                             phs = cat(results[k].phase..., dims = 3)[i, j, :]
-                            phs[phs .> 0] .-= 360
+                            phs[phs .> 1] .-= 360
                             # set wrap arounds in phase to Inf to avoid jumps in plot
-                            phs[findall(abs.(diff(phs)) .> 180)] .= Inf
+                            phs[findall(abs.(diff(phs)) .> 181)] .= Inf
                             lb = vpt_name[1] * "=$(my_round(vpts[k]))  $(vpt_name[3])"
                             p1 = plot!(p1, w, mag; lw = 2, label = lb)
                             p2 = plot!(p2, w, phs; lw = 2, label = "")
