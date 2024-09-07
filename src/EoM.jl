@@ -15,12 +15,16 @@ using Plots.Measures
 import Pkg
 function __init__()
     println("Initializing EoM...")
-    if !any(x -> x.name == "PlotlyJS" && x.is_direct_dep, values(Pkg.dependencies()))
-        println("Installing Plots engine...")
-        Pkg.add("PlotlyJS")
+    if !any(x -> x.name == "PlotlyBase" && x.is_direct_dep, values(Pkg.dependencies()))
+        println("Installing PlotlyBase...")
+        Pkg.add("PlotlyBase")
     end
-    println("Choosing Plots engine...")
-    plotlyjs()
+    if !any(x -> x.name == "PlotlyKaleido" && x.is_direct_dep, values(Pkg.dependencies()))
+        println("Installing PlotlyKaleido...")
+        Pkg.add("PlotlyKaleido")
+    end
+    println("Choosing Plotly engine...")
+    plotly()
     println("Plots configured.")
 end
 
@@ -144,17 +148,7 @@ end
 
 end  # end module
 
-
-
-    # rcol = []
-    # for i in 1:size(vect,2)
-    #     if sum(isnan.(vect[:,i])) < len && sum(isinf.(vect[:,i])) < len
-    #         push!(rcol, i)
-    #     end
-    # end
-    # vect[:, rcol]
-
-
+ 
 # macro def(name, definition)
 #     return quote
 #         macro $(esc(name))()
@@ -172,5 +166,3 @@ end  # end module
 #     moments::Int
 #     radius::Vector{Vector{Float64}}
 # end
-
-
