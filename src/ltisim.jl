@@ -2,11 +2,14 @@ function ltisim(
     ss::EoM.ss_data,
     u::Function,
     tspan::Tuple{Number, Number};
-    x0 = zeros(size(ss.A, 2), 1),
+    x0 = zeros(size(ss.A, 2)),
     flag::Bool = false
 )
 
     # Copyright (C) 2024, Bruce Minaker
+    if typeof(u(x0, 0.)) != Vector{Float64} && typeof(u(x0, 0.)) != Vector{Int64}
+        error("Input function must be a vector.")
+    end
 
     (; A, B, C, D) = ss
 
