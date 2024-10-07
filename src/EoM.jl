@@ -116,7 +116,7 @@ function my_round(x::Number; dig = 4, lim = 1e-7)
     x
 end
 
-function treat(vec_in::Vector{Vector{Float64}})
+function treat(vec_in::Vector{Vector{Float64}}, lim::Number)
     vect = unique.(vec_in)
     nf = maximum(length.(vect))
     len = length(vect)
@@ -127,7 +127,7 @@ function treat(vec_in::Vector{Vector{Float64}})
     end
     vect = hcat(vect...)'
     any(vect .!= 0 .&& .!(isnan.(vect))) && (vect[vect .== 0] .= NaN)
-    vect[abs.(vect) .> 1e5] .= Inf
+    vect[abs.(vect) .> lim] .= Inf
     rcol = []
     for i in eachcol(vect)
         if sum(isnan.(i)) < len && sum(isinf.(i)) < len

@@ -268,7 +268,7 @@ function summarize(
             mc = RGB(0 / 255, 154 / 255, 250 / 255)
             label=""
 
-            omega = treat(getfield.(results, :omega_n))
+            omega = treat(getfield.(results, :omega_n), 1000)
             if length(omega) > 0
                 po = plot(
                     vpts,
@@ -293,7 +293,7 @@ function summarize(
                 end
             end
 
-            zeta = treat(getfield.(results, :zeta))
+            zeta = treat(getfield.(results, :zeta), 1)
             if length(zeta) > 0
                 pz = plot(
                     vpts,
@@ -317,7 +317,7 @@ function summarize(
                 end
             end
 
-            tau = treat(getfield.(results, :tau))
+            tau = treat(getfield.(results, :tau), 100)
             if length(tau) > 0
                 pt = plot(
                     vpts,
@@ -341,7 +341,7 @@ function summarize(
                 end
             end
 
-            lambda = treat(getfield.(results, :lambda))
+            lambda = treat(getfield.(results, :lambda), 100)
             if length(lambda) > 0
                 pl = plot(
                     vpts,
