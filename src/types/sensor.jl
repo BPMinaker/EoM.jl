@@ -23,6 +23,7 @@ Base.@kwdef mutable struct sensor
     nu::Array{Float64,2} = zeros(3, 2)
     b_mtx::Vector{Array{Float64,2}} = [zeros(1, 3), zeros(1, 3)]
     units::String = "m"
+    desc::String = ""
 end
 
 sensor(str::String) = sensor(; name = str)

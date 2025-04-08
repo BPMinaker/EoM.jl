@@ -20,6 +20,7 @@ Base.@kwdef mutable struct actuator
     nu::Array{Float64,2} = zeros(3, 2)
     b_mtx::Vector{Array{Float64,2}} = [zeros(1, 3), zeros(1, 3)]
     units::String = "N"
+    desc::String = ""
 end
 
 actuator(str::String) = actuator(; name = str)

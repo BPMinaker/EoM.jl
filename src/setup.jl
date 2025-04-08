@@ -21,22 +21,3 @@ function setup(; folder::String = "output")
     dir_date
 
 end  ## Leave
-
-#, data::String = "data")
-#    dir = joinpath(dir_date, "figures")
-#    if ~isdir(dir)  # if no figures folder exists
-#        mkdir(dir)  # create new empty system folder
-
-#    end
-
-    # dir = joinpath(dir_date, data)
-    # if ~isdir(dir)  # if no system folder exists
-    #     mkdir(dir)  # create new empty system folder
-    # end
-
-    # tmstr = Dates.format(now(), "HH-MM-SS-s")
-    # dir_output = joinpath(dir, tmstr)
-    # if ~isdir(dir_output)
-    #     mkdir(dir_output)  # create new empty timed output folder
-    # end
-    # dir_time = joinpath(data, tmstr)

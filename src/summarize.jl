@@ -549,8 +549,7 @@ function summarize(
                 if length(r) > 0
                     t = results[l[1]].impulse_t
                     imp = cat(results[l[1]].impulse..., dims = 3)[r, i, :]
-                    label = hcat(output_names[r]...)
-                    label .*= "/" * input_names[i]
+                    label = input_names[i] * "🡲" .* hcat(output_names[r]...)
                     p = plot(
                         t,
                         imp';
@@ -577,7 +576,7 @@ function summarize(
                 for j in 1:nin
                     if impulse[i,j] == 1
                         # make empty plot
-                        ylabel = "|$(output_names[i])|/|$(input_names[j])| "
+                        ylabel = input_names[j] * "🡲" * output_names[i]
                         p = plot(;
                             xlabel = "Time [s]",
                             ylabel,
@@ -654,23 +653,4 @@ function summarize(
     end
 end
 
-            # for i in axes(si, 1)
-            #     if any(si[i, :] .!= 0)
-            #         push!(tr, i)
-            #     end
-            # end
-            # si = si[tr, :]
-
 #   xticks = 10.0 .^ collect(Int(round(log10(w[1]))):1:Int(round(log10(w[end]))))
-
-#=                     if output_units[i] == input_units[j]
-                        str_u = ""
-                    elseif contains(output_units[i], input_units[j])
-                        if contains(output_units[i], "/")
-                            str_u = " [$(replace(output_units[i], input_units[j] => "1"))]"
-                        else
-                            str_u = " [$(replace(output_units[i], input_units[j] => ""))]"
-                        end
-                    else
-                        str_u = " [$(output_units[i])/$(input_units[j])]"
-                    end =#

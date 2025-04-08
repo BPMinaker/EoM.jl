@@ -190,3 +190,105 @@ function Base.show(io::IO, obj::analysis)
     show(io, "text/plain", my_round.(obj.ss_resp))
     println()
 end
+
+mutable struct lti_soln
+    y::Function
+    u::Function
+    t::StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}}
+end
+
+function Base.show(io::IO, obj::lti_soln)
+    println(io, "LTI solution")
+    println(io, "t:")
+    show(io, "text/plain", collect(obj.t))
+    println(io)
+    println(io, "y:")
+    show(io, "text/plain", obj.y.(obj.t))
+    println(io)
+    println(io, "u:")
+    show(io, "text/plain", obj.u.(obj.t))
+    println(io)
+
+end
+
+function (obj::lti_soln)(t::Number)
+    obj.y(t)
+end
+
+function Base.getindex(obj::lti_soln, idx::Int)
+    obj.y(obj.t[idx])
+end
+
+function Base.getindex(obj::lti_soln, ::Colon, idx::Int)
+    obj.y(obj.t[idx])
+end
+
+function Base.getindex(obj::lti_soln, idx::Union{Vector{Int}, StepRange{Int, Int}})
+    hcat(obj.y.(obj.t[idx])...)
+end
+
+function Base.getindex(obj::lti_soln, ::Colon, idx::Union{Vector{Int}, StepRange{Int, Int}})
+    hcat(obj.y.(obj.t[idx])...)
+end
+
+function Base.getindex(obj::lti_soln, idx::Int, idx2::Int)
+    obj.y(obj.t[idx2])[idx]
+end
+
+function Base.getindex(obj::lti_soln, idx::Union{Int, Vector{Int}, StepRange{Int, Int}}, ::Colon)
+    hcat(obj.y.(obj.t)...)[idx, :]
+end
+
+function Base.getindex(obj::lti_soln, idx::Union{Vector{Int}, StepRange{Int, Int}}, idx2::Union{Vector{Int}, StepRange{Int, Int}})
+    hcat(obj.y.(obj.t[idx2])...)[idx, :]
+end
+
+function Base.getindex(obj::lti_soln, idx::Union{Vector{Int}, StepRange{Int, Int}}, idx2::Int)
+    obj.y(obj.t[idx2])[idx]
+end
+
+function Base.getindex(obj::lti_soln, ::Colon, ::Colon)
+    hcat(obj.y.(obj.t)...)
+end
+
+
+function ltiplot(obj::lti_soln, data::Union{Matrix{Float64}, Vector{Float64}}=zeros(length(obj.t), 0); yidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:, uidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:, label::Array{String}=String[], xlabel::String = "Time [s]",ylabel::String, title::String=  "EoM " * Dates.format(now(), "yyyy-mm-dd"),titlefontsize::Int=7, titlelocation::Symbol=:left, lw::Int=2, size::Tuple{Int, Int}=(800, 400)) 
+
+    if yidx == [0]
+        yidx = []
+    end
+
+    if uidx == [0]
+        uidx = []
+    end
+
+    plot(obj.t, [hcat(obj.y.(obj.t)...)'[:, yidx] hcat(obj.u.(obj.t)...)'[:, uidx] data]; xlabel, ylabel, label, title, titlefontsize, titlelocation, lw, size)
+end
+
+function ltilabels(the_system::mbd_system; yidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:, uidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:)
+
+    if yidx != [0]
+        onames = getproperty.(the_system.sensors[yidx], :name)
+        ounits = uparse.(getproperty.(the_system.sensors[yidx], :units))
+        odesc = getproperty.(the_system.sensors[yidx], :desc)
+    else
+        onames = String[]
+        ounits = String[]
+        odesc = String[]
+    end
+
+    if uidx != [0]
+        inames = getproperty.(the_system.actuators[uidx], :name)
+        iunits = uparse.(getproperty.(the_system.actuators[uidx], :units))
+        idesc = getproperty.(the_system.actuators[uidx], :desc)
+    else
+        inames = String[]
+        iunits = String[]
+        idesc = String[]
+    end
+
+    label = reshape([odesc .* " " .* onames; idesc .* " " .* inames], 1, :)
+    ylabel = join([onames .* " [" .* ["$i" for i in ounits] .* "]"; inames .* " [" .* ["$i" for i in iunits] .* "]"], ", ")
+
+    label, ylabel
+end

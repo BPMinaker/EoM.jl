@@ -8,8 +8,7 @@ using DelimitedFiles
 using PrettyTables
 using Unitful
 using OrdinaryDiffEq
-using Reexport
-@reexport using Plots
+using Plots
 using Plots.Measures
 
 import Pkg
@@ -38,6 +37,8 @@ export summarize
 export summarize_pluto
 export impulse
 export ltisim
+export ltiplot
+export ltilabels
 export random_road
 export input_delay!
 

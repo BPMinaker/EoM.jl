@@ -5,6 +5,16 @@ function ltisim(
     x0 = zeros(size(ss.A, 2)),
     flag::Bool = false
 )
+    ltisim(ss, u, range(tspan[1], tspan[2], length=1001), x0, flag)
+end
+
+function ltisim(
+    ss::EoM.ss_data,
+    u::Function,
+    tspan::StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}},
+    x0 = zeros(size(ss.A, 2)),
+    flag::Bool = false
+)
 
     # Copyright (C) 2024, Bruce Minaker
     if typeof(u(x0, 0.)) != Vector{Float64} && typeof(u(x0, 0.)) != Vector{Int64}
@@ -13,6 +23,24 @@ function ltisim(
 
     (; A, B, C, D) = ss
 
+    LTI = SplitFunction(MatrixOperator(A), (dx, x, p, t) -> dx .= B * u(x, t))
+    prob = SplitODEProblem(LTI, x0, (tspan[1], tspan[end]))
+    x = solve(prob, ETDRK4(); dt=tspan[2]-tspan[1])
+
+    function y(t)
+        C * x(t) + D * u(x(t), t)
+    end
+
+    function uu(t)
+        u(x(t), t)
+    end
+
+    lti_soln(y, uu, tspan)
+
+end
+
+
+#=
     function eomtr(dx, x, p, t)
         dx .= A * x + B * u(x, t)
         nothing
@@ -20,11 +48,6 @@ function ltisim(
 
     prob = ODEProblem(eomtr, x0, tspan)
     x = solve(prob, Tsit5())
+=#
 
-    function y(t)
-        C * x(t) + D * u(x(t), t)
-    end
 
-    y
-
-end

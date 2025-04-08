@@ -1,4 +1,4 @@
-function random_road(;class::Int=3, L=100.0, B=0.05, dz=0)
+function random_road(;class::Int=3, L=100.0, B=0.2, dz=0)
 
 # class is an integer from 3 - 9, where class=3 is an A-B road (smooth), class=9 is G-H road (rough)
 # L is max wavelength [m], also equals road length
