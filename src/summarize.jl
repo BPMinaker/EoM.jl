@@ -549,7 +549,7 @@ function summarize(
                 if length(r) > 0
                     t = results[l[1]].impulse_t
                     imp = cat(results[l[1]].impulse..., dims = 3)[r, i, :]
-                    label = input_names[i] * "🡲" .* hcat(output_names[r]...)
+                    label = input_names[i] * " 🡲 " .* hcat(output_names[r]...)
                     p = plot(
                         t,
                         imp';
@@ -576,7 +576,7 @@ function summarize(
                 for j in 1:nin
                     if impulse[i,j] == 1
                         # make empty plot
-                        ylabel = input_names[j] * "🡲" * output_names[i]
+                        ylabel = input_names[j] * " 🡲 " * output_names[i]
                         p = plot(;
                             xlabel = "Time [s]",
                             ylabel,
