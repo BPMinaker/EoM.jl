@@ -125,11 +125,11 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false; freq::Tuple{Int64, 
     end
 
     # compute impulse response
-    # at least two of the longest wavelengths
-    tt = 4π / result.w[1]
+    # at least one of the longest wavelengths
+    tt = 2π / result.w[1]
     tt == Inf && (tt = 10)
-    # try to get 20 steps in the shortest wavelength
-    dt = 0.1 * π / result.w[end]
+    # try to get 10 steps in the shortest wavelength
+    dt = 0.2π / result.w[end]
     steps = Int64(round(tt/dt)) + 1
     # cap at 5000 steps, otherwise too much data
     steps = min(5001, steps)

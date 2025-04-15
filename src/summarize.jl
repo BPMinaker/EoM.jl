@@ -424,9 +424,9 @@ function summarize(
                 r = findall(bode[:, i] .== 1)
                 if length(r) > 0
                     w = results[l[1]].w / 2π
-                    mag = cat(results[l[1]].mag..., dims = 3)[r, i, :]
+                    mag = [temp[j, i] for  j in r, temp in results[l[1]].mag]
                     mag[findall(mag .> 100)] .= Inf
-                    phs = cat(results[l[1]].phase..., dims = 3)[r, i, :]
+                    phs = [temp[j, i] for j in r, temp in results[l[1]].phase]
                     phs[phs .> 1] .-= 360
                     phs[findall(abs.(diff(phs, dims = 2)) .> 181)] .= Inf
                     label = hcat(output_names[r]...)
@@ -511,9 +511,9 @@ function summarize(
                         # fill in for each selected vpt
                         for k in l
                             w = results[k].w / 2π
-                            mag = cat(results[k].mag..., dims = 3)[i, j, :]
+                            mag = [temp[i, j] for temp in results[k].mag]
                             mag[findall(mag .> 100)] .= Inf
-                            phs = cat(results[k].phase..., dims = 3)[i, j, :]
+                            phs = [temp[i, j] for temp in results[k].phase]
                             phs[phs .> 1] .-= 360
                             # set wrap arounds in phase to Inf to avoid jumps in plot
                             phs[findall(abs.(diff(phs)) .> 181)] .= Inf

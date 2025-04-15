@@ -34,9 +34,7 @@ function write_output(
 
     # get names of inputs and outputs
     input_names = getfield.(systems[1].actuators, :name)
-    #    input_units = getfield.(systems[1].actuators, :units)
     output_names = getfield.(systems[1].sensors, :name)
-    #    output_units = getfield.(systems[1].sensors, :units)
 
     # get number of ins, outs, and number of vpts (velocity points)
     nin = length(input_names)
@@ -115,7 +113,7 @@ function write_output(
                         print(sstf_f, "{", output_names[j], "/")
                         print(sstf_f, input_names[k], "} ")
                         print(sstf_f, results[i].ss_resp[j, k], " ")
-                        mag = cat(results[i].mag..., dims = 3)[j,k,:]
+                        mag = [temp[j, k] for temp in results[i].mag]
                         println(sstf_f, maximum(mag))
                     end
                 end
@@ -127,7 +125,7 @@ function write_output(
                 end
                 for j in eachindex(output_names)
                     for k in eachindex(input_names)
-                        mag = cat(results[i].mag..., dims = 3)[j,k,:]
+                        mag = [temp[j, k] for temp in results[i].mag]
                         print(sstf_f, maximum(mag), " ")
                     end
                 end
@@ -147,8 +145,9 @@ function write_output(
             for j in eachindex(input_names)
                 temp = NaN * ones(nr, nc)
                 for k in eachindex(vpts)
-                    mag = cat(results[k].mag..., dims = 3)[i,j,:]
-                    phs = cat(results[k].phase..., dims = 3)[i,j,:]
+                    mag = [mtx[i, j] for mtx in results[k].mag]
+                    mag[mag .> 0] .-= 360
+                    phs = [mtx[i, j] for mtx in results[k].phase]
                     phs[phs .> 0] .-= 360
                     temp[1:length(results[k].w), 3 * k .+ (-2:0) ] = [results[k].w / 2π mag phs]
                 end
@@ -191,29 +190,3 @@ function write_output(
 
 end ## Leave
 
-
-    # for j in 1:length(results[i].w) ## Loop over frequency range
-    #     ## Each row starts with vpt, then freq in Hz
-    #     print(bode_f, vpts[i], " ", results[i].w[j] / 2 / pi, " ")
-    #     # Followed by first mag column, written as a row, then next column, as a row
-    #     for k in vec(results[i].mag[j])
-    #         print(bode_f, k, " ")
-    #     end
-    #     # Followed by first phase column, written as a row, then next column, as a row
-    #     for k in vec(results[i].phase[j])
-    #         print(bode_f, k, " ")
-    #     end
-    #     println(bode_f, "")
-    # end
-    # println(bode_f, "")
-
-
-
-# dss_path = joinpath(dir_data, "dss")
-# ~isdir(dss_path) && (mkdir(dss_path))
-
-# writedlm(joinpath(dss_path, "A.out"), eoms.A)
-# writedlm(joinpath(dss_path, "B.out"), eoms.B)
-# writedlm(joinpath(dss_path, "C.out"), eoms.C)
-# writedlm(joinpath(dss_path, "D.out"), eoms.D)
-# writedlm(joinpath(dss_path, "E.out"), eoms.E)
