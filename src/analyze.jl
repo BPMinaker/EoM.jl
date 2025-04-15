@@ -148,9 +148,10 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false; freq::Tuple{Int64, 
 
     nout, nin=size(D)
     result.impulse = Array{Vector{Float64}}(undef, nout, nin)
+
     for i in 1:nout
         for j in 1:nin
-            result.impulse[i,j] = cat(impulse..., dims = 3)[i, j, :]
+            result.impulse[i,j] = [temp[i, j] for temp in impulse]
         end
     end
 
