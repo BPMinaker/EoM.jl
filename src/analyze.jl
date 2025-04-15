@@ -135,15 +135,23 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false; freq::Tuple{Int64, 
     steps = min(5001, steps)
     result.impulse_t = collect(range(0, tt; length = steps))
     dt = tt / (steps - 1)
-    result.impulse = fill(zeros(size(C, 1), size(B, 2)), steps)
     temp = fill(zeros(size(A)), steps)
     temp[1] += I
-    result.impulse[1] = C * B
+    impulse = fill(zeros(size(D)), steps)
+    impulse[1] = C * B
 
     ϕ = exp(A * dt)
     for i in 2:steps
         temp[i] = temp[i-1] * ϕ
-        result.impulse[i] = C * temp[i] * B
+        impulse[i] = C * temp[i] * B
+    end
+
+    nout, nin=size(D)
+    result.impulse = Array{Vector{Float64}}(undef, nout, nin)
+    for i in 1:nout
+        for j in 1:nin
+            result.impulse[i,j] = cat(impulse..., dims = 3)[i, j, :]
+        end
     end
 
     result
