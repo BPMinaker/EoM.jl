@@ -39,7 +39,7 @@ function ltisim(
 
 end
 
-function ltiplot(obj::lti_soln, data::Union{Matrix{Float64}, Vector{Float64}}=zeros(length(obj.t), 0); yidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:, uidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:, label::Array{String}=String[], xlabel::String = "Time [s]",ylabel::String, title::String=  "EoM " * Dates.format(now(), "yyyy-mm-dd"),titlefontsize::Int=7, titlelocation::Symbol=:left, lw::Int=2, size::Tuple{Int, Int}=(800, 400)) 
+function ltiplot(obj::lti_soln, data::Union{Matrix{Float64}, Vector{Float64}}=zeros(length(obj.t), 0); yidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:, uidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:, label::Array{String}=String[], xlabel::String = "Time [s]",ylabel::String, title::String=  "EoM " * Dates.format(now(), "yyyy-mm-dd"), titlefontsize::Int=7, titlelocation::Symbol=:left, lw::Int=2, size::Tuple{Int, Int}=(800, 400), kwargs...) 
 
     if yidx == [0]
         yidx = []
@@ -49,7 +49,8 @@ function ltiplot(obj::lti_soln, data::Union{Matrix{Float64}, Vector{Float64}}=ze
         uidx = []
     end
 
-    plot(obj.t, [hcat(obj.y.(obj.t)...)'[:, yidx] hcat(obj.u.(obj.t)...)'[:, uidx] data]; xlabel, ylabel, label, title, titlefontsize, titlelocation, lw, size)
+    label = reshape(label, 1, :)
+    plot(obj.t, [hcat(obj.y.(obj.t)...)'[:, yidx] hcat(obj.u.(obj.t)...)'[:, uidx] data]; xlabel, ylabel, label, title, titlefontsize, titlelocation, lw, size, kwargs...)
 end
 
 function ltilabels(the_system::mbd_system; yidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:, uidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:)
