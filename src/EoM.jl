@@ -7,7 +7,7 @@ using Dates
 using DelimitedFiles
 using PrettyTables
 using Unitful
-using OrdinaryDiffEq
+using Interpolations
 using Plots
 using Plots.Measures
 
@@ -40,6 +40,7 @@ export ltiplot
 export ltilabels
 export random_road
 export input_delay!
+export discrete
 
 export skew
 export mbd_system
@@ -104,6 +105,7 @@ include("thin_rod.jl")
 include("ltisim.jl")
 include("random_road.jl")
 include("input_delay.jl")
+include("discrete.jl")
 
 #include("lsim.jl")
 #include("phi.jl")

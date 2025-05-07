@@ -1,31 +1,22 @@
-function ltisim(
-    ss::EoM.ss_data,
-    u::Function,
-    tspan::Tuple{Number, Number};
-    x0 = zeros(size(ss.A, 2)),
-    flag::Bool = false
-)
-    ltisim(ss, u, range(tspan[1], tspan[2], length=1001), x0, flag)
-end
+function ltisim(result::EoM.analysis, u::Function, tspan::Tuple{Number, Number}, x0 = zeros(size(result.ss_eqns.A, 2)); flag::Bool = false)
 
-function ltisim(
-    ss::EoM.ss_data,
-    u::Function,
-    tspan::StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}},
-    x0 = zeros(size(ss.A, 2)),
-    flag::Bool = false
-)
-
-    # Copyright (C) 2024, Bruce Minaker
     if typeof(u(x0, 0.)) != Vector{Float64} && typeof(u(x0, 0.)) != Vector{Int64}
         error("Input function must be a vector.")
     end
 
-    (; A, B, C, D) = ss
+    ssd = discrete(result, 0.001)
+    (; A, B, C, D) = ssd
+    
+    t = tspan[1]:0.001:tspan[2]
 
-    LTI = SplitFunction(MatrixOperator(A), (dx, x, p, t) -> dx .= B * u(x, t))
-    prob = SplitODEProblem(LTI, x0, (tspan[1], tspan[end]))
-    x = solve(prob, ETDRK4(); dt=tspan[2]-tspan[1])
+    xi = [zeros(length(x0)) for i in t]
+    xi[1] = x0
+
+    for i in 1:length(t)-1    
+        xi[i+1] = A * xi[i] + B * u(0, t[i]) 
+    end
+
+    x = LinearInterpolation(t, xi)
 
     function y(t)
         C * x(t) + D * u(x(t), t)
@@ -35,11 +26,11 @@ function ltisim(
         u(x(t), t)
     end
 
-    lti_soln(y, uu, tspan)
+    lti_soln(y, uu, t[1:10:end])
 
 end
 
-function ltiplot(obj::lti_soln, data::Union{Matrix{Float64}, Vector{Float64}}=zeros(length(obj.t), 0); yidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:, uidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:, label::Array{String}=String[], xlabel::String = "Time [s]",ylabel::String, title::String=  "EoM " * Dates.format(now(), "yyyy-mm-dd"), titlefontsize::Int=7, titlelocation::Symbol=:left, lw::Int=2, size::Tuple{Int, Int}=(800, 400), kwargs...) 
+function ltiplot(obj::lti_soln, data::Union{Matrix{Float64}, Vector{Float64}}=zeros(length(obj.t), 0), t::Union{Vector{Float64}, StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}}=obj.t; yidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:, uidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:, label::Array{String}=String[], xlabel::String = "Time [s]",ylabel::String, title::String=  "EoM " * Dates.format(now(), "yyyy-mm-dd"), titlefontsize::Int=7, titlelocation::Symbol=:left, lw::Int=2, size::Tuple{Int, Int}=(800, 400), kwargs...) 
 
     if yidx == [0]
         yidx = []
@@ -50,7 +41,7 @@ function ltiplot(obj::lti_soln, data::Union{Matrix{Float64}, Vector{Float64}}=ze
     end
 
     label = reshape(label, 1, :)
-    plot(obj.t, [hcat(obj.y.(obj.t)...)'[:, yidx] hcat(obj.u.(obj.t)...)'[:, uidx] data]; xlabel, ylabel, label, title, titlefontsize, titlelocation, lw, size, kwargs...)
+    plot(t, [hcat(obj.y.(t)...)'[:, yidx] hcat(obj.u.(t)...)'[:, uidx] data]; xlabel, ylabel, label, title, titlefontsize, titlelocation, lw, size, kwargs...)
 end
 
 function ltilabels(the_system::mbd_system; yidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:, uidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:)
@@ -82,14 +73,17 @@ function ltilabels(the_system::mbd_system; yidx::Union{Vector{Int}, StepRange{In
 end
 
 
-#=
-    function eomtr(dx, x, p, t)
-        dx .= A * x + B * u(x, t)
-        nothing
-    end
+#    (; A, B, C, D) = ss
 
-    prob = ODEProblem(eomtr, x0, tspan)
-    x = solve(prob, Tsit5())
-=#
+#    LTI = SplitFunction(MatrixOperator(A), (dx, x, p, t) -> dx .= B * u(x, t))
+#    prob = SplitODEProblem(LTI, x0, (tspan[1], tspan[end]))
+#    x = solve(prob, ETDRK4(); dt=tspan[2]-tspan[1])
+
+# function eomtr(dx, x, p, t)
+#     dx .= A * x + B * u(x, t)
+#     nothing
+# end
+# prob = ODEProblem(eomtr, x0, tspan)
+# x = solve(prob, Tsit5())
 
 
