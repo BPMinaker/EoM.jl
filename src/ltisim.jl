@@ -4,19 +4,14 @@ function ltisim(result::EoM.analysis, u::Function, tspan::Tuple{Number, Number},
         error("Input function must be a vector.")
     end
 
-    ssd = discrete(result, 0.001)
-    (; A, B, C, D) = ssd
-    
-    t = tspan[1]:0.001:tspan[2]
+    (; A, B, C, D) = result.ss_eqns
 
-    xi = [zeros(length(x0)) for i in t]
-    xi[1] = x0
-
-    for i in 1:length(t)-1    
-        xi[i+1] = A * xi[i] + B * u(0, t[i]) 
+    function eomtr(dx, x, p, t)
+        dx .= A * x + B * u(x, t)
+        nothing
     end
-
-    x = LinearInterpolation(t, xi)
+    prob = ODEProblem(eomtr, x0, tspan)
+    x = solve(prob, Tsit5())
 
     function y(t)
         C * x(t) + D * u(x(t), t)
@@ -26,7 +21,7 @@ function ltisim(result::EoM.analysis, u::Function, tspan::Tuple{Number, Number},
         u(x(t), t)
     end
 
-    lti_soln(y, uu, t[1:10:end])
+    lti_soln(y, uu, x.t)
 
 end
 
@@ -86,4 +81,14 @@ end
 # prob = ODEProblem(eomtr, x0, tspan)
 # x = solve(prob, Tsit5())
 
+# (; A, B, C, D) = discrete(result, 0.001)    
+# t = tspan[1]:0.001:tspan[2]
 
+# xi = [zeros(length(x0)) for i in t]
+# xi[1] = x0
+
+# for i in 1:length(t)-1    
+#     xi[i+1] = A * xi[i] + B * u(0, t[i]) 
+# end
+
+# x = LinearInterpolation(t, xi)

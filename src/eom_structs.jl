@@ -194,7 +194,7 @@ end
 mutable struct lti_soln
     y::Function
     u::Function
-    t::StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}}
+    t::Union{Vector{Float64}, StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}}}
 end
 
 function Base.show(io::IO, obj::lti_soln)
