@@ -1,17 +1,20 @@
-function ltisim(result::EoM.analysis, u::Function, tspan::Tuple{Number, Number}, x0 = zeros(size(result.ss_eqns.A, 2)); flag::Bool = false)
+function ltisim(result::EoM.analysis, u::Function, tspan::Tuple{Number, Number}, x0 = zeros(size(result.ss_eqns.A, 1)); flag::Bool = false)
 
     if typeof(u(x0, 0.)) != Vector{Float64} && typeof(u(x0, 0.)) != Vector{Int64}
         error("Input function must be a vector.")
     end
 
-    (; A, B, C, D) = result.ss_eqns
+    (; A, B, C, D) = discrete(result, 0.001)    
+    t = tspan[1]:0.001:tspan[2]
 
-    function eomtr(dx, x, p, t)
-        dx .= A * x + B * u(x, t)
-        nothing
+    xi = [zeros(length(x0)) for i in t]
+    xi[1] = x0
+
+    for i in 1:length(t)-1    
+        xi[i+1] = A * xi[i] + B * u(xi[i], t[i]) 
     end
-    prob = ODEProblem(eomtr, x0, tspan)
-    x = solve(prob, Tsit5())
+
+    x = LinearInterpolation(t, xi)
 
     function y(t)
         C * x(t) + D * u(x(t), t)
@@ -21,8 +24,7 @@ function ltisim(result::EoM.analysis, u::Function, tspan::Tuple{Number, Number},
         u(x(t), t)
     end
 
-    lti_soln(y, uu, x.t)
-
+    lti_soln(y, uu, t)
 end
 
 function ltiplot(obj::lti_soln, data::Union{Matrix{Float64}, Vector{Float64}}=zeros(length(obj.t), 0), t::Union{Vector{Float64}, StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}}=obj.t; yidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:, uidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:, label::Array{String}=String[], xlabel::String = "Time [s]",ylabel::String, title::String=  "EoM " * Dates.format(now(), "yyyy-mm-dd"), titlefontsize::Int=7, titlelocation::Symbol=:left, lw::Int=2, size::Tuple{Int, Int}=(800, 400), kwargs...) 
@@ -88,7 +90,7 @@ end
 # xi[1] = x0
 
 # for i in 1:length(t)-1    
-#     xi[i+1] = A * xi[i] + B * u(0, t[i]) 
+#     xi[i+1] = A * xi[i] + B * u(xi[i], t[i]) 
 # end
 
 # x = LinearInterpolation(t, xi)
