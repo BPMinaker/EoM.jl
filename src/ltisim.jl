@@ -68,9 +68,13 @@ function ltiplot(
 
     if isnothing(label)
         label = reshape([odesc .* " " .* onames; idesc .* " " .* inames], 1, :)
+    else
+        label = [reshape([odesc .* " " .* onames; idesc .* " " .* inames], 1, :) label]
     end
     if isnothing(ylabel)
         ylabel = join([onames .* " [" .* ["$i" for i in ounits] .* "]"; inames .* " [" .* ["$i" for i in iunits] .* "]"], ", ")
+    elseif ylabel[1] == ','
+        ylabel = join([onames .* " [" .* ["$i" for i in ounits] .* "]"; inames .* " [" .* ["$i" for i in iunits] .* "]"], ", ") * ylabel
     end
 
     plot(t, [hcat(obj.y.(t)...)'[:, yidx] hcat(obj.u.(t)...)'[:, uidx] data]; xlabel, ylabel, label, title, titlefontsize, titlelocation, lw, size, kwargs...)
