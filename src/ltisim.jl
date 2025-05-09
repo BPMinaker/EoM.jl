@@ -1,4 +1,4 @@
-function ltisim(result::EoM.analysis, u::Function, tspan::Tuple{Number, Number}, x0 = zeros(size(result.ss_eqns.A, 1)); flag::Bool = false)
+function ltisim(result::analysis, u::Function, tspan::Tuple{Number, Number}, x0 = zeros(size(result.ss_eqns.A, 1)); flag::Bool = false)
 
     if typeof(u(x0, 0.)) != Vector{Float64} && typeof(u(x0, 0.)) != Vector{Int64}
         error("Input function must be a vector.")
@@ -27,21 +27,22 @@ function ltisim(result::EoM.analysis, u::Function, tspan::Tuple{Number, Number},
     lti_soln(y, uu, t)
 end
 
-function ltiplot(obj::lti_soln, data::Union{Matrix{Float64}, Vector{Float64}}=zeros(length(obj.t), 0), t::Union{Vector{Float64}, StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}}=obj.t; yidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:, uidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:, label::Array{String}=String[], xlabel::String = "Time [s]",ylabel::String, title::String=  "EoM " * Dates.format(now(), "yyyy-mm-dd"), titlefontsize::Int=7, titlelocation::Symbol=:left, lw::Int=2, size::Tuple{Int, Int}=(800, 400), kwargs...) 
-
-    if yidx == [0]
-        yidx = []
-    end
-
-    if uidx == [0]
-        uidx = []
-    end
-
-    label = reshape(label, 1, :)
-    plot(t, [hcat(obj.y.(t)...)'[:, yidx] hcat(obj.u.(t)...)'[:, uidx] data]; xlabel, ylabel, label, title, titlefontsize, titlelocation, lw, size, kwargs...)
-end
-
-function ltilabels(the_system::mbd_system; yidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:, uidx::Union{Vector{Int}, StepRange{Int, Int}, Colon}=:)
+function ltiplot(
+    the_system::mbd_system,
+    obj::lti_soln,
+    data::Union{Matrix{Float64}, Vector{Float64}}=zeros(length(obj.t), 0),
+    t::Union{Vector{Float64}, StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}} = obj.t;
+    yidx::Union{Vector{Int}, StepRange{Int, Int}, Colon} = :,
+    uidx::Union{Vector{Int}, StepRange{Int, Int}, Colon} = :,
+    label::Union{Array{String}, Nothing} = nothing,
+    xlabel::String = "Time [s]",
+    ylabel::Union{String, Nothing} = nothing,
+    title::String =  "EoM " * Dates.format(now(), "yyyy-mm-dd"),
+    titlefontsize::Int = 7,
+    titlelocation::Symbol = :left,
+    lw::Int = 2,
+    size::Tuple{Int, Int} = (800, 400),
+    kwargs...) 
 
     if yidx != [0]
         onames = getproperty.(the_system.sensors[yidx], :name)
@@ -51,6 +52,7 @@ function ltilabels(the_system::mbd_system; yidx::Union{Vector{Int}, StepRange{In
         onames = String[]
         ounits = String[]
         odesc = String[]
+        yidx = []
     end
 
     if uidx != [0]
@@ -61,12 +63,17 @@ function ltilabels(the_system::mbd_system; yidx::Union{Vector{Int}, StepRange{In
         inames = String[]
         iunits = String[]
         idesc = String[]
+        uidx = []
     end
 
-    label = reshape([odesc .* " " .* onames; idesc .* " " .* inames], 1, :)
-    ylabel = join([onames .* " [" .* ["$i" for i in ounits] .* "]"; inames .* " [" .* ["$i" for i in iunits] .* "]"], ", ")
+    if isnothing(label)
+        label = reshape([odesc .* " " .* onames; idesc .* " " .* inames], 1, :)
+    end
+    if isnothing(ylabel)
+        ylabel = join([onames .* " [" .* ["$i" for i in ounits] .* "]"; inames .* " [" .* ["$i" for i in iunits] .* "]"], ", ")
+    end
 
-    label, ylabel
+    plot(t, [hcat(obj.y.(t)...)'[:, yidx] hcat(obj.u.(t)...)'[:, uidx] data]; xlabel, ylabel, label, title, titlefontsize, titlelocation, lw, size, kwargs...)
 end
 
 
@@ -83,14 +90,3 @@ end
 # prob = ODEProblem(eomtr, x0, tspan)
 # x = solve(prob, Tsit5())
 
-# (; A, B, C, D) = discrete(result, 0.001)    
-# t = tspan[1]:0.001:tspan[2]
-
-# xi = [zeros(length(x0)) for i in t]
-# xi[1] = x0
-
-# for i in 1:length(t)-1    
-#     xi[i+1] = A * xi[i] + B * u(xi[i], t[i]) 
-# end
-
-# x = LinearInterpolation(t, xi)
