@@ -208,7 +208,6 @@ function Base.show(io::IO, obj::lti_soln)
     println(io, "u:")
     show(io, "text/plain", obj.u.(obj.t))
     println(io)
-
 end
 
 function (obj::lti_soln)(t::Number)
@@ -223,11 +222,11 @@ function Base.getindex(obj::lti_soln, ::Colon, idx::Int)
     obj.y(obj.t[idx])
 end
 
-function Base.getindex(obj::lti_soln, idx::Union{Vector{Int}, StepRange{Int, Int}})
+function Base.getindex(obj::lti_soln, idx::Union{Vector{Int}, StepRange{Int, Int}, UnitRange{Int}})
     hcat(obj.y.(obj.t[idx])...)
 end
 
-function Base.getindex(obj::lti_soln, ::Colon, idx::Union{Vector{Int}, StepRange{Int, Int}})
+function Base.getindex(obj::lti_soln, ::Colon, idx::Union{Vector{Int}, StepRange{Int, Int}, UnitRange{Int}})
     hcat(obj.y.(obj.t[idx])...)
 end
 
@@ -235,15 +234,15 @@ function Base.getindex(obj::lti_soln, idx::Int, idx2::Int)
     obj.y(obj.t[idx2])[idx]
 end
 
-function Base.getindex(obj::lti_soln, idx::Union{Int, Vector{Int}, StepRange{Int, Int}}, ::Colon)
+function Base.getindex(obj::lti_soln, idx::Union{Int, Vector{Int}, StepRange{Int, Int}, UnitRange{Int}}, ::Colon)
     hcat(obj.y.(obj.t)...)[idx, :]
 end
 
-function Base.getindex(obj::lti_soln, idx::Union{Vector{Int}, StepRange{Int, Int}}, idx2::Union{Vector{Int}, StepRange{Int, Int}})
+function Base.getindex(obj::lti_soln, idx::Union{Vector{Int}, StepRange{Int, Int}, UnitRange{Int}}, idx2::Union{Vector{Int}, StepRange{Int, Int}, UnitRange{Int}})
     hcat(obj.y.(obj.t[idx2])...)[idx, :]
 end
 
-function Base.getindex(obj::lti_soln, idx::Union{Vector{Int}, StepRange{Int, Int}}, idx2::Int)
+function Base.getindex(obj::lti_soln, idx::Union{Vector{Int}, StepRange{Int, Int}, UnitRange{Int}}, idx2::Int)
     obj.y(obj.t[idx2])[idx]
 end
 

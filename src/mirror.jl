@@ -39,7 +39,13 @@ function mirror!(the_system::mbd_system)
             elseif isa(item, sensor) || isa(item, actuator)
 
                 mirror_name!(item)
-
+                if isa(item, sensor)
+                    item.actuator = replace(item.actuator, "LF" => "RF")
+                    item.actuator = replace(item.actuator, "LR" => "RR")
+                    item.actuator = replace(item.actuator, "lf" => "rf")
+                    item.actuator = replace(item.actuator, "lr" => "rr")
+                end
+                
                 del = item.location[2] - item.location[1]
                 item.location[1][2] = -item.location[1][2]
                 item.location[2] = item.location[1] + del
