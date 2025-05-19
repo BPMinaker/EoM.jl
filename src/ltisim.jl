@@ -77,7 +77,10 @@ function ltiplot(
         ylabel = join([onames .* " [" .* ["$i" for i in ounits] .* "]"; inames .* " [" .* ["$i" for i in iunits] .* "]"], ", ") * ylabel
     end
 
-    plot(t, [hcat(obj.y.(t)...)'[:, yidx] hcat(obj.u.(t)...)'[:, uidx] data]; xlabel, ylabel, label, title, titlefontsize, titlelocation, lw, size, kwargs...)
+    scale = Int(round(length(t)/2000))
+    scale < 1 && (scale = 1)
+   
+    plot(t[1:scale:end], [hcat(obj.y.(t[1:scale:end])...)'[:, yidx] hcat(obj.u.(t[1:scale:end])...)'[:, uidx] data[1:scale:end,:]]; xlabel, ylabel, label, title, titlefontsize, titlelocation, lw, size, kwargs...)
 end
 
 
