@@ -529,7 +529,7 @@ function summarize(
                             size = (800, 600)
                         )
                         if format == :html
-                            show(output_f, MIME("text/html"), po)
+                            show(output_f, MIME("text/html"), p)
                         else
                             display(p)
                         end
