@@ -111,9 +111,7 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false; freq::Tuple{Int64, 
     result.phase = phs.(result.freq_resp)
 
     small(x::Matrix{Float64}) = x .< -120
-    function set(x, idx)
-        x[idx] .= 0
-    end
+    set(x, idx) = (x[idx] .= 0)
     set.(result.phase, small.(result.mag))
 
     # compute steady state response
@@ -131,10 +129,18 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false; freq::Tuple{Int64, 
     # try to get 10 steps in the shortest wavelength
     dt = 0.2π / result.w[end]
     steps = Int64(round(tt/dt)) + 1
-    # cap at 5000 steps, otherwise too much data
-    steps = min(5001, steps)
-    result.impulse_t = collect(range(0, tt; length = steps))
-    dt = tt / (steps - 1)
+
+    if steps > 25005
+        # much too long, take 5000 steps of the longest possible step, shorten the time
+        dt *= 5
+        tt = 5000 * dt
+        steps = 5001
+    elseif steps > 5001 && steps <= 25005
+        # still too long, take 5000 steps of a longer step, but make the time
+        dt = tt / 5000
+        steps = 5001
+    end
+
     temp = fill(zeros(size(A)), steps)
     temp[1] += I
     impulse = fill(zeros(size(D)), steps)
@@ -146,14 +152,14 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false; freq::Tuple{Int64, 
         impulse[i] = C * temp[i] * B
     end
 
-    nout, nin=size(D)
-    result.impulse = Array{Vector{Float64}}(undef, nout, nin)
-
-    for i in 1:nout
-        for j in 1:nin
-            result.impulse[i,j] = [temp[i, j] for temp in impulse]
-        end
+    # instead of a vector of matrices, we will have a matrix of vectors
+    # each vector will contain the impulse response for each output-input pair
+    temp_ii = [zeros(0) for _ in D]
+    for i in CartesianIndices(D)
+        temp_ii[i] = [temp[i] for temp in impulse]
     end
+
+    result.impulse_resp = impulse_data(collect(range(0, tt; length = steps)), temp_ii)
 
     result
 end

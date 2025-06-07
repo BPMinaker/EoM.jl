@@ -547,8 +547,8 @@ function summarize(
                 # fill in for each selected vpt
                 r = findall(impulse[:, i] .== 1)
                 if length(r) > 0
-                    t = results[l[1]].impulse_t
-                    imp = results[l[1]].impulse[r, i]
+                    t = results[l[1]].impulse_resp.impulse_t
+                    imp = results[l[1]].impulse_resp.impulse[r, i]
                     label = input_names[i] * " 🡲 " .* hcat(output_names[r]...)
                     p = plot(
                         t,
@@ -588,8 +588,8 @@ function summarize(
                         )
                         # fill in for each selected vpt
                         for k in l
-                            t = results[k].impulse_t
-                            imp = results[k].impulse[i, j]
+                            t = results[k].impulse_resp.impulse_t
+                            imp = results[k].impulse_resp.impulse[i, j]
                             lb = vpt_name[1] * "=$(my_round(vpts[k]))  $(vpt_name[3])"
                             p = plot!(p, t, imp; lw = 2, label = lb)
                         end

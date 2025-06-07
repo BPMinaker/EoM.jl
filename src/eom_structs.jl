@@ -150,6 +150,11 @@ function Base.show(io::IO, obj::ss_data)
     println(io)
 end
 
+@kwdef struct impulse_data
+    impulse_t::Vector{Float64} = zeros(0)
+    impulse::Array{Vector{Float64},2} = [zeros(0) for i in 1:0, j in 1:0]
+end
+
 @kwdef mutable struct analysis
     ss_eqns::ss_data = ss_data()
     mode_vals::Vector{Complex{Float64}} = zeros(0)
@@ -168,8 +173,7 @@ end
     ss_resp::Array{Float64,2} = zeros(0,0)
     centre::Array{Complex{Float64},2} = zeros(0,0) * 1im
     hsv::Vector{Float64} = zeros(0)
-    impulse_t::Vector{Float64} = zeros(0)
-    impulse::Array{Vector{Float64},2} = [zeros(0) for i in 1:0, j in 1:0]
+    impulse_resp::impulse_data = impulse_data()
 end
 
 function Base.show(io::IO, obj::analysis)
