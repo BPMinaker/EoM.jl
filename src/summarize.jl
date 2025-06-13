@@ -1,32 +1,32 @@
 function summarize(
     system::mbd_system,
     results::EoM.analysis;
-    plots = [],
-    ss::Union{Symbol, Matrix, Vector} = :default,
-    bode::Union{Symbol, Matrix, Vector} = :default,
-    impulse::Union{Symbol, Matrix, Vector} = :default,
-    format::Symbol = :screen,
-    folder::String = "output",
-    filename::String = system.name,
+    plots=[],
+    ss::Union{Symbol,Matrix,Vector}=:default,
+    bode::Union{Symbol,Matrix,Vector}=:default,
+    impulse::Union{Symbol,Matrix,Vector}=:default,
+    format::Symbol=:screen,
+    folder::String="output",
+    filename::String=system.name,
 )
     summarize([system], 0, [results]; plots, ss, bode, impulse, format, folder, filename)
 end
 
-    # Copyright (C) 2020, Bruce Minaker
+# Copyright (C) 2020, Bruce Minaker
 
 function summarize(
     systems::Vector{mbd_system},
     vpts,
     results::Vector{EoM.analysis};
-    plots = [],
-    ss::Union{Symbol, Matrix, Vector} = :default,
-    bode::Union{Symbol, Matrix, Vector} = :default,
-    impulse::Union{Symbol, Matrix, Vector} = :default,
-    vpt_name = ["u" "Speed" "m/s"],
-    format::Symbol = :screen,
-    folder::String = "output",
-    filename::String = systems[1].name,
-    )
+    plots=[],
+    ss::Union{Symbol,Matrix,Vector}=:default,
+    bode::Union{Symbol,Matrix,Vector}=:default,
+    impulse::Union{Symbol,Matrix,Vector}=:default,
+    vpt_name=["u" "Speed" "m/s"],
+    format::Symbol=:screen,
+    folder::String="output",
+    filename::String=systems[1].name,
+)
 
     println("Printing summary of the analysis of: $(systems[1].name)...")
     noeigs = false
@@ -98,11 +98,11 @@ function summarize(
                         p = plot(
                             vpts,
                             x;
-                            lw = 2,
-                            xlabel = vpt_name[2] * " [$(vpt_name[3])]",
-                            ylabel = lb,
-                            label = "",
-                            size = (800, 400),
+                            lw=2,
+                            xlabel=vpt_name[2] * " [$(vpt_name[3])]",
+                            ylabel=lb,
+                            label="",
+                            size=(800, 400),
                             title,
                             titlefontsize,
                             titlelocation,
@@ -123,11 +123,11 @@ function summarize(
             header = ["Output/Input", "Gain"]
             if format == :html
                 println(output_f, "<h2>Steady state gains</h2>")
-                str = pretty_table(String, [labels my_round.(gain)]; header, backend = Val(:html), standalone = false)
+                str = pretty_table(String, [labels my_round.(gain)]; header, backend=Val(:html), standalone=false)
                 println(output_f, str)
             else
                 println("Steady state gains:")
-                pretty_table([labels my_round.(gain)]; header, vlines = :none)
+                pretty_table([labels my_round.(gain)]; header, vlines=:none)
             end
         end
     end
@@ -158,11 +158,11 @@ function summarize(
 
             if format == :html
                 println(output_f, "<h2>Eigenvalues of minimal system</h2>")
-                str = pretty_table(String,[1:1:l[1] my_round.([s omega zeta tau lambda])]; header, backend = Val(:html), standalone = false)
+                str = pretty_table(String, [1:1:l[1] my_round.([s omega zeta tau lambda])]; header, backend=Val(:html), standalone=false)
                 println(output_f, str)
             else
                 println("Eigenvalues of minimal system:")
-                pretty_table([1:1:l[1] my_round.([s omega zeta tau lambda])]; header, vlines = :none)
+                pretty_table([1:1:l[1] my_round.([s omega zeta tau lambda])]; header, vlines=:none)
             end
 
             t_zero = results[1].t_zero
@@ -171,16 +171,16 @@ function summarize(
             header = ["No.", "σ±ωi [rad/s]", "ω [Hz]"]
             if format == :html
                 println(output_f, "<h2>Zeros of minimal system</h2>")
-                str = pretty_table(String,[1:1:lz[1] my_round.([t_zero t_zero_f])]; header, backend = Val(:html), standalone = false)
+                str = pretty_table(String, [1:1:lz[1] my_round.([t_zero t_zero_f])]; header, backend=Val(:html), standalone=false)
                 println(output_f, str)
             else
                 println("Zeros of minimal system:")
-                pretty_table([1:1:lz[1] my_round.([t_zero t_zero_f])]; header, vlines = :none)
+                pretty_table([1:1:lz[1] my_round.([t_zero t_zero_f])]; header, vlines=:none)
             end
         else
 
             seriestype = :scatter
-            label = ""
+            label = reshape(["$(vpt_name[1])=$i" for i in vpts], 1, nvpts)
             mc = RGB(0 / 255, 154 / 255, 250 / 255)
             ms = 3
 
@@ -189,16 +189,18 @@ function summarize(
             vsr = vec(sr')
             vsi = vec(si')
 
-            p = plot(vsr, vsi;
+            p = plot(vsr', vsi';
                 seriestype,
-                aspect_ratio = :equal,
+                aspect_ratio=:equal,
                 mc,
                 ms,
                 label,
-                xlabel = "Real part [rad/s]",
-                ylabel = "Imaginary part [rad/s]",
-                size = (800, 400),
+                xlabel="Real part [rad/s]",
+                ylabel="Imaginary part [rad/s]",
+                size=(800, 400),
                 title,
+                legend=false,
+                marker=:o,
                 titlefontsize,
                 titlelocation,
                 #extra_kwargs
@@ -228,13 +230,13 @@ function summarize(
             si = hcat(tr...)'
 
             # don't plot zeros - but can't have entire row of NaN
-            sr[sr .== 0] .= NaN
-            si[si .== 0] .= NaN
+            sr[sr.==0] .= NaN
+            si[si.==0] .= NaN
 
             p = plot(;
-                xlabel = vpt_name[2] * " [$(vpt_name[3])]",
-                ylabel = "Eigenvalue [rad/s]",
-                size = (800, 400),
+                xlabel=vpt_name[2] * " [$(vpt_name[3])]",
+                ylabel="Eigenvalue [rad/s]",
+                size=(800, 400),
                 title,
                 titlefontsize,
                 titlelocation,
@@ -266,7 +268,7 @@ function summarize(
             end
 
             mc = RGB(0 / 255, 154 / 255, 250 / 255)
-            label=""
+            label = ""
 
             omega = treat(getfield.(results, :omega_n), 1000)
             if length(omega) > 0
@@ -277,10 +279,10 @@ function summarize(
                     mc,
                     ms,
                     label,
-                    xlabel = vpt_name[2] * " [$(vpt_name[3])]",
-                    ylabel = "Natural frequency [Hz]",
-                    ylims = (0, Inf),
-                    size = (800, 400),
+                    xlabel=vpt_name[2] * " [$(vpt_name[3])]",
+                    ylabel="Natural frequency [Hz]",
+                    ylims=(0, Inf),
+                    size=(800, 400),
                     title,
                     titlefontsize,
                     titlelocation,
@@ -302,9 +304,9 @@ function summarize(
                     mc,
                     ms,
                     label,
-                    xlabel = vpt_name[2] * " [$(vpt_name[3])]",
-                    ylabel = "Damping ratio",
-                    size = (800, 400),
+                    xlabel=vpt_name[2] * " [$(vpt_name[3])]",
+                    ylabel="Damping ratio",
+                    size=(800, 400),
                     title,
                     titlefontsize,
                     titlelocation,
@@ -326,9 +328,9 @@ function summarize(
                     mc,
                     ms,
                     label,
-                    xlabel = vpt_name[2] * " [$(vpt_name[3])]",
-                    ylabel = "Time constant [s]",
-                    size = (800, 400),
+                    xlabel=vpt_name[2] * " [$(vpt_name[3])]",
+                    ylabel="Time constant [s]",
+                    size=(800, 400),
                     title,
                     titlefontsize,
                     titlelocation,
@@ -350,10 +352,10 @@ function summarize(
                     mc,
                     ms,
                     label,
-                    xlabel = vpt_name[2] * " [$(vpt_name[3])]",
-                    ylabel = "Wavelength [s]",
-                    ylims = (0, Inf),
-                    size = (800, 400),
+                    xlabel=vpt_name[2] * " [$(vpt_name[3])]",
+                    ylabel="Wavelength [s]",
+                    ylims=(0, Inf),
+                    size=(800, 400),
                     title,
                     titlefontsize,
                     titlelocation,
@@ -377,17 +379,17 @@ function summarize(
                 for i in axes(temp, 1)
                     push!(link, joinpath("<a href=\"$filename", "x3d", "mode_$(i)_s=$(round(results[1].mode_vals[i], digits=3)).html\">$i</a>"))
                 end
-                str = pretty_table(String, [link temp]; header, backend = Val(:html), allow_html_in_cells = true, standalone = false)
+                str = pretty_table(String, [link temp]; header, backend=Val(:html), allow_html_in_cells=true, standalone=false)
                 println(output_f, str)
             else
                 println("Rotation centres of first body for all modes:")
-                pretty_table([1:1:size(temp, 1) temp]; header, vlines = :none)
+                pretty_table([1:1:size(temp, 1) temp]; header, vlines=:none)
             end
         end
     end
 
     if bode == :default
-        isok(x) = (x == NoDims) 
+        isok(x) = (x == NoDims)
         bode = isok.(dimension.(output_units * transpose(1 ./ input_units)))
     elseif typeof(bode) == Symbol
         bode = zeros(nout, nin)
@@ -409,11 +411,11 @@ function summarize(
 
     # if there are too many inputs and outputs, skip
     if nin * nout > 0 && any(bode .== 1) && sum(bode .== 1) < 32
-        
+
         if format == :html
             println(output_f, "<h2>Bode plots</h2>")
         end
-        
+
         # pick out up to four representative vpts from the list
         l = unique(Int.(round.((nvpts - 1) .* [1, 3, 5, 7] / 8 .+ 1)))
         ll = length(l)
@@ -424,11 +426,11 @@ function summarize(
                 r = findall(bode[:, i] .== 1)
                 if length(r) > 0
                     w = results[l[1]].w / 2π
-                    mag = [temp[j, i] for  j in r, temp in results[l[1]].mag]
+                    mag = [temp[j, i] for j in r, temp in results[l[1]].mag]
                     mag[findall(mag .> 100)] .= Inf
                     phs = [temp[j, i] for j in r, temp in results[l[1]].phase]
-                    phs[phs .> 1] .-= 360
-                    phs[findall(abs.(diff(phs, dims = 2)) .> 181)] .= Inf
+                    phs[phs.>1] .-= 360
+                    phs[findall(abs.(diff(phs, dims=2)) .> 181)] .= Inf
                     label = hcat(output_names[r]...)
                     label .*= "/" * input_names[i]
                     xscale = :log10
@@ -436,38 +438,38 @@ function summarize(
                     p1 = plot(
                         w,
                         mag';
-                        lw = 2,
+                        lw=2,
                         label,
-                        xlabel = "",
-                        ylabel = "Gain [dB]",
+                        xlabel="",
+                        ylabel="Gain [dB]",
                         xscale,
                         xticks,
-                        ylims = (-40, Inf),
+                        ylims=(-40, Inf),
                         title,
                         titlefontsize,
                         titlelocation,
-                        bottom_margin = 5mm,
+                        bottom_margin=5mm,
                         #extra_kwargs
                     )
                     p2 = plot(
                         w,
                         phs';
-                        lw = 2,
-                        label = "",
-                        xlabel = "Frequency [Hz]",
-                        ylabel = "Phase [°]",
+                        lw=2,
+                        label="",
+                        xlabel="Frequency [Hz]",
+                        ylabel="Phase [°]",
                         xscale,
                         xticks,
-                        ylims = (-365, 5),
-                        yticks = -360:60:0,
+                        ylims=(-365, 5),
+                        yticks=-360:60:0,
                         #extra_kwargs
                     )
                     # merge two subplots
                     p = plot(
                         p1,
                         p2,
-                        layout = grid(2, 1, heights = [0.67, 0.33]),
-                        size = (800, 600)
+                        layout=grid(2, 1, heights=[0.67, 0.33]),
+                        size=(800, 600)
                     )
                     if format == :html
                         show(output_f, MIME("text/html"), p)
@@ -480,19 +482,19 @@ function summarize(
             # loop over outputs and inputs and selected vpts
             for i in 1:nout
                 for j in 1:nin
-                    if bode[i,j] == 1
+                    if bode[i, j] == 1
                         # make empty plots of magnitude and phase
                         xscale = :log10
                         w = results[l[1]].w / 2π
                         xticks = w[isinteger.(log10.(w))]
                         ylabel = "|$(output_names[i])|/|$(input_names[j])| [dB]"
                         p1 = plot(;
-                            xlabel = "",
+                            xlabel="",
                             ylabel,
                             xscale,
                             xticks,
-                            ylims = (-40, Inf),
-                            bottom_margin = 5mm,
+                            ylims=(-40, Inf),
+                            bottom_margin=5mm,
                             title,
                             titlefontsize,
                             titlelocation,
@@ -500,12 +502,12 @@ function summarize(
                         )
                         ylabel = "∠ $(output_names[i])/$(input_names[j]) [°]"
                         p2 = plot(;
-                            xlabel = "Frequency [Hz]",
+                            xlabel="Frequency [Hz]",
                             ylabel,
                             xscale,
                             xticks,
-                            ylims = (-365, 5),
-                            yticks = -360:60:0,
+                            ylims=(-365, 5),
+                            yticks=-360:60:0,
                             #extra_kwargs
                         )
                         # fill in for each selected vpt
@@ -514,19 +516,19 @@ function summarize(
                             mag = [temp[i, j] for temp in results[k].mag]
                             mag[findall(mag .> 100)] .= Inf
                             phs = [temp[i, j] for temp in results[k].phase]
-                            phs[phs .> 1] .-= 360
+                            phs[phs.>1] .-= 360
                             # set wrap arounds in phase to Inf to avoid jumps in plot
                             phs[findall(abs.(diff(phs)) .> 181)] .= Inf
                             lb = vpt_name[1] * "=$(my_round(vpts[k]))  $(vpt_name[3])"
-                            p1 = plot!(p1, w, mag; lw = 2, label = lb)
-                            p2 = plot!(p2, w, phs; lw = 2, label = "")
+                            p1 = plot!(p1, w, mag; lw=2, label=lb)
+                            p2 = plot!(p2, w, phs; lw=2, label="")
                         end
                         # merge two subplots
                         p = plot(
                             p1,
                             p2,
-                            layout = grid(2, 1, heights = [0.67, 0.33]),
-                            size = (800, 600)
+                            layout=grid(2, 1, heights=[0.67, 0.33]),
+                            size=(800, 600)
                         )
                         if format == :html
                             show(output_f, MIME("text/html"), p)
@@ -553,11 +555,11 @@ function summarize(
                     p = plot(
                         t,
                         imp;
-                        lw = 2,
+                        lw=2,
                         label,
-                        xlabel = "Time [s]",
-                        ylabel = "Output",
-                        size = (800, 400),
+                        xlabel="Time [s]",
+                        ylabel="Output",
+                        size=(800, 400),
                         title,
                         titlefontsize,
                         titlelocation,
@@ -574,13 +576,13 @@ function summarize(
             # loop over outputs and inputs and selected vpts
             for i in 1:nout
                 for j in 1:nin
-                    if impulse[i,j] == 1
+                    if impulse[i, j] == 1
                         # make empty plot
                         ylabel = input_names[j] * " 🡲 " * output_names[i]
                         p = plot(;
-                            xlabel = "Time [s]",
+                            xlabel="Time [s]",
                             ylabel,
-                            size = (800, 400),
+                            size=(800, 400),
                             title,
                             titlefontsize,
                             titlelocation,
@@ -591,7 +593,7 @@ function summarize(
                             t = results[k].impulse_resp.impulse_t
                             imp = results[k].impulse_resp.impulse[i, j]
                             lb = vpt_name[1] * "=$(my_round(vpts[k]))  $(vpt_name[3])"
-                            p = plot!(p, t, imp; lw = 2, label = lb)
+                            p = plot!(p, t, imp; lw=2, label=lb)
                         end
                         if format == :html
                             show(output_f, MIME("text/html"), p)
@@ -625,9 +627,9 @@ function summarize(
         systems[1].links
     ]
     temp =
-        [getfield.(items, :name) my_round.(vcat(getfield.(items, :force)'...); lim = 1e-4) my_round.(
+        [getfield.(items, :name) my_round.(vcat(getfield.(items, :force)'...); lim=1e-4) my_round.(
             vcat(getfield.(items, :moment)'...);
-            lim = 1e-4,
+            lim=1e-4,
         )]
 
     #=    for item in the_system.beams
@@ -640,7 +642,7 @@ function summarize(
 
     if format == :html
         println(output_f, "<h2>Preloads of first system</h2>")
-        str = pretty_table(String, temp; header, backend = Val(:html), standalone = false)
+        str = pretty_table(String, temp; header, backend=Val(:html), standalone=false)
         println(output_f, str)
 
         # print the end and close the output
@@ -649,7 +651,7 @@ function summarize(
 
     else
         println("Preloads of first system:")
-        pretty_table(temp; header, vlines = :none)
+        pretty_table(temp; header, vlines=:none)
     end
 end
 
