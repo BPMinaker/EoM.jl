@@ -127,7 +127,7 @@ function summarize(
                 println(output_f, str)
             else
                 println("Steady state gains:")
-                pretty_table([labels my_round.(gain)]; header, vlines=:none)
+                pretty_table([labels my_round.(gain)]; header, vlines=:none, crop=:none)
             end
         end
     end
@@ -162,7 +162,7 @@ function summarize(
                 println(output_f, str)
             else
                 println("Eigenvalues of minimal system:")
-                pretty_table([1:1:l[1] my_round.([s omega zeta tau lambda])]; header, vlines=:none)
+                pretty_table([1:1:l[1] my_round.([s omega zeta tau lambda])]; header, vlines=:none, crop=:none)
             end
 
             t_zero = results[1].t_zero
@@ -175,7 +175,7 @@ function summarize(
                 println(output_f, str)
             else
                 println("Zeros of minimal system:")
-                pretty_table([1:1:lz[1] my_round.([t_zero t_zero_f])]; header, vlines=:none)
+                pretty_table([1:1:lz[1] my_round.([t_zero t_zero_f])]; header, vlines=:none, crop=:none)
             end
         else
 
@@ -383,7 +383,7 @@ function summarize(
                 println(output_f, str)
             else
                 println("Rotation centres of first body for all modes:")
-                pretty_table([1:1:size(temp, 1) temp]; header, vlines=:none)
+                pretty_table([1:1:size(temp, 1) temp]; header, vlines=:none, crop=:none)
             end
         end
     end
@@ -651,7 +651,7 @@ function summarize(
 
     else
         println("Preloads of first system:")
-        pretty_table(temp; header, vlines=:none)
+        pretty_table(temp; header, vlines=:none, crop=:none)
     end
 end
 
