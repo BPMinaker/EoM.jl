@@ -31,11 +31,14 @@ function summarize(
     println("Printing summary of the analysis of: $(systems[1].name)...")
     noeigs = false
 
+    if !isdefined(Main, :VSCodeServer)
+        println("No VSCode detected, enforcing html format output...")
+        format = :html
+    end
+
     title = "EoM " * Dates.format(now(), "yyyy-mm-dd")
     titlefontsize = 7
     titlelocation = :left
-
-    #extra_kwargs = Dict(:subplot => (; ))#width = 20))
 
     if format == :html
 
