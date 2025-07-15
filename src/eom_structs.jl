@@ -1,8 +1,8 @@
 @kwdef mutable struct eom_data
-    mass::Array{Float64,2} =  zeros(0, 0) ## mass matrix from bodies
-    inertia::Array{Float64,2} =  zeros(0, 0) ## mass matrix from springs
-    damping::Array{Float64,2} =  zeros(0, 0) ## damping matrix from dampers
-    stiffness::Array{Float64,2} =  zeros(0, 0) ## stiffness matrix from springs
+    mass::Array{Float64,2} = zeros(0, 0) ## mass matrix from bodies
+    inertia::Array{Float64,2} = zeros(0, 0) ## mass matrix from springs
+    damping::Array{Float64,2} = zeros(0, 0) ## damping matrix from dampers
+    stiffness::Array{Float64,2} = zeros(0, 0) ## stiffness matrix from springs
     tangent_stiffness::Array{Float64,2} = zeros(0, 0) ## stiffness matrix from internal loads
     load_stiffness::Array{Float64,2} = zeros(0, 0) ## stiffness matrix from external loads
     velocity::Array{Float64,2} = zeros(0, 0) ## velocity matrix for kinematics differential equation
@@ -31,7 +31,7 @@ end
 @kwdef mutable struct mbd_system
     name::String = "Unnamed System"
     vpt::Number = 0
-    item::Vector{Union{body, link, spring, rigid_point, flex_point, nh_point, beam, load, sensor, actuator}} = Vector{Union{body, link, spring, rigid_point, flex_point, nh_point, beam, load, sensor, actuator}}(undef, 0)
+    item::Vector{Union{body,link,spring,rigid_point,flex_point,nh_point,beam,load,sensor,actuator}} = Vector{Union{body,link,spring,rigid_point,flex_point,nh_point,beam,load,sensor,actuator}}(undef, 0)
     bodys::Vector{body} = Vector{body}(undef, 0)
     links::Vector{link} = Vector{link}(undef, 0)
     springs::Vector{spring} = Vector{spring}(undef, 0)
@@ -45,7 +45,7 @@ end
     scratch::Any = 0
 end
 
-mbd_system(str::String) = mbd_system(; name = str)
+mbd_system(str::String) = mbd_system(; name=str)
 
 function Base.show(io::IO, obj::mbd_system)
     println(io, "Multibody dynamic system:")
@@ -54,7 +54,7 @@ function Base.show(io::IO, obj::mbd_system)
     println(io, "vpt: ", obj.vpt)
 end
 
-function add_item!(item::Union{body, link, spring, rigid_point, flex_point, nh_point, beam, load, sensor, actuator}, obj::mbd_system)
+function add_item!(item::Union{body,link,spring,rigid_point,flex_point,nh_point,beam,load,sensor,actuator}, obj::mbd_system)
     item_init!(item)
     push!(obj.item, item)
 end
@@ -158,7 +158,7 @@ end
 @kwdef mutable struct analysis
     ss_eqns::ss_data = ss_data()
     mode_vals::Vector{Complex{Float64}} = zeros(0)
-    modes::Array{Complex{Float64},2} = zeros(0,0) * 1im
+    modes::Array{Complex{Float64},2} = zeros(0, 0) * 1im
     e_val::Vector{Complex{Float64}} = zeros(0)
     omega_n::Vector{Float64} = zeros(0)
     zeta::Vector{Float64} = zeros(0)
@@ -167,11 +167,11 @@ end
     t_zero::Vector{Complex{Float64}} = zeros(0)
     t_zero_f::Vector{Float64} = zeros(0)
     w::Vector{Float64} = zeros(0)
-    freq_resp::Vector{Array{Complex{Float64},2}} = [zeros(0,0) * 1im]
-    mag::Vector{Array{Float64,2}} = [zeros(0,0)]
-    phase::Vector{Array{Float64,2}} = [zeros(0,0)]
-    ss_resp::Array{Float64,2} = zeros(0,0)
-    centre::Array{Complex{Float64},2} = zeros(0,0) * 1im
+    freq_resp::Vector{Array{Complex{Float64},2}} = [zeros(0, 0) * 1im]
+    mag::Vector{Array{Float64,2}} = [zeros(0, 0)]
+    phase::Vector{Array{Float64,2}} = [zeros(0, 0)]
+    ss_resp::Array{Float64,2} = zeros(0, 0)
+    centre::Array{Complex{Float64},2} = zeros(0, 0) * 1im
     hsv::Vector{Float64} = zeros(0)
     impulse_resp::impulse_data = impulse_data()
 end
@@ -196,9 +196,17 @@ function Base.show(io::IO, obj::analysis)
 end
 
 mutable struct lti_soln
-    y::Function
-    u::Function
-    t::Union{Vector{Float64}, StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}}}
+    y::Vector{Vector{Float64}}
+    u::Vector{Vector{Float64}}
+    t::Union{Vector{Float64},StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}}
+end
+
+function Base.getindex(obj::lti_soln, idx::Union{Int,Vector{Int},StepRange{Int,Int},UnitRange{Int}}, ::Colon)
+    hcat(obj.y...)[idx, :]
+end
+
+function Base.getindex(obj::lti_soln, ::Colon, ::Colon)
+    hcat(obj.y...)
 end
 
 function Base.show(io::IO, obj::lti_soln)
@@ -207,49 +215,9 @@ function Base.show(io::IO, obj::lti_soln)
     show(io, "text/plain", collect(obj.t))
     println(io)
     println(io, "y:")
-    show(io, "text/plain", obj.y.(obj.t))
+    show(io, "text/plain", obj.y)
     println(io)
     println(io, "u:")
-    show(io, "text/plain", obj.u.(obj.t))
+    show(io, "text/plain", obj.u)
     println(io)
-end
-
-function (obj::lti_soln)(t::Number)
-    obj.y(t)
-end
-
-function Base.getindex(obj::lti_soln, idx::Int)
-    obj.y(obj.t[idx])
-end
-
-function Base.getindex(obj::lti_soln, ::Colon, idx::Int)
-    obj.y(obj.t[idx])
-end
-
-function Base.getindex(obj::lti_soln, idx::Union{Vector{Int}, StepRange{Int, Int}, UnitRange{Int}})
-    hcat(obj.y.(obj.t[idx])...)
-end
-
-function Base.getindex(obj::lti_soln, ::Colon, idx::Union{Vector{Int}, StepRange{Int, Int}, UnitRange{Int}})
-    hcat(obj.y.(obj.t[idx])...)
-end
-
-function Base.getindex(obj::lti_soln, idx::Int, idx2::Int)
-    obj.y(obj.t[idx2])[idx]
-end
-
-function Base.getindex(obj::lti_soln, idx::Union{Int, Vector{Int}, StepRange{Int, Int}, UnitRange{Int}}, ::Colon)
-    hcat(obj.y.(obj.t)...)[idx, :]
-end
-
-function Base.getindex(obj::lti_soln, idx::Union{Vector{Int}, StepRange{Int, Int}, UnitRange{Int}}, idx2::Union{Vector{Int}, StepRange{Int, Int}, UnitRange{Int}})
-    hcat(obj.y.(obj.t[idx2])...)[idx, :]
-end
-
-function Base.getindex(obj::lti_soln, idx::Union{Vector{Int}, StepRange{Int, Int}, UnitRange{Int}}, idx2::Int)
-    obj.y(obj.t[idx2])[idx]
-end
-
-function Base.getindex(obj::lti_soln, ::Colon, ::Colon)
-    hcat(obj.y.(obj.t)...)
 end

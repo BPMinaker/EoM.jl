@@ -7,7 +7,6 @@ using Dates
 using DelimitedFiles
 using PrettyTables
 using Unitful
-using Interpolations
 using Plots
 using Plots.Measures
 
@@ -110,10 +109,10 @@ include("discrete.jl")
 #include("lsim.jl")
 #include("phi.jl")
 
-function my_round(x::Number; dig = 4, lim = 1e-7)
-    x = round(x, sigdigits = dig)
-    abs(real(x)) < lim  && (x = 0 + imag(x)im )
-    abs(imag(x)) < lim  && (x = real(x))
+function my_round(x::Number; dig=4, lim=1e-7)
+    x = round(x, sigdigits=dig)
+    abs(real(x)) < lim && (x = 0 + imag(x)im)
+    abs(imag(x)) < lim && (x = real(x))
     x
 end
 
@@ -127,8 +126,8 @@ function treat(vec_in::Vector{Vector{Float64}}, lim::Number)
         end
     end
     vect = hcat(vect...)'
-    any(vect .!= 0 .&& .!(isnan.(vect))) && (vect[vect .== 0] .= NaN)
-    vect[abs.(vect) .> lim] .= Inf
+    any(vect .!= 0 .&& .!(isnan.(vect))) && (vect[vect.==0] .= NaN)
+    vect[abs.(vect).>lim] .= Inf
     rcol = []
     for i in eachcol(vect)
         if sum(isnan.(i)) < len && sum(isinf.(i)) < len
@@ -144,12 +143,12 @@ function step(t::Number)
 end
 
 function pulse(t::Number, a::Number, b::Number)
-    step(t-a) - step(t-b)
+    step(t - a) - step(t - b)
 end
 
 end  # end module
 
- 
+
 # macro def(name, definition)
 #     return quote
 #         macro $(esc(name))()

@@ -1,49 +1,52 @@
-function ltisim(result::analysis, u::Function, tspan::Tuple{Number, Number}, x0 = zeros(size(result.ss_eqns.A, 1)); flag::Bool = false)
+function ltisim(result::analysis, u::Function, tspan::Tuple{Number,Number}, x0=zeros(size(result.ss_eqns.A, 1)); flag::Bool=false)
 
-    if typeof(u(x0, 0.)) != Vector{Float64} && typeof(u(x0, 0.)) != Vector{Int64}
+    if typeof(u(x0, 0.0)) != Vector{Float64} && typeof(u(x0, 0.0)) != Vector{Int64}
         error("Input function must be a vector.")
     end
 
-    (; A, B, C, D) = discrete(result, 0.001)    
+    (; A, B, C, D) = discrete(result, 0.001)
     t = tspan[1]:0.001:tspan[2]
 
-    xi = [zeros(length(x0)) for i in t]
+    nin = size(B, 2)
+    nout = size(C, 1)
+    n = size(A, 1)
+
+    xi = [zeros(n) for i in t]
     xi[1] = x0
 
-    for i in 1:length(t)-1    
-        xi[i+1] = A * xi[i] + B * u(xi[i], t[i]) 
+    y = [zeros(nout) for i in t]
+    uu = [zeros(nin) for i in t]
+
+    for i in 1:length(t)-1
+        uu[i] = u(xi[i], t[i])
+        y[i] = C * xi[i] + D * uu[i]
+        xi[i+1] = A * xi[i] + B * uu[i]
     end
 
-    x = LinearInterpolation(t, xi)
-
-    function y(t)
-        C * x(t) + D * u(x(t), t)
-    end
-
-    function uu(t)
-        u(x(t), t)
-    end
+    uu[end] = u(xi[end], t[end])
+    y[end] = C * xi[end] + D * uu[end]
 
     lti_soln(y, uu, t)
+
 end
 
 function ltiplot(
     the_system::mbd_system,
     obj::lti_soln,
-    data::Union{Matrix{Float64}, Vector{Float64}}=zeros(length(obj.t), 0),
-    t::Union{Vector{Float64}, StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}} = obj.t;
-    yidx::Union{Vector{Int}, StepRange{Int, Int}, Colon} = :,
-    uidx::Union{Vector{Int}, StepRange{Int, Int}, Colon} = :,
-    label::Union{Array{String}, Nothing} = nothing,
-    xlabel::String = "Time [s]",
-    ylabel::Union{String, Nothing} = nothing,
-    title::String =  "EoM " * Dates.format(now(), "yyyy-mm-dd"),
-    titlefontsize::Int = 7,
-    titlelocation::Symbol = :left,
-    lw::Int = 2,
-    size::Tuple{Int, Int} = (800, 400),
-    scale::Int = 0,
-    kwargs...) 
+    data::Union{Matrix{Float64},Vector{Float64}}=zeros(length(obj.t), 0),
+    t::Union{Vector{Float64},StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64},Int64}}=obj.t;
+    yidx::Union{Vector{Int},StepRange{Int,Int},Colon}=:,
+    uidx::Union{Vector{Int},StepRange{Int,Int},Colon}=:,
+    label::Union{Array{String},Nothing}=nothing,
+    xlabel::String="Time [s]",
+    ylabel::Union{String,Nothing}=nothing,
+    title::String="EoM " * Dates.format(now(), "yyyy-mm-dd"),
+    titlefontsize::Int=7,
+    titlelocation::Symbol=:left,
+    lw::Int=2,
+    size::Tuple{Int,Int}=(800, 400),
+    scale::Int=0,
+    kwargs...)
 
     if yidx != [0]
         onames = getproperty.(the_system.sensors[yidx], :name)
@@ -79,11 +82,12 @@ function ltiplot(
     end
 
     if scale == 0
-        scale = Int(round(length(t)/2000))
+        scale = Int(round(length(t) / 2000))
     end
     scale < 1 && (scale = 1)
-    
-    plot(t[1:scale:end], [hcat(obj.y.(t[1:scale:end])...)'[:, yidx] hcat(obj.u.(t[1:scale:end])...)'[:, uidx] data[1:scale:end,:]]; xlabel, ylabel, label, title, titlefontsize, titlelocation, lw, size, kwargs...)
+
+    plot(t[1:scale:end], [hcat(obj.y...)'[1:scale:end, yidx] hcat(obj.u...)'[1:scale:end, uidx] data[1:scale:end, :]]; xlabel, ylabel, label, title, titlefontsize, titlelocation, lw, size, kwargs...)
+
 end
 
 
@@ -99,4 +103,3 @@ end
 # end
 # prob = ODEProblem(eomtr, x0, tspan)
 # x = solve(prob, Tsit5())
-
