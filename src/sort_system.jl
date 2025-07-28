@@ -23,6 +23,9 @@ function sort_system!(the_system::mbd_system, verb::Bool = false)
     verb && println("Looking for location info...")
     find_radius!.(the_system.item, (getfield.(the_system.bodys, :location),))
 
+    the_system.aidx = Dict(getfield.(the_system.actuators, :name) .=> eachindex(the_system.actuators))
+    the_system.sidx = Dict(getfield.(the_system.sensors, :name) .=> eachindex(the_system.sensors))
+
     verb && println("System sorted.")
 
 end  ## Leave

@@ -42,6 +42,8 @@ end
     loads::Vector{load} = Vector{load}(undef, 0)
     sensors::Vector{sensor} = Vector{sensor}(undef, 0)
     actuators::Vector{actuator} = Vector{actuator}(undef, 0)
+    aidx::Dict{String,Int} = Dict{String,Int}()
+    sidx::Dict{String,Int} = Dict{String,Int}()
     scratch::Any = 0
 end
 

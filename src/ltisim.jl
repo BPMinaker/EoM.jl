@@ -37,6 +37,8 @@ function ltiplot(
     t::Union{Vector{Float64},StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64},Int64}}=obj.t;
     yidx::Union{Vector{Int},StepRange{Int,Int},Colon}=:,
     uidx::Union{Vector{Int},StepRange{Int,Int},Colon}=:,
+    sidx::Union{Vector{String},Nothing}=nothing,
+    aidx::Union{Vector{String},Nothing}=nothing,
     label::Union{Array{String},Nothing}=nothing,
     xlabel::String="Time [s]",
     ylabel::Union{String,Nothing}=nothing,
@@ -47,6 +49,14 @@ function ltiplot(
     size::Tuple{Int,Int}=(800, 400),
     scale::Int=0,
     kwargs...)
+
+    if !isnothing(sidx) 
+        yidx = get.([the_system.sidx], sidx, 0)
+    end
+
+    if !isnothing(aidx)
+        uidx = get.([the_system.aidx], aidx, 0)
+    end
 
     if yidx != [0]
         onames = getproperty.(the_system.sensors[yidx], :name)
