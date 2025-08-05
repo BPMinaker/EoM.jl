@@ -52,6 +52,7 @@ end
     loads_name::Dict{String,load} = Dict{String,load}()
     sensors_name::Dict{String,sensor} = Dict{String,sensor}()
     actuators_name::Dict{String,actuator} = Dict{String,actuator}() 
+    bidx::Dict{String,Int} = Dict{String,Int}()
     aidx::Dict{String,Int} = Dict{String,Int}()
     sidx::Dict{String,Int} = Dict{String,Int}()
     scratch::Any = 0

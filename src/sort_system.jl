@@ -8,7 +8,7 @@ function sort_system!(the_system::mbd_system, verb::Bool = false)
     push!(the_system.item, body("ground"))  ## Ground body is added last (important!)
 
     # Find the type of each item, and sort into named fields
-    sort_items!.(the_system.item, (the_system,))
+    sort_items!.(the_system.item, [the_system])
 
     the_system.bodys_name = Dict(getfield.(the_system.bodys, :name) .=> the_system.bodys)
     the_system.links_name = Dict(getfield.(the_system.links, :name) .=> the_system.links)
@@ -21,21 +21,19 @@ function sort_system!(the_system::mbd_system, verb::Bool = false)
     the_system.sensors_name = Dict(getfield.(the_system.sensors, :name) .=> the_system.sensors)
     the_system.actuators_name = Dict(getfield.(the_system.actuators, :name) .=> the_system.actuators)
 
+    the_system.bidx = Dict(getfield.(the_system.bodys, :name) .=> eachindex(the_system.bodys))
+    the_system.aidx = Dict(getfield.(the_system.actuators, :name) .=> eachindex(the_system.actuators))
+    the_system.sidx = Dict(getfield.(the_system.sensors, :name) .=> eachindex(the_system.sensors))
+
     # Find the body number
     verb && println("Looking for connection info...")
-    # link each bodys name with its number in the list
-    idx = Dict(getfield.(the_system.bodys, :name) .=> eachindex(the_system.bodys))
-    find_bodynum!.(the_system.item, (idx,))
-    find_bodyframenum!.(the_system.loads, (idx,))
-    idx = Dict(getfield.(the_system.actuators, :name) .=> eachindex(the_system.actuators))
-    find_actnum!.(the_system.sensors, (idx,))
+    find_bodynum!.(the_system.item, [the_system.bidx])
+    find_bodyframenum!.(the_system.loads, [the_system.bidx])
+    find_actnum!.(the_system.sensors, [the_system.aidx])
 
     # Find the radius of each connector
     verb && println("Looking for location info...")
-    find_radius!.(the_system.item, (getfield.(the_system.bodys, :location),))
-
-    the_system.aidx = Dict(getfield.(the_system.actuators, :name) .=> eachindex(the_system.actuators))
-    the_system.sidx = Dict(getfield.(the_system.sensors, :name) .=> eachindex(the_system.sensors))
+    find_radius!.(the_system.item, [getfield.(the_system.bodys, :location)])
 
     verb && println("System sorted.")
 
