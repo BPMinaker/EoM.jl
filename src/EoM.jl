@@ -10,20 +10,10 @@ using Unitful
 using Plots
 using Plots.Measures
 
-import Pkg
 function __init__()
     println("Initializing EoM...")
-    if !any(x -> x.name == "PlotlyBase" && x.is_direct_dep, values(Pkg.dependencies()))
-        println("Installing PlotlyBase...")
-        Pkg.add("PlotlyBase")
-    end
-    if !any(x -> x.name == "PlotlyKaleido" && x.is_direct_dep, values(Pkg.dependencies()))
-        println("Installing PlotlyKaleido...")
-        Pkg.add("PlotlyKaleido")
-    end
-    println("Choosing Plotly engine...")
-    plotly()
-    println("Plots configured.")
+    Plots.plotlyjs()
+    println("Selected PlotlyJS engine...")
 end
 
 export setup
@@ -149,6 +139,22 @@ function pulse(t::Number, a::Number, b::Number)
 end
 
 end  # end module
+
+# import Pkg
+# function __init__()
+#     println("Initializing EoM...")
+#     if !any(x -> x.name == "PlotlyBase" && x.is_direct_dep, values(Pkg.dependencies()))
+#         println("Installing PlotlyBase...")
+#         Pkg.add("PlotlyBase")
+#     end
+#     if !any(x -> x.name == "PlotlyKaleido" && x.is_direct_dep, values(Pkg.dependencies()))
+#         println("Installing PlotlyKaleido...")
+#         Pkg.add("PlotlyKaleido")
+#     end
+#     println("Choosing Plotly engine...")
+#     plotly()
+#     println("Plots configured.")
+# end
 
 
 # macro def(name, definition)

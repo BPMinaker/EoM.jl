@@ -609,8 +609,8 @@ function summarize(
         end
     end
 
-
     if length(plots) > 0
+        plot!.(plots; title, titlefontsize, titlelocation)
         if format == :html
             println(output_f, "<h2>Time history and other plots</h2>")
             for p in plots
