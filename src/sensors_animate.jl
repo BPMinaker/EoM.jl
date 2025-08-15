@@ -1,6 +1,6 @@
 function sensors_animate!(the_system::mbd_system)
 
-    deleteat!(the_system.item, findall(typeof.(the_system.item) .== sensor))
+#    deleteat!(the_system.item, findall(typeof.(the_system.item) .== sensor))
 
     for i in the_system.item[typeof.(the_system.item) .== body]
         for j in 1:6
