@@ -9,18 +9,18 @@ function force!(the_system::mbd_system, data::EoM.eom_data, verb::Bool = false)
     mtx = zeros(6 * num, 6 * num) ## mtx (stiffness matrix) is defined as zero matrix
 
     for i in the_system.loads ## for each external loads
-        ptr_1 = 6 * (i.body_number - 1)  ## Row or column where this info is stored
-        ptr_2 = 6 * (i.frame_number - 1)
 
         ## Total moment = applied moment + (r cross f) <-using skew symmetric matrix
-        vec[ptr_1.+(1:3)] += i.force ## Adds force vector to rows 1,2,3 (for mass 1) of column vector
-        vec[ptr_1.+(4:6)] += i.moment + (skew(i.radius) * i.force) ## Adds moment vector to rows 4,5,6 (for mass 1) of column vector
+        ## Adds force vector to rows 1,2,3 (for mass 1) of column vector
+        ## Adds moment vector to rows 4,5,6 (for mass 1) of column vector
 
-        mtx[ptr_1.+(1:3), ptr_1.+(4:6)] -= skew(i.force)
-        mtx[ptr_1.+(1:3), ptr_2.+(4:6)] += skew(i.force)  ## Note same row, different column
+        ptr_1 = 6 * (i.body_number - 1)  ## Row or column where this info is stored
+        vec[ptr_1.+(1:6)] += [i.force; i.moment + skew(i.radius) * i.force]
 
-        mtx[ptr_1.+(4:6), ptr_1.+(4:6)] -= skew(i.radius) * skew(i.force) + skew(i.moment)
-        mtx[ptr_1.+(4:6), ptr_2.+(4:6)] += skew(i.radius) * skew(i.force) + skew(i.moment)  ## If 'body' = 'axes', then matrix terms will cancel
+        ptr_2 = 6 * (i.frame_number - 1)
+        temp = [skew(i.force); skew(i.radius) * skew(i.force) + skew(i.moment)]
+        mtx[ptr_1.+(1:6), ptr_1.+(4:6)] -= temp
+        mtx[ptr_1.+(1:6), ptr_2.+(4:6)] += temp
     end
 
     n = 6 * (num - 1)

@@ -33,47 +33,32 @@ function hessian(items::Union{Vector{flex_point}, Vector{rigid_point}, Vector{nh
         ff1 = skew(rs) * skew(frc)
         ff2 = skew(re) * skew(frc)
 
-        ## Force terms
-        row = ptr_1 .+ (1:3)
+        t1 = [ff; ff1]
+        t2 = [ff; ff2]
+
+        row = ptr_1 .+ (1:6)
         col = ptr_1 .+ (4:6)
-        mtx[row, col] -= ff  ## Body1 motion
+        mtx[row, col] -= t1
         col = ptr_3 .+ (4:6)
-        mtx[row, col] += ff  ## Reference motion
+        mtx[row, col] += t1
 
-        row = ptr_2 .+ (1:3)
+        row = ptr_2 .+ (1:6)
         col = ptr_2 .+ (4:6)
-        mtx[row, col] += ff  ## Body2 motion
+        mtx[row, col] += t2
         col = ptr_3 .+ (4:6)
-        mtx[row, col] -= ff  ## Reference motion
-
-        ## Moment terms
-        row = ptr_1 .+ (4:6)
-        col = ptr_1 .+ (4:6)
-        mtx[row, col] -= ff1
-        col = ptr_3 .+ (4:6)
-        mtx[row, col] += ff1
-
-        row = ptr_2 .+ (4:6)
-        col = ptr_2 .+ (4:6)
-        mtx[row, col] += ff2
-        col = ptr_3 .+ (4:6)
-        mtx[row, col] -= ff2
+        mtx[row, col] -= t2
 
         ## If relative motion can occur, assume re varies, so add change in moment to body2
         ## Note that for force==0 or forces==3, this should have no effect, as either force=0 or deflection=0
         ## Translation terms
-        row = ptr_2 .+ (4:6)
-        col = ptr_1 .+ (1:3)
-        mtx[row, col] -= ff
-        col = ptr_2 .+ (1:3)
-        mtx[row, col] += ff
-
         ## Rotation terms
         ## Note transpose here: skew(f)skew(r) = transpose(skew(r)skew(f))
-        col = ptr_1 .+ (4:6)
-        mtx[row, col] += ff1'
-        col = ptr_2 .+ (4:6)
-        mtx[row, col] -= ff2'
+
+        row = ptr_2 .+ (4:6)
+        col = ptr_1 .+ (1:6)
+        mtx[row, col] += t1'
+        col = ptr_2 .+ (1:6)
+        mtx[row, col] -= t2'
 
         ## Capture change in direction of moment also
         ## If moments==0 or moments==3, then no terms appear, unless rolling
