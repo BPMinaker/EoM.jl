@@ -187,6 +187,9 @@ end
     centre::Array{Complex{Float64},2} = zeros(0, 0) * 1im
     hsv::Vector{Float64} = zeros(0)
     impulse_resp::impulse_data = impulse_data()
+    ss::Union{Symbol,Matrix,Vector} = :default
+    bode::Union{Symbol,Matrix,Vector} = :default
+    impulse::Union{Symbol,Matrix,Vector} = :default
 end
 
 function Base.show(io::IO, obj::analysis)

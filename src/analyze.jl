@@ -1,8 +1,18 @@
-function analyze(dss_eqns::EoM.dss_data, verb::Bool = false; freq::Tuple{Int64, Int64} = (0, 0))
+function analyze(
+    dss_eqns::EoM.dss_data,
+    verb::Bool = false;
+    freq::Tuple{Int64, Int64} = (0, 0),
+    ss::Union{Symbol,Matrix,Vector}=:default,
+    bode::Union{Symbol,Matrix,Vector}=:default,
+    impulse::Union{Symbol,Matrix,Vector}=:default
+)
 
     verb && println("Running linear analysis...")
 
     result = analysis()
+
+    # get number of ins, outs
+    nout, nin = size(dss_eqns.D)
 
     F = eigen(dss_eqns.A, dss_eqns.E) # find the eigen
     result.mode_vals = F.values[abs.(F.values) .< 1e9] # discard modes with Inf or Nan vals
@@ -74,6 +84,13 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false; freq::Tuple{Int64, 
 #        result.hsv = zeros(size(A,1))
 #    end
 
+    compute = true
+    if typeof(bode) == Symbol &&  bode != :default
+        bode = zeros(nout, nin)
+        compute = false
+    end
+    result.bode = bode
+
     if freq[1] == freq[2]
         t = unique(abs.(result.e_val)) / 2π
         t = t[t .> 2e-5]
@@ -88,78 +105,101 @@ function analyze(dss_eqns::EoM.dss_data, verb::Bool = false; freq::Tuple{Int64, 
     if (high - low) < 1 
         low = high - 1
     end
-    # compute evenly spaced range of frequncies in log space to consider
-    result.w = 2π * 10.0 .^ (low:0.005:high)
 
     # compute frequency response
     G(x::Float64) = C * ((I * x * 1im - A) \ B) + D
-    try
-        result.freq_resp = G.(result.w)
-    catch
-        result.freq_resp = Vector{Matrix{ComplexF64}}(undef,size(result.w))
-        for i in 1:length(result.w)
-            try
-                result.freq_resp[i] = G(result.w[i])
-            catch
-                result.freq_resp[i] = ones(size(D)) * Inf
+
+    if compute
+        # compute evenly spaced range of frequncies in log space to consider
+        result.w = 2π * 10.0 .^ (low:0.005:high)
+
+        try
+            result.freq_resp = G.(result.w)
+        catch
+            result.freq_resp = Vector{Matrix{ComplexF64}}(undef,size(result.w))
+            for i in 1:length(result.w)
+                try
+                    result.freq_resp[i] = G(result.w[i])
+                catch
+                    result.freq_resp[i] = ones(size(D)) * Inf
+                end
             end
         end
-    end
-    mag(x::Matrix{Complex{Float64}}) =  20 * log10.(abs.(x)) .+ eps(1.0)
-    result.mag = mag.(result.freq_resp)
-    phs(x::Matrix{Complex{Float64}}) = 180 / π .* angle.(x)
-    result.phase = phs.(result.freq_resp)
+        mag(x::Matrix{Complex{Float64}}) =  20 * log10.(abs.(x)) .+ eps(1.0)
+        result.mag = mag.(result.freq_resp)
+        phs(x::Matrix{Complex{Float64}}) = 180 / π .* angle.(x)
+        result.phase = phs.(result.freq_resp)
 
-    small(x::Matrix{Float64}) = x .< -120
-    set(x, idx) = (x[idx] .= 0)
-    set.(result.phase, small.(result.mag))
-
-    # compute steady state response
-    if cond(A) < 1e6
-        result.ss_resp = -C * (A \ B) + D
-    else
-        verb && println("System matrix is near singular.  Substituting real part of low frequency response ($(my_round(10.0 ^ (low - 1))) Hz) for steady state...")
-        result.ss_resp = real.(G(2π * 10.0 ^ (low - 1)))
+        small(x::Matrix{Float64}) = x .< -120
+        set(x, idx) = (x[idx] .= 0)
+        set.(result.phase, small.(result.mag))
     end
 
-    # compute impulse response
-    # at least one of the longest wavelengths
-    tt = 2π / result.w[1]
-    tt == Inf && (tt = 10)
-    # try to get 10 steps in the shortest wavelength
-    dt = 0.2π / result.w[end]
-    steps = Int64(round(tt/dt)) + 1
+    compute = true
+    if typeof(ss) == Symbol && ss != :default
+        ss = zeros(nout, nin)
+        compute = false
+    end
+    result.ss = ss
 
-    if steps > 25005
-        # much too long, take 5000 steps of the longest possible step, shorten the time
-        dt *= 5
-        tt = 5000 * dt
-        steps = 5001
-    elseif steps > 5001 && steps <= 25005
-        # still too long, take 5000 steps of a longer step, but make the time
-        dt = tt / 5000
-        steps = 5001
+    if compute
+        # compute steady state response
+        if cond(A) < 1e6
+            result.ss_resp = -C * (A \ B) + D
+        else
+            verb && println("System matrix is near singular.  Substituting real part of low frequency response ($(my_round(10.0 ^ (low - 1))) Hz) for steady state...")
+            result.ss_resp = real.(G(2π * 10.0 ^ (low - 1)))
+        end
     end
 
-    temp = fill(zeros(size(A)), steps)
-    temp[1] += I
-    impulse = fill(zeros(size(D)), steps)
-    impulse[1] = C * B
-
-    ϕ = exp(A * dt)
-    for i in 2:steps
-        temp[i] = temp[i-1] * ϕ
-        impulse[i] = C * temp[i] * B
+    compute = true
+    if typeof(impulse) == Symbol && impulse != :default
+        impulse = zeros(nout, nin)
+        compute = false
     end
+    result.impulse = impulse
 
-    # instead of a vector of matrices, we will have a matrix of vectors
-    # each vector will contain the impulse response for each output-input pair
-    temp_ii = [zeros(0) for _ in D]
-    for i in CartesianIndices(D)
-        temp_ii[i] = [temp[i] for temp in impulse]
+    if compute
+        # compute impulse response
+        # at least one of the longest wavelengths
+        tt = 2π / result.w[1]
+        tt == Inf && (tt = 10)
+        # try to get 10 steps in the shortest wavelength
+        dt = 0.2π / result.w[end]
+        steps = Int64(round(tt/dt)) + 1
+
+        if steps > 25005
+            # much too long, take 5000 steps of the longest possible step, shorten the time
+            dt *= 5
+            tt = 5000 * dt
+            steps = 5001
+        elseif steps > 5001 && steps <= 25005
+            # still too long, take 5000 steps of a longer step, but make the time
+            dt = tt / 5000
+            steps = 5001
+        end
+
+        temp = fill(zeros(size(A)), steps)
+        temp[1] += I
+        impulse = fill(zeros(size(D)), steps)
+        impulse[1] = C * B
+
+        ϕ = exp(A * dt)
+        for i in 2:steps
+            temp[i] = temp[i-1] * ϕ
+            impulse[i] = C * temp[i] * B
+        end
+
+        # instead of a vector of matrices, we will have a matrix of vectors
+        # each vector will contain the impulse response for each output-input pair
+        temp_ii = [zeros(0) for _ in D]
+        for i in CartesianIndices(D)
+            temp_ii[i] = [temp[i] for temp in impulse]
+        end
+
+        result.impulse_resp = impulse_data(collect(range(0, tt; length = steps)), temp_ii)
+
     end
-
-    result.impulse_resp = impulse_data(collect(range(0, tt; length = steps)), temp_ii)
 
     result
 end

@@ -29,7 +29,62 @@ function summarize(
 )
 
     println("Printing summary of the analysis of: $(systems[1].name)...")
+
+    # get names of inputs and outputs
+    input_names = getfield.(systems[1].actuators, :name)
+    input_units = uparse.(getfield.(systems[1].actuators, :units))
+    output_names = getfield.(systems[1].sensors, :name)
+    output_units = uparse.(getfield.(systems[1].sensors, :units))
+
+    # get number of ins, outs, and number of vpts (velocity points)
+    nin = length(input_names)
+    nout = length(output_names)
+    nvpts = length(vpts)
+
     noeigs = false
+
+    if ss == :default
+        ss = results[1].ss
+    end
+
+    if ss == :default
+        ss = ones(nout, nin)
+    elseif typeof(ss) == Symbol
+        ss = zeros(nout, nin)
+    end
+
+    if size(ss, 1) != nout || size(ss, 2) != nin
+        error("Steady state plot request dimensions are incompatible with system!")
+    end
+
+    if bode == :default
+        bode = results[1].bode
+    end
+
+    if bode == :default
+        isok(x) = (x == NoDims)
+        bode = isok.(dimension.(output_units * transpose(1 ./ input_units)))
+    elseif typeof(bode) == Symbol
+        bode = zeros(nout, nin)
+    end
+
+    if size(bode, 1) != nout || size(bode, 2) != nin
+        error("Bode plot request dimensions are incompatible with system!")
+    end
+
+    if impulse == :default
+        impulse = results[1].impulse
+    end
+
+    if impulse == :default
+        impulse = ones(nout, nin)
+    elseif typeof(impulse) == Symbol
+        impulse = zeros(nout, nin)
+    end
+
+    if size(impulse, 1) != nout || size(impulse, 2) != nin
+        error("Impulse response plot request dimensions are incompatible with system!")
+    end
 
     if !isdefined(Main, :VSCodeServer)
         println("No VSCode detected, enforcing html format output...")
@@ -56,27 +111,6 @@ function summarize(
         println(output_f, "<img src=\"eom_logo.png\" alt=\"Icon\" style=\"width:200px;\">")
         println(output_f, "<h1>Analysis results</h1>")
         println(output_f, "<p>Here are the results of the analysis of: $(systems[1].name)</p>")
-    end
-
-    # get names of inputs and outputs
-    input_names = getfield.(systems[1].actuators, :name)
-    input_units = uparse.(getfield.(systems[1].actuators, :units))
-    output_names = getfield.(systems[1].sensors, :name)
-    output_units = uparse.(getfield.(systems[1].sensors, :units))
-
-    # get number of ins, outs, and number of vpts (velocity points)
-    nin = length(input_names)
-    nout = length(output_names)
-    nvpts = length(vpts)
-
-    if ss == :default
-        ss = ones(nout, nin)
-    elseif typeof(ss) == Symbol
-        ss = zeros(nout, nin)
-    end
-
-    if size(ss, 1) != nout || size(ss, 2) != nin
-        error("Steady state plot request dimensions are incompatible with system!")
     end
 
     # if there are too many inputs and outputs, skip
@@ -389,27 +423,6 @@ function summarize(
                 pretty_table([1:1:size(temp, 1) temp]; header, vlines=:none, crop=:none)
             end
         end
-    end
-
-    if bode == :default
-        isok(x) = (x == NoDims)
-        bode = isok.(dimension.(output_units * transpose(1 ./ input_units)))
-    elseif typeof(bode) == Symbol
-        bode = zeros(nout, nin)
-    end
-
-    if size(bode, 1) != nout || size(bode, 2) != nin
-        error("Bode plot request dimensions are incompatible with system!")
-    end
-
-    if impulse == :default
-        impulse = ones(nout, nin)
-    elseif typeof(impulse) == Symbol
-        impulse = zeros(nout, nin)
-    end
-
-    if size(impulse, 1) != nout || size(impulse, 2) != nin
-        error("Impulse response plot request dimensions are incompatible with system!")
     end
 
     # if there are too many inputs and outputs, skip
