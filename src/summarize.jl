@@ -425,16 +425,85 @@ function summarize(
         end
     end
 
+    # pick out up to four representative vpts from the list
+    l = unique(Int.(round.((nvpts - 1) .* [1, 3, 5, 7] / 8 .+ 1)))
+    ll = length(l)
+
+    # if there are too many inputs and outputs, skip
+    if nin * nout > 0 && any(impulse .== 1) && sum(impulse .== 1) < 32
+
+        if format == :html
+            println(output_f, "<h2>Impulse response plots</h2>")
+        end
+
+        if ll == 1
+            for i in 1:nin
+                # fill in for each selected vpt
+                r = findall(impulse[:, i] .== 1)
+                if length(r) > 0
+                    t = results[l[1]].impulse_resp.impulse_t
+                    imp = results[l[1]].impulse_resp.impulse[r, i]
+                    label = input_names[i] * " 🡲 " .* hcat(output_names[r]...)
+                    p = plot(
+                        t,
+                        imp;
+                        lw=2,
+                        label,
+                        xlabel="Time [s]",
+                        ylabel="Output",
+                        size=(800, 400),
+                        title,
+                        titlefontsize,
+                        titlelocation,
+                        #extra_kwargs
+                    )
+                    if format == :html
+                        show(output_f, MIME("text/html"), p)
+                    else
+                        display(p)
+                    end
+                end
+            end
+        else
+            # loop over outputs and inputs and selected vpts
+            for i in 1:nout
+                for j in 1:nin
+                    if impulse[i, j] == 1
+                        # make empty plot
+                        ylabel = input_names[j] * " 🡲 " * output_names[i]
+                        p = plot(;
+                            xlabel="Time [s]",
+                            ylabel,
+                            size=(800, 400),
+                            title,
+                            titlefontsize,
+                            titlelocation,
+                            #extra_kwargs
+                        )
+                        # fill in for each selected vpt
+                        for k in l
+                            t = results[k].impulse_resp.impulse_t
+                            imp = results[k].impulse_resp.impulse[i, j]
+                            lb = vpt_name[1] * "=$(my_round(vpts[k]))  $(vpt_name[3])"
+                            p = plot!(p, t, imp; lw=2, label=lb)
+                        end
+                        if format == :html
+                            show(output_f, MIME("text/html"), p)
+                        else
+                            display(p)
+                        end
+                    end
+                end
+            end
+        end
+    end
+
     # if there are too many inputs and outputs, skip
     if nin * nout > 0 && any(bode .== 1) && sum(bode .== 1) < 32
 
         if format == :html
             println(output_f, "<h2>Bode plots</h2>")
         end
-
-        # pick out up to four representative vpts from the list
-        l = unique(Int.(round.((nvpts - 1) .* [1, 3, 5, 7] / 8 .+ 1)))
-        ll = length(l)
 
         if ll == 1
             for i in 1:nin
@@ -546,71 +615,6 @@ function summarize(
                             layout=grid(2, 1, heights=[0.67, 0.33]),
                             size=(800, 600)
                         )
-                        if format == :html
-                            show(output_f, MIME("text/html"), p)
-                        else
-                            display(p)
-                        end
-                    end
-                end
-            end
-        end
-
-        if format == :html
-            println(output_f, "<h2>Impulse response plots</h2>")
-        end
-
-        if ll == 1
-            for i in 1:nin
-                # fill in for each selected vpt
-                r = findall(impulse[:, i] .== 1)
-                if length(r) > 0
-                    t = results[l[1]].impulse_resp.impulse_t
-                    imp = results[l[1]].impulse_resp.impulse[r, i]
-                    label = input_names[i] * " 🡲 " .* hcat(output_names[r]...)
-                    p = plot(
-                        t,
-                        imp;
-                        lw=2,
-                        label,
-                        xlabel="Time [s]",
-                        ylabel="Output",
-                        size=(800, 400),
-                        title,
-                        titlefontsize,
-                        titlelocation,
-                        #extra_kwargs
-                    )
-                    if format == :html
-                        show(output_f, MIME("text/html"), p)
-                    else
-                        display(p)
-                    end
-                end
-            end
-        else
-            # loop over outputs and inputs and selected vpts
-            for i in 1:nout
-                for j in 1:nin
-                    if impulse[i, j] == 1
-                        # make empty plot
-                        ylabel = input_names[j] * " 🡲 " * output_names[i]
-                        p = plot(;
-                            xlabel="Time [s]",
-                            ylabel,
-                            size=(800, 400),
-                            title,
-                            titlefontsize,
-                            titlelocation,
-                            #extra_kwargs
-                        )
-                        # fill in for each selected vpt
-                        for k in l
-                            t = results[k].impulse_resp.impulse_t
-                            imp = results[k].impulse_resp.impulse[i, j]
-                            lb = vpt_name[1] * "=$(my_round(vpts[k]))  $(vpt_name[3])"
-                            p = plot!(p, t, imp; lw=2, label=lb)
-                        end
                         if format == :html
                             show(output_f, MIME("text/html"), p)
                         else
