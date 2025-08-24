@@ -183,6 +183,7 @@ function analyze(
         impulse = fill(zeros(size(D)), steps)
         impulse[1] = C * B
         step_r = fill(zeros(size(D)), steps)
+        step_r[1] = D
 
         ϕ = exp(A * dt)
         for i in 2:steps
