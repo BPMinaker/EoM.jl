@@ -105,14 +105,13 @@ function analyze(
     if (high - low) < 1 
         low = high - 1
     end
+    result.w = 2π * 10.0 .^ (low:0.005:high)
 
     # compute frequency response
     G(x::Float64) = C * ((I * x * 1im - A) \ B) + D
 
     if compute
         # compute evenly spaced range of frequncies in log space to consider
-        result.w = 2π * 10.0 .^ (low:0.005:high)
-
         try
             result.freq_resp = G.(result.w)
         catch
@@ -183,22 +182,26 @@ function analyze(
         temp[1] += I
         impulse = fill(zeros(size(D)), steps)
         impulse[1] = C * B
+        step_r = fill(zeros(size(D)), steps)
 
         ϕ = exp(A * dt)
         for i in 2:steps
             temp[i] = temp[i-1] * ϕ
             impulse[i] = C * temp[i] * B
+            step_r[i] = step_r[i-1] + 0.5*(impulse[i]+impulse[i-1]) * dt
         end
 
         # instead of a vector of matrices, we will have a matrix of vectors
         # each vector will contain the impulse response for each output-input pair
         temp_ii = [zeros(0) for _ in D]
+        temp_iii =  [zeros(0) for _ in D]
         for i in CartesianIndices(D)
             temp_ii[i] = [temp[i] for temp in impulse]
+            temp_iii[i] = [temp[i] for temp in step_r]
         end
 
-        result.impulse_resp = impulse_data(collect(range(0, tt; length = steps)), temp_ii)
-
+        result.impulse_resp = response_data(collect(range(0, tt; length = steps)), temp_ii)
+        result.step_resp = response_data(collect(range(0, tt; length = steps)), temp_iii)
     end
 
     result

@@ -86,6 +86,8 @@ function summarize(
         error("Impulse response plot request dimensions are incompatible with system!")
     end
 
+    step_r = impulse
+ 
     if !isdefined(Main, :VSCodeServer)
         println("No VSCode detected, enforcing html format output...")
         format = :html
@@ -498,12 +500,33 @@ function summarize(
                 # fill in for each selected vpt
                 r = findall(impulse[:, i] .== 1)
                 if length(r) > 0
-                    t = results[l[1]].impulse_resp.impulse_t
-                    imp = results[l[1]].impulse_resp.impulse[r, i]
+                    t = results[l[1]].impulse_resp.time
+                    imp = results[l[1]].impulse_resp.response[r, i]
                     label = input_names[i] * " 🡲 " .* hcat(output_names[r]...)
                     p = plot(
                         t,
                         imp;
+                        lw=2,
+                        label,
+                        xlabel="Time [s]",
+                        ylabel="Output",
+                        size=(800, 400),
+                        title,
+                        titlefontsize,
+                        titlelocation,
+                        #extra_kwargs
+                    )
+                    if format == :html
+                        show(output_f, MIME("text/html"), p)
+                    else
+                        display(p)
+                    end
+
+                    t = results[l[1]].step_resp.time
+                    stp = results[l[1]].step_resp.response[r, i]
+                    p = plot(
+                        t,
+                        stp;
                         lw=2,
                         label,
                         xlabel="Time [s]",
@@ -539,10 +562,32 @@ function summarize(
                         )
                         # fill in for each selected vpt
                         for k in l
-                            t = results[k].impulse_resp.impulse_t
-                            imp = results[k].impulse_resp.impulse[i, j]
+                            t = results[k].impulse_resp.time
+                            imp = results[k].impulse_resp.response[i, j]
                             lb = vpt_name[1] * "=$(my_round(vpts[k]))  $(vpt_name[3])"
                             p = plot!(p, t, imp; lw=2, label=lb)
+                        end
+                        if format == :html
+                            show(output_f, MIME("text/html"), p)
+                        else
+                            display(p)
+                        end
+
+                        p = plot(;
+                            xlabel="Time [s]",
+                            ylabel,
+                            size=(800, 400),
+                            title,
+                            titlefontsize,
+                            titlelocation,
+                            #extra_kwargs
+                        )
+                        # fill in for each selected vpt
+                        for k in l
+                            t = results[k].step_resp.time
+                            stp = results[k].step_resp.response[i, j]
+                            lb = vpt_name[1] * "=$(my_round(vpts[k]))  $(vpt_name[3])"
+                            p = plot!(p, t, stp; lw=2, label=lb)
                         end
                         if format == :html
                             show(output_f, MIME("text/html"), p)

@@ -163,9 +163,9 @@ function Base.show(io::IO, obj::ss_data)
     println(io)
 end
 
-@kwdef struct impulse_data
-    impulse_t::Vector{Float64} = zeros(0)
-    impulse::Array{Vector{Float64},2} = [zeros(0) for i in 1:0, j in 1:0]
+@kwdef struct response_data
+    time::Vector{Float64} = zeros(0)
+    response::Array{Vector{Float64},2} = [zeros(0) for i in 1:0, j in 1:0]
 end
 
 @kwdef mutable struct analysis
@@ -186,7 +186,8 @@ end
     ss_resp::Array{Float64,2} = zeros(0, 0)
     centre::Array{Complex{Float64},2} = zeros(0, 0) * 1im
     hsv::Vector{Float64} = zeros(0)
-    impulse_resp::impulse_data = impulse_data()
+    impulse_resp::response_data = response_data()
+    step_resp::response_data = response_data()
     ss::Union{Symbol,Matrix,Vector} = :default
     bode::Union{Symbol,Matrix,Vector} = :default
     impulse::Union{Symbol,Matrix,Vector} = :default
