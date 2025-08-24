@@ -404,6 +404,63 @@ function summarize(
                     display(pl)
                 end
             end
+
+            szr = real.(sz)
+            szi = imag.(sz)
+
+            # eliminate all zero rows
+            tr = []
+            for i in eachrow(szr)
+                if any(i .!= 0)
+                    push!(tr, i)
+                end
+            end
+            szr = hcat(tr...)'
+            tr = []
+            for i in eachrow(szi)
+                if any(i .!= 0)
+                    push!(tr, i)
+                end
+            end
+            szi = hcat(tr...)'
+
+            # don't plot zeros - but can't have entire row of NaN
+            szr[szr.==0] .= NaN
+            szi[szi.==0] .= NaN
+
+            p = plot(;
+                xlabel=vpt_name[2] * " [$(vpt_name[3])]",
+                ylabel="Zero [rad/s]",
+                size=(800, 400),
+                title,
+                titlefontsize,
+                titlelocation,
+                #extra_kwargs
+            )
+
+            vszr = vec(szr')
+            mc = RGB(0 / 255, 154 / 255, 250 / 255)
+            label = "Real"
+            u = size(szr, 1)
+            vv = vcat(fill(vpts, u)...)
+            if length(vszr) > 0
+                plot!(p, vv, vszr; seriestype, mc, ms, label)
+            end
+            vszi = vec(szi')
+            mc = RGB(227 / 255, 111 / 255, 71 / 255)
+            label = "Imaginary"
+            u = size(szi, 1)
+            vv = vcat(fill(vpts, u)...)
+            if length(vszi) > 0
+                plot!(p, vv, vszi; seriestype, mc, ms, label)
+            end
+
+            if format == :html
+                println(output_f, "<h2>Zeros plot</h2>")
+                show(output_f, MIME("text/html"), p)
+            else
+                display(p)
+            end
         end
 
         # print instant centre of body 1
