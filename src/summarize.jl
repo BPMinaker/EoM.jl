@@ -253,20 +253,11 @@ function summarize(
             end
 
             # eliminate all zero rows
-            tr = []
-            for i in eachrow(sr)
-                if any(i .!= 0)
-                    push!(tr, i)
-                end
-            end
-            sr = hcat(tr...)'
-            tr = []
-            for i in eachrow(si)
-                if any(i .!= 0)
-                    push!(tr, i)
-                end
-            end
-            si = hcat(tr...)'
+            nonzero_rows = findall(row -> any(row .!= 0), eachrow(sr))
+            sr = sr[nonzero_rows, :]
+
+            nonzero_rows = findall(row -> any(row .!= 0), eachrow(si))
+            si = si[nonzero_rows, :]
 
             # don't plot zeros - but can't have entire row of NaN
             sr[sr.==0] .= NaN
@@ -411,20 +402,11 @@ function summarize(
             szi = imag.(sz)
 
             # eliminate all zero rows
-            tr = []
-            for i in eachrow(szr)
-                if any(i .!= 0)
-                    push!(tr, i)
-                end
-            end
-            szr = hcat(tr...)'
-            tr = []
-            for i in eachrow(szi)
-                if any(i .!= 0)
-                    push!(tr, i)
-                end
-            end
-            szi = hcat(tr...)'
+            nonzero_rows = findall(row -> any(row .!= 0), eachrow(szr))
+            szr = szr[nonzero_rows, :]
+
+            nonzero_rows = findall(row -> any(row .!= 0), eachrow(szi))
+            szi = szi[nonzero_rows, :]
 
             # don't plot zeros - but can't have entire row of NaN
             szr[szr.==0] .= NaN
