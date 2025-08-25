@@ -159,14 +159,14 @@ function summarize(
 
         # if only one vpt, make table of the gains
         if nvpts == 1
-            header = ["Output/Input", "Gain"]
+            column_labels = ["Output/Input", "Gain"]
             if format == :html
                 println(output_f, "<h2>Steady state gains</h2>")
-                str = pretty_table(String, [labels my_round.(gain)]; header, backend=Val(:html), standalone=false)
+                str = pretty_table(String, [labels my_round.(gain)]; column_labels, backend=:html)
                 println(output_f, str)
             else
                 println("Steady state gains:")
-                pretty_table([labels my_round.(gain)]; header, vlines=:none, crop=:none)
+                pretty_table([labels my_round.(gain)]; column_labels, table_format = TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
             end
         end
     end
@@ -193,28 +193,28 @@ function summarize(
             zeta = results[1].zeta
             tau = results[1].tau
             lambda = results[1].lambda
-            header = ["No.", "σ±ωi [rad/s]", "ω_n [Hz]", "ζ", "τ [s]", "λ [s]"]
+            column_labels = ["No.", "σ±ωi [rad/s]", "ω_n [Hz]", "ζ", "τ [s]", "λ [s]"]
 
             if format == :html
                 println(output_f, "<h2>Eigenvalues of minimal system</h2>")
-                str = pretty_table(String, [1:1:l[1] my_round.([s omega zeta tau lambda])]; header, backend=Val(:html), standalone=false)
+                str = pretty_table(String, [1:1:l[1] my_round.([s omega zeta tau lambda])]; column_labels, backend=:html)
                 println(output_f, str)
             else
                 println("Eigenvalues of minimal system:")
-                pretty_table([1:1:l[1] my_round.([s omega zeta tau lambda])]; header, vlines=:none, crop=:none)
+                pretty_table([1:1:l[1] my_round.([s omega zeta tau lambda])]; column_labels, table_format = TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
             end
 
             t_zero = results[1].t_zero
             t_zero_f = results[1].t_zero_f
 
-            header = ["No.", "σ±ωi [rad/s]", "ω [Hz]"]
+            column_labels = ["No.", "σ±ωi [rad/s]", "ω [Hz]"]
             if format == :html
                 println(output_f, "<h2>Zeros of minimal system</h2>")
-                str = pretty_table(String, [1:1:lz[1] my_round.([t_zero t_zero_f])]; header, backend=Val(:html), standalone=false)
+                str = pretty_table(String, [1:1:lz[1] my_round.([t_zero t_zero_f])]; column_labels, backend=:html)
                 println(output_f, str)
             else
                 println("Zeros of minimal system:")
-                pretty_table([1:1:lz[1] my_round.([t_zero t_zero_f])]; header, vlines=:none, crop=:none)
+                pretty_table([1:1:lz[1] my_round.([t_zero t_zero_f])]; column_labels, table_format = TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
             end
         else
 
@@ -449,7 +449,7 @@ function summarize(
 
         # print instant centre of body 1
         if nvpts == 1
-            header = ["No.", "Eigenvalue", "x", "y", "z", "u_x", "u_y", "u_z"]
+            column_labels = ["No.", "Eigenvalue", "x", "y", "z", "u_x", "u_y", "u_z"]
             temp = my_round.([results[1].mode_vals (results[1].centre[1:6, 1:end])'])
             if format == :html
                 println(output_f, "<h2>Rotation centres of first body for all modes</h2>")
@@ -457,11 +457,11 @@ function summarize(
                 for i in axes(temp, 1)
                     push!(link, joinpath("<a href=\"$filename", "x3d", "mode_$(i)_s=$(round(results[1].mode_vals[i], digits=3)).html\">$i</a>"))
                 end
-                str = pretty_table(String, [link temp]; header, backend=Val(:html), allow_html_in_cells=true, standalone=false)
+                str = pretty_table(String, [link temp]; column_labels, backend=:html, allow_html_in_cells=true)
                 println(output_f, str)
             else
                 println("Rotation centres of first body for all modes:")
-                pretty_table([1:1:size(temp, 1) temp]; header, vlines=:none, crop=:none)
+                pretty_table([1:1:size(temp, 1) temp]; column_labels, table_format = TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
             end
         end
     end
@@ -723,7 +723,7 @@ function summarize(
     end
 
     # add the static preloads
-    header = ["Connector", "X", "Y", "Z", "L", "M", "N"]
+    column_labels = ["Connector", "X", "Y", "Z", "L", "M", "N"]
     items = [
         systems[1].rigid_points
         systems[1].flex_points
@@ -746,7 +746,7 @@ function summarize(
 
     if format == :html
         println(output_f, "<h2>Preloads of first system</h2>")
-        str = pretty_table(String, temp; header, backend=Val(:html), standalone=false)
+        str = pretty_table(String, temp; column_labels, backend=:html)
         println(output_f, str)
 
         # print the end and close the output
@@ -755,7 +755,7 @@ function summarize(
 
     else
         println("Preloads of first system:")
-        pretty_table(temp; header, vlines=:none, crop=:none)
+        pretty_table(temp; column_labels, table_format = TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
     end
 end
 
