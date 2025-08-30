@@ -474,7 +474,7 @@ function summarize(
     if nin * nout > 0 && any(impulse .== 1) && sum(impulse .== 1) < 32
 
         if format == :html
-            println(output_f, "<h2>Impulse response plots</h2>")
+            println(output_f, "<h2>Impulse/Step response plots</h2>")
         end
 
         if ll == 1
