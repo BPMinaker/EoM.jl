@@ -398,52 +398,55 @@ function summarize(
                 end
             end
 
-            szr = real.(sz)
-            szi = imag.(sz)
+            if nin == nout
 
-            # eliminate all zero rows
-            nonzero_rows = findall(row -> any(row .!= 0), eachrow(szr))
-            szr = szr[nonzero_rows, :]
+                szr = real.(sz)
+                szi = imag.(sz)
 
-            nonzero_rows = findall(row -> any(row .!= 0), eachrow(szi))
-            szi = szi[nonzero_rows, :]
+                # eliminate all zero rows
+                nonzero_rows = findall(row -> any(row .!= 0), eachrow(szr))
+                szr = szr[nonzero_rows, :]
 
-            # don't plot zeros - but can't have entire row of NaN
-            szr[szr.==0] .= NaN
-            szi[szi.==0] .= NaN
+                nonzero_rows = findall(row -> any(row .!= 0), eachrow(szi))
+                szi = szi[nonzero_rows, :]
 
-            p = plot(;
-                xlabel=vpt_name[2] * " [$(vpt_name[3])]",
-                ylabel="Zero [rad/s]",
-                size=(800, 400),
-                title,
-                titlefontsize,
-                titlelocation,
-                #extra_kwargs
-            )
+                # don't plot zeros - but can't have entire row of NaN
+                szr[szr.==0] .= NaN
+                szi[szi.==0] .= NaN
 
-            vszr = vec(szr')
-            mc = RGB(0 / 255, 154 / 255, 250 / 255)
-            label = "Real"
-            u = size(szr, 1)
-            vv = vcat(fill(vpts, u)...)
-            if length(vszr) > 0
-                plot!(p, vv, vszr; seriestype, mc, ms, label)
-            end
-            vszi = vec(szi')
-            mc = RGB(227 / 255, 111 / 255, 71 / 255)
-            label = "Imaginary"
-            u = size(szi, 1)
-            vv = vcat(fill(vpts, u)...)
-            if length(vszi) > 0
-                plot!(p, vv, vszi; seriestype, mc, ms, label)
-            end
+                p = plot(;
+                    xlabel=vpt_name[2] * " [$(vpt_name[3])]",
+                    ylabel="Zero [rad/s]",
+                    size=(800, 400),
+                    title,
+                    titlefontsize,
+                    titlelocation,
+                    #extra_kwargs
+                )
 
-            if format == :html
-                println(output_f, "<h2>Zeros plot</h2>")
-                show(output_f, MIME("text/html"), p)
-            else
-                display(p)
+                vszr = vec(szr')
+                mc = RGB(0 / 255, 154 / 255, 250 / 255)
+                label = "Real"
+                u = size(szr, 1)
+                vv = vcat(fill(vpts, u)...)
+                if length(vszr) > 0
+                    plot!(p, vv, vszr; seriestype, mc, ms, label)
+                end
+                vszi = vec(szi')
+                mc = RGB(227 / 255, 111 / 255, 71 / 255)
+                label = "Imaginary"
+                u = size(szi, 1)
+                vv = vcat(fill(vpts, u)...)
+                if length(vszi) > 0
+                    plot!(p, vv, vszi; seriestype, mc, ms, label)
+                end
+
+                if format == :html
+                    println(output_f, "<h2>Zeros plot</h2>")
+                    show(output_f, MIME("text/html"), p)
+                else
+                    display(p)
+                end
             end
         end
 
