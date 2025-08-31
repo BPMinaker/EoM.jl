@@ -180,11 +180,13 @@ function summarize(
             s[1:l[i], i] = results[i].e_val
         end
 
-        lz = length.(getfield.(results, :t_zero))
+        zs = getfield.(results, :t_zero)
+        zsv = [vcat(zs[i][:]...) for i in 1:nvpts]
+        lz = length.(zsv)
         mz = maximum(lz)
         sz = zeros(mz, nvpts) * 1im
         for i in 1:nvpts
-            sz[1:lz[i], i] = results[i].t_zero
+            sz[1:lz[i], i] = zsv[i]
         end
 
         # for one velocity, chart of calcs from eigenvalues, otherwise plot eigenvalues
@@ -204,8 +206,8 @@ function summarize(
                 pretty_table([1:1:l[1] my_round.([s omega zeta tau lambda])]; column_labels, table_format = TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
             end
 
-            t_zero = results[1].t_zero
-            t_zero_f = results[1].t_zero_f
+            t_zero = vcat(results[1].t_zero[:]...)
+            t_zero_f = vcat(results[1].t_zero_f[:]...)
 
             column_labels = ["No.", "σ±ωi [rad/s]", "ω [Hz]"]
             if format == :html
@@ -398,55 +400,52 @@ function summarize(
                 end
             end
 
-            if nin == nout
+            szr = real.(sz)
+            szi = imag.(sz)
 
-                szr = real.(sz)
-                szi = imag.(sz)
+            # eliminate all zero rows
+            nonzero_rows = findall(row -> any(row .!= 0), eachrow(szr))
+            szr = szr[nonzero_rows, :]
 
-                # eliminate all zero rows
-                nonzero_rows = findall(row -> any(row .!= 0), eachrow(szr))
-                szr = szr[nonzero_rows, :]
+            nonzero_rows = findall(row -> any(row .!= 0), eachrow(szi))
+            szi = szi[nonzero_rows, :]
 
-                nonzero_rows = findall(row -> any(row .!= 0), eachrow(szi))
-                szi = szi[nonzero_rows, :]
+            # don't plot zeros - but can't have entire row of NaN
+            szr[szr.==0] .= NaN
+            szi[szi.==0] .= NaN
 
-                # don't plot zeros - but can't have entire row of NaN
-                szr[szr.==0] .= NaN
-                szi[szi.==0] .= NaN
+            p = plot(;
+                xlabel=vpt_name[2] * " [$(vpt_name[3])]",
+                ylabel="Zero [rad/s]",
+                size=(800, 400),
+                title,
+                titlefontsize,
+                titlelocation,
+                #extra_kwargs
+            )
 
-                p = plot(;
-                    xlabel=vpt_name[2] * " [$(vpt_name[3])]",
-                    ylabel="Zero [rad/s]",
-                    size=(800, 400),
-                    title,
-                    titlefontsize,
-                    titlelocation,
-                    #extra_kwargs
-                )
+            vszr = vec(szr')
+            mc = RGB(0 / 255, 154 / 255, 250 / 255)
+            label = "Real"
+            u = size(szr, 1)
+            vv = vcat(fill(vpts, u)...)
+            if length(vszr) > 0
+                plot!(p, vv, vszr; seriestype, mc, ms, label)
+            end
+            vszi = vec(szi')
+            mc = RGB(227 / 255, 111 / 255, 71 / 255)
+            label = "Imaginary"
+            u = size(szi, 1)
+            vv = vcat(fill(vpts, u)...)
+            if length(vszi) > 0
+                plot!(p, vv, vszi; seriestype, mc, ms, label)
+            end
 
-                vszr = vec(szr')
-                mc = RGB(0 / 255, 154 / 255, 250 / 255)
-                label = "Real"
-                u = size(szr, 1)
-                vv = vcat(fill(vpts, u)...)
-                if length(vszr) > 0
-                    plot!(p, vv, vszr; seriestype, mc, ms, label)
-                end
-                vszi = vec(szi')
-                mc = RGB(227 / 255, 111 / 255, 71 / 255)
-                label = "Imaginary"
-                u = size(szi, 1)
-                vv = vcat(fill(vpts, u)...)
-                if length(vszi) > 0
-                    plot!(p, vv, vszi; seriestype, mc, ms, label)
-                end
-
-                if format == :html
-                    println(output_f, "<h2>Zeros plot</h2>")
-                    show(output_f, MIME("text/html"), p)
-                else
-                    display(p)
-                end
+            if format == :html
+                println(output_f, "<h2>Zeros plot</h2>")
+                show(output_f, MIME("text/html"), p)
+            else
+                display(p)
             end
         end
 
@@ -455,7 +454,7 @@ function summarize(
             column_labels = ["No.", "Eigenvalue", "x", "y", "z", "u_x", "u_y", "u_z"]
             temp = my_round.([results[1].mode_vals (results[1].centre[1:6, 1:end])'])
             if format == :html
-                println(output_f, "<h2>Rotation centres of first body for all modes</h2>")
+                println(output_f, "<h2>Rotation centres of first body for all modes, relative to G:</h2>")
                 link = []
                 for i in axes(temp, 1)
                     push!(link, joinpath("<a href=\"$filename", "x3d", "mode_$(i)_s=$(round(results[1].mode_vals[i], digits=3)).html\">$i</a>"))
@@ -463,7 +462,7 @@ function summarize(
                 str = pretty_table(String, [link temp]; column_labels, backend=:html, allow_html_in_cells=true)
                 println(output_f, str)
             else
-                println("Rotation centres of first body for all modes:")
+                println("Rotation centres of first body for all modes, relative to G:")
                 pretty_table([1:1:size(temp, 1) temp]; column_labels, table_format = TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
             end
         end

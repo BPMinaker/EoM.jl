@@ -177,8 +177,8 @@ end
     zeta::Vector{Float64} = zeros(0)
     tau::Vector{Float64} = zeros(0)
     lambda::Vector{Float64} = zeros(0)
-    t_zero::Vector{Complex{Float64}} = zeros(0)
-    t_zero_f::Vector{Float64} = zeros(0)
+    t_zero::Array{Vector{Complex{Float64}},2} = [zeros(0) for i in 1:0, j in 1:0]
+    t_zero_f::Array{Vector{Complex{Float64}},2} = [zeros(0) for i in 1:0, j in 1:0]
     w::Vector{Float64} = zeros(0)
     freq_resp::Vector{Array{Complex{Float64},2}} = [zeros(0, 0) * 1im]
     mag::Vector{Array{Float64,2}} = [zeros(0, 0)]

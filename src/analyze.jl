@@ -68,12 +68,18 @@ function analyze(
     result.zeta[idx] .= NaN
 
     (; A, B, C, D) = result.ss_eqns
+    ns = size(A, 1)
 
-    temp = [A B; C D]
-    if size(temp, 1) == size(temp, 2)
-        F = eigen(temp, [I zeros(size(B)); zeros(size(C)) zeros(size(D))])
-        result.t_zero = F.values[abs.(F.values) .< 1e9]
-        result.t_zero_f = abs.(result.t_zero) / 2π
+    result.t_zero = [zeros(0) for _ in 1:nout, _ in 1:nin]
+    result.t_zero_f = [zeros(0) for _ in 1:nout, _ in 1:nin]
+
+    for i in 1:nout
+        for j in 1:nin
+            temp = [A B[:, j]; C[i:i, :] D[i, j]]
+            F = eigen(temp, [I zeros(ns, 1); zeros(1, ns) 0])
+            result.t_zero[i, j] = F.values[abs.(F.values) .< 1e9]
+            result.t_zero_f[i,j] = abs.(result.t_zero[i, j]) / 2π
+        end
     end
 
 #    try
