@@ -6,39 +6,14 @@ function syst_props(the_system::mbd_system, dir_output::String)
     # Body data
     idx = 1
     for item in the_system.bodys[1:end-1]
-        print(
-            body_f,
-            "{",
-            idx,
-            "} {",
-            item.name,
-            "} ",
+        vals = [
+            "{", idx, "} {", item.name, "} ",
             item.mass,
-            " ",
-            item.location[1],
-            " ",
-            item.location[2],
-            " ",
-            item.location[3],
-            " ",
-        )
-        print(
-            body_f,
-            item.moments_of_inertia[1],
-            " ",
-            item.moments_of_inertia[2],
-            " ",
-            item.moments_of_inertia[3],
-            " ",
-        )
-        println(
-            body_f,
-            item.products_of_inertia[1],
-            " ",
-            item.products_of_inertia[2],
-            " ",
-            item.products_of_inertia[3],
-        )
+            item.location...,
+            item.moments_of_inertia...,
+            item.products_of_inertia...
+        ]
+        println(body_f, join(vals, " "))
         idx += 1
     end
     close(body_f)
@@ -54,186 +29,74 @@ function syst_props(the_system::mbd_system, dir_output::String)
 
     # Connection data
     idx = 1
+    idx2 = 1
+
     for item in the_system.rigid_points
-        print(
-            point_f,
-            "{",
-            idx,
-            "} {",
-            item.name,
-            "} ",
-            item.location[1],
-            " ",
-            item.location[2],
-            " ",
-            item.location[3],
-            " ",
-        )
+        vals = ["{", idx, "} {", item.name, "} ", item.location...]
         if norm(item.axis) > 0
-            println(point_f, item.unit[1], " ", item.unit[2], " ", item.unit[3])
+            vec = [vals; item.unit...]
         else
-            println(point_f, "{} {} {}")
+            vec = [vals; "{} {} {}"]
         end
+        println(point_f, join(vec, " "))
         idx += 1
     end
 
-    idx2 = 1
     for item in the_system.flex_points
-        print(
-            point_f,
-            "{",
-            idx,
-            "} {",
-            item.name,
-            "} ",
-            item.location[1],
-            " ",
-            item.location[2],
-            " ",
-            item.location[3],
-            " ",
-        )
+        vals = ["{", idx, "} {", item.name, "} ", item.location...]
         if norm(item.axis) > 0
-            println(point_f, item.unit[1], " ", item.unit[2], " ", item.unit[3])
+            vec = [vals; item.unit...]
         else
-            println(point_f, "{} {} {}")
+            vec = [vals; "{} {} {}"]
         end
-        println(
-            stiff_f,
-            "{",
-            idx2,
-            "} {",
-            item.name,
-            "} ",
-            item.stiffness[1],
-            " ",
-            item.damping[1],
-            " ",
-            item.stiffness[2],
-            " ",
-            item.damping[2],
-        )
+        println(point_f, join(vec, " "))
+        vec = [
+            "{", idx2, "} {", item.name, "} ",
+            item.stiffness[1], item.damping[1],
+            item.stiffness[2], item.damping[2]
+        ]
+        println(stiff_f, join(vec, " "))
         idx += 1
         idx2 += 1
     end
 
     for item in the_system.nh_points
-        print(
-            point_f,
-            "{",
-            idx,
-            "} {",
-            item.name,
-            "} ",
-            item.location[1],
-            " ",
-            item.location[2],
-            " ",
-            item.location[3],
-            " ",
-        )
+        vals = ["{", idx, "} {", item.name, "} ", item.location...]
         if norm(item.axis) > 0
-            println(point_f, item.unit[1], " ", item.unit[2], " ", item.unit[3])
+            vec = [vals; item.unit...]
         else
-            println(point_f, "{} {} {}")
+            vec = [vals; "{} {} {}"]
         end
+        println(point_f, join(vec, " "))
         idx += 1
     end
 
     for item in the_system.springs
-        println(
-            point_f,
-            "{",
-            idx,
-            "} {",
-            item.name,
-            "} ",
-            item.location[1][1],
-            " ",
-            item.location[1][2],
-            " ",
-            item.location[1][3],
-            " {} {} {}",
-        )
-        println(
-            point_f,
-            "{} {} ",
-            item.location[2][1],
-            " ",
-            item.location[2][2],
-            " ",
-            item.location[2][3],
-            " {} {} {}",
-        )
-        println(
-            stiff_f,
-            "{",
-            idx2,
-            "} {",
-            item.name,
-            "} ",
-            item.stiffness,
-            " ",
-            item.damping,
-            " {} {}",
-        )
+        vals = [
+            "{", idx, "} {", item.name, "} ", item.location[1]..., "{} {} {}\n",
+            "{} {} ", item.location[2]..., "{} {} {}"
+            ]
+        println(point_f, join(vals, " "))
+        println(stiff_f, "{", idx2, "} {", item.name, "} ", item.stiffness, " ", item.damping, " {} {}")
         idx += 1
         idx2 += 1
     end
 
     for item in the_system.links
-        println(
-            point_f,
-            "{",
-            idx,
-            "} {",
-            item.name,
-            "} ",
-            item.location[1][1],
-            " ",
-            item.location[1][2],
-            " ",
-            item.location[1][3],
-            " {} {} {}",
-        )
-        println(
-            point_f,
-            "{} {} ",
-            item.location[2][1],
-            " ",
-            item.location[2][2],
-            " ",
-            item.location[2][3],
-            " {} {} {}",
-        )
+        vals = [
+            "{", idx, "} {", item.name, "} ", item.location[1]..., "{} {} {}\n",
+            "{} {} ", item.location[2]..., "{} {} {}"
+        ]
+        println(point_f, join(vals, " "))
         idx += 1
     end
 
     for item in the_system.beams
-        println(
-            point_f,
-            "{",
-            idx,
-            "} {",
-            item.name,
-            "} ",
-            item.location[1][1],
-            " ",
-            item.location[1][2],
-            " ",
-            item.location[1][3],
-            " {} {} {}",
-        )
-        println(
-            point_f,
-            "{} {} ",
-            item.location[2][1],
-            " ",
-            item.location[2][2],
-            " ",
-            item.location[2][3],
-            " {} {} {}",
-        )
+        vals = [
+            "{", idx, "} {", item.name, "} ", item.location[1]..., "{} {} {}\n",
+            "{} {} ", item.location[2]..., "{} {} {}"
+        ]
+        println(point_f, join(vals, " "))
         println(stiff_f, "{", idx2, "} {", item.name, "} ", item.stiffness, " {} {} {}")
         idx += 1
         idx2 += 1
@@ -242,33 +105,17 @@ function syst_props(the_system::mbd_system, dir_output::String)
     close(point_f)
     close(stiff_f)
 
-
     input_f = open(joinpath(dir_output, "inputdata.out"), "w")
     println(input_f, "###### Connection Data\nnum name rx ry rz ux uy uz gain")
 
-    idx = 1
-    for item in the_system.actuators
-        println(
-            input_f,
-            "{",
-            idx,
-            "} {",
-            item.name,
-            "} ",
-            item.location[1][1],
-            " ",
-            item.location[1][2],
-            " ",
-            item.location[1][3],
-            " ",
-            item.location[2][1],
-            " ",
-            item.location[2][2],
-            " ",
-            item.location[2][3],
-            " ",
-            item.gain)
-        idx += 1
+    for (idx, item) in enumerate(the_system.actuators)
+        vals = [
+            "{", idx, "} {", item.name, "} ",
+            item.location[1]...,
+            item.location[2]...,
+            item.gain
+        ]
+        println(input_f, join(vals, " "))
     end
 
     close(input_f)
@@ -276,29 +123,14 @@ function syst_props(the_system::mbd_system, dir_output::String)
     output_f = open(joinpath(dir_output, "outputdata.out"), "w")
     println(output_f, "###### Connection Data\nnum name rx ry rz ux uy uz gain")
 
-    idx = 1
-    for item in the_system.sensors
-        println(
-            output_f,
-            "{",
-            idx,
-            "} {",
-            item.name,
-            "} ",
-            item.location[1][1],
-            " ",
-            item.location[1][2],
-            " ",
-            item.location[1][3],
-            " ",
-            item.location[2][1],
-            " ",
-            item.location[2][2],
-            " ",
-            item.location[2][3],
-            " ",
-            item.gain)
-        idx += 1
+    for (idx, item) in enumerate(the_system.sensors)
+        vals = [
+            "{", idx, "} {", item.name, "} ",
+            item.location[1]...,
+            item.location[2]...,
+            item.gain
+        ]
+        println(output_f, join(vals, " "))
     end
 
     close(output_f)
