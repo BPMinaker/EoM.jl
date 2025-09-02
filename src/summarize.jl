@@ -208,15 +208,16 @@ function summarize(
 
             t_zero = vcat(results[1].t_zero[:]...)
             t_zero_f = vcat(results[1].t_zero_f[:]...)
-
-            column_labels = ["No.", "σ±ωi [rad/s]", "ω [Hz]"]
-            if format == :html
-                println(output_f, "<h2>Zeros of minimal system</h2>")
-                str = pretty_table(String, [1:1:lz[1] my_round.([t_zero t_zero_f])]; column_labels, backend=:html)
-                println(output_f, str)
-            else
-                println("Zeros of minimal system:")
-                pretty_table([1:1:lz[1] my_round.([t_zero t_zero_f])]; column_labels, table_format = TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
+            if length(t_zero) < 200
+                column_labels = ["No.", "σ±ωi [rad/s]", "ω [Hz]"]
+                if format == :html
+                    println(output_f, "<h2>Zeros of minimal system</h2>")
+                    str = pretty_table(String, [1:1:lz[1] my_round.([t_zero t_zero_f])]; column_labels, backend=:html)
+                    println(output_f, str)
+                else
+                    println("Zeros of minimal system:")
+                    pretty_table([1:1:lz[1] my_round.([t_zero t_zero_f])]; column_labels, table_format = TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
+                end
             end
         else
 
@@ -750,8 +751,6 @@ function summarize(
         println(output_f, "<h2>Preloads of first system</h2>")
         str = pretty_table(String, temp; column_labels, backend=:html)
         println(output_f, str)
-
-        # print the end and close the output
         println(output_f, str_close)
         close(output_f)
 
