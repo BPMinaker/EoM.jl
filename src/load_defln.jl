@@ -8,37 +8,42 @@ function load_defln(the_system::mbd_system, dir_output::String)
 
     idx = 1
     for item in [the_system.rigid_points; the_system.flex_points]
-        print(preload_f, "{$idx} {" * item.name * "} ")
-        println(preload_f, "force $(item.force[1]), $(item.force[2]), $(item.force[3]), $(norm(item.force))")
-        print(preload_f, "{} {} ")
-        println(preload_f, "moment $(item.moment[1]), $(item.moment[2]), $(item.moment[3]), $(norm(item.moment))")
+        vals_force = ["{$idx}", "{", item.name, "}", "force", item.force..., norm(item.force)]
+        println(preload_f, join(vals_force, " "))
+        vals_moment = ["{} {}", "moment", item.moment..., norm(item.moment)]
+        println(preload_f, join(vals_moment, " "))
         idx += 1
     end
 
     for item in [the_system.springs; the_system.links]
-
-        print(preload_f, "{$idx} {" * item.name * "} ")
+        vals = ["{$idx}", "{", item.name, "}"]
         if item.twist == 0
-            println(preload_f, "force $(item.force[1]), $(item.force[2]), $(item.force[3]), $(item.preload)")
+            vals_force = [vals..., "force", item.force..., item.preload]
+            println(preload_f, join(vals_force, " "))
         else
-            println(preload_f, "moment $(item.moment[1]), $(item.moment[2]), $(item.moment[3]), $(item.preload)")
+            vals_moment = [vals..., "moment", item.moment..., item.preload]
+            println(preload_f, join(vals_moment, " "))
         end
         idx += 1
     end
 
     for item in the_system.beams
-        println(preload_f, "{$idx} {" * item.name * "} shear $(item.force[1][1]), $(item.force[1][2]), $(item.force[1][3]), $(norm(item.force[1]))")
-        println(preload_f, "{} {} moment $(item.moment[1][1]), $(item.moment[1][2]), $(item.moment[1][3]), $(norm(item.moment[1]))")
-        println(preload_f, "{} {} shear $(item.force[2][1]), $(item.force[2][2]), $(item.force[2][3]), $(norm(item.force[2]))")
-        println(preload_f, "{} {} moment $(item.moment[2][1]), $(item.moment[2][2]), $(item.moment[2][3]), $(norm(item.moment[2]))")
+        vals_shear1 = ["{$idx}", "{", item.name, "}", "shear", item.force[1]..., norm(item.force[1])]
+        vals_moment1 = ["{} {}", "moment", item.moment[1]..., norm(item.moment[1])]
+        vals_shear2 = ["{} {}", "shear", item.force[2]..., norm(item.force[2])]
+        vals_moment2 = ["{} {}", "moment", item.moment[2]..., norm(item.moment[2])]
+        println(preload_f, join(vals_shear1, " "))
+        println(preload_f, join(vals_moment1, " "))
+        println(preload_f, join(vals_shear2, " "))
+        println(preload_f, join(vals_moment2, " "))
         idx += 1
     end
 
-    idx = 1
-    for item in the_system.bodys[1:end - 1]
-        println(defln_f, "{$idx} {" * item.name * "} translation $(item.deflection[1]), $(item.deflection[2]), $(item.deflection[3])")
-        println(defln_f, "{ } { } rotation $(item.angular_deflection[1]), $(item.angular_deflection[2]), $(item.angular_deflection[3])")
-        idx += 1
+    for (idx, item) in enumerate(the_system.bodys[1:end - 1])
+        vals_trans = ["{$idx}", "{", item.name, "}", "translation", item.deflection...]
+        vals_rot = ["{ } { }", "rotation", item.angular_deflection...]
+        println(defln_f, join(vals_trans, " "))
+        println(defln_f, join(vals_rot, " "))
     end
 
     close(preload_f)
