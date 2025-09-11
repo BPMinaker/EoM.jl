@@ -424,8 +424,6 @@ function summarize(
             szi[szi.==0] .= NaN
             vszr = vec(szr')
             vszi = vec(szi')
-            display(vszr)
-            display(length(vszr))
             if length(vszr) > 0 && minimum(filter(isfinite, vszr)) < -100
                 yliml = -100
             else
