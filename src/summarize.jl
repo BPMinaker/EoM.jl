@@ -265,6 +265,13 @@ function summarize(
             # don't plot zeros - but can't have entire row of NaN
             sr[sr.==0] .= NaN
             si[si.==0] .= NaN
+            vsr = vec(sr')
+            vsi = vec(si')
+            if minimum(vsr) < -100
+                yliml = -100
+            else
+                yliml = -Inf
+            end
 
             p = plot(;
                 xlabel=vpt_name[2] * " [$(vpt_name[3])]",
@@ -273,10 +280,11 @@ function summarize(
                 title,
                 titlefontsize,
                 titlelocation,
+                ylims=(yliml, Inf),
+                widen=true,
                 #extra_kwargs
             )
 
-            vsr = vec(sr')
             mc = RGB(0 / 255, 154 / 255, 250 / 255)
             label = "Real"
             u = size(sr, 1)
@@ -284,7 +292,6 @@ function summarize(
             if length(vsr) > 0
                 plot!(p, vv, vsr; seriestype, mc, ms, label)
             end
-            vsi = vec(si')
             mc = RGB(227 / 255, 111 / 255, 71 / 255)
             label = "Imaginary"
             u = size(si, 1)
@@ -315,6 +322,7 @@ function summarize(
                     xlabel=vpt_name[2] * " [$(vpt_name[3])]",
                     ylabel="Natural frequency [Hz]",
                     ylims=(0, Inf),
+                    widen=true,
                     size=(800, 400),
                     title,
                     titlefontsize,
@@ -414,6 +422,15 @@ function summarize(
             # don't plot zeros - but can't have entire row of NaN
             szr[szr.==0] .= NaN
             szi[szi.==0] .= NaN
+            vszr = vec(szr')
+            vszi = vec(szi')
+            display(vszr)
+            display(length(vszr))
+            if length(vszr) > 0 && minimum(filter(isfinite, vszr)) < -100
+                yliml = -100
+            else
+                yliml = -Inf
+            end
 
             p = plot(;
                 xlabel=vpt_name[2] * " [$(vpt_name[3])]",
@@ -422,10 +439,11 @@ function summarize(
                 title,
                 titlefontsize,
                 titlelocation,
+                ylims=(yliml, Inf),
+                widen=true,
                 #extra_kwargs
             )
 
-            vszr = vec(szr')
             mc = RGB(0 / 255, 154 / 255, 250 / 255)
             label = "Real"
             u = size(szr, 1)
@@ -433,7 +451,6 @@ function summarize(
             if length(vszr) > 0
                 plot!(p, vv, vszr; seriestype, mc, ms, label)
             end
-            vszi = vec(szi')
             mc = RGB(227 / 255, 111 / 255, 71 / 255)
             label = "Imaginary"
             u = size(szi, 1)
@@ -617,6 +634,7 @@ function summarize(
                         xscale,
                         xticks,
                         ylims=(-40, Inf),
+                        widen=true,
                         title,
                         titlefontsize,
                         titlelocation,
@@ -632,7 +650,8 @@ function summarize(
                         ylabel="Phase [°]",
                         xscale,
                         xticks,
-                        ylims=(-365, 5),
+                        ylims=(-360, 0),
+                        widen=true,
                         yticks=-360:60:0,
                         #extra_kwargs
                     )
@@ -666,6 +685,7 @@ function summarize(
                             xscale,
                             xticks,
                             ylims=(-40, Inf),
+                            widen=true,
                             bottom_margin=5mm,
                             title,
                             titlefontsize,
@@ -678,7 +698,8 @@ function summarize(
                             ylabel,
                             xscale,
                             xticks,
-                            ylims=(-365, 5),
+                            ylims=(-360, 0),
+                            widen=true,
                             yticks=-360:60:0,
                             #extra_kwargs
                         )
