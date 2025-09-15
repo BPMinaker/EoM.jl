@@ -13,6 +13,7 @@ using Plots.Measures
 function __init__()
     println("Initializing EoM...")
     Plots.plotlyjs()
+    Plots.default(fontfamily="Calibri", titlefontsize=7, titlelocation=:left, size=(800, 400), lw=2, ms=3)
     println("Selected PlotlyJS engine...")
 end
 

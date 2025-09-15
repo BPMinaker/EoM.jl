@@ -50,7 +50,7 @@ function summarize(
         println(output_f, "<p>Here are the results of the analysis of: $(systems[1].name)</p>")
 
     else
-            println("Printing summary of the analysis of: $(systems[1].name)...")
+        println("Printing summary of the analysis of: $(systems[1].name)...")
     end
 
     # get names of inputs and outputs
@@ -110,8 +110,6 @@ function summarize(
     end
 
     title = "EoM " * Dates.format(now(), "yyyy-mm-dd")
-    titlefontsize = 7
-    titlelocation = :left
 
     # if there are too many inputs and outputs, skip
     if nin * nout > 0 && any(ss .== 1) && sum(ss .== 1) < 16
@@ -133,14 +131,10 @@ function summarize(
                         p = plot(
                             vpts,
                             x;
-                            lw=2,
                             xlabel=vpt_name[2] * " [$(vpt_name[3])]",
                             ylabel=lb,
                             label="",
-                            size=(800, 400),
                             title,
-                            titlefontsize,
-                            titlelocation,
                             #extra_kwargs
                         )
                         if format == :html
@@ -162,7 +156,7 @@ function summarize(
                 println(output_f, str)
             else
                 println("Steady state gains:")
-                pretty_table([labels my_round.(gain)]; column_labels, table_format = TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
+                pretty_table([labels my_round.(gain)]; column_labels, table_format=TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
             end
         end
     end
@@ -199,7 +193,7 @@ function summarize(
                 println(output_f, str)
             else
                 println("Eigenvalues of minimal system:")
-                pretty_table([1:1:l[1] my_round.([s omega zeta tau lambda])]; column_labels, table_format = TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
+                pretty_table([1:1:l[1] my_round.([s omega zeta tau lambda])]; column_labels, table_format=TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
             end
 
             t_zero = vcat(results[1].t_zero[:]...)
@@ -212,7 +206,7 @@ function summarize(
                     println(output_f, str)
                 else
                     println("Zeros of minimal system:")
-                    pretty_table([1:1:lz[1] my_round.([t_zero t_zero_f])]; column_labels, table_format = TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
+                    pretty_table([1:1:lz[1] my_round.([t_zero t_zero_f])]; column_labels, table_format=TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
                 end
             end
 
@@ -221,7 +215,6 @@ function summarize(
             seriestype = :scatter
             label = reshape(["$(vpt_name[1])=$i" for i in vpts], 1, nvpts)
             mc = RGB(0 / 255, 154 / 255, 250 / 255)
-            ms = 3
 
             sr = real.(s)
             si = imag.(s)
@@ -232,16 +225,12 @@ function summarize(
                 seriestype,
                 aspect_ratio=:equal,
                 mc,
-                ms,
                 label,
                 xlabel="Real part [rad/s]",
                 ylabel="Imaginary part [rad/s]",
-                size=(800, 400),
                 title,
                 legend=false,
                 marker=:o,
-                titlefontsize,
-                titlelocation,
                 #extra_kwargs
             )
 
@@ -273,10 +262,7 @@ function summarize(
             p = plot(;
                 xlabel=vpt_name[2] * " [$(vpt_name[3])]",
                 ylabel="Eigenvalue [rad/s]",
-                size=(800, 400),
                 title,
-                titlefontsize,
-                titlelocation,
                 ylims=(yliml, Inf),
                 widen=true,
                 #extra_kwargs
@@ -287,14 +273,14 @@ function summarize(
             u = size(sr, 1)
             vv = vcat(fill(vpts, u)...)
             if length(vsr) > 0
-                plot!(p, vv, vsr; seriestype, mc, ms, label)
+                plot!(p, vv, vsr; seriestype, mc, label)
             end
             mc = RGB(227 / 255, 111 / 255, 71 / 255)
             label = "Imaginary"
             u = size(si, 1)
             vv = vcat(fill(vpts, u)...)
             if length(vsi) > 0
-                plot!(p, vv, vsi; seriestype, mc, ms, label)
+                plot!(p, vv, vsi; seriestype, mc, label)
             end
 
             if format == :html
@@ -314,16 +300,12 @@ function summarize(
                     omega;
                     seriestype,
                     mc,
-                    ms,
                     label,
                     xlabel=vpt_name[2] * " [$(vpt_name[3])]",
                     ylabel="Natural frequency [Hz]",
                     ylims=(0, Inf),
                     widen=true,
-                    size=(800, 400),
                     title,
-                    titlefontsize,
-                    titlelocation,
                     #extra_kwargs
                 )
                 if format == :html
@@ -340,14 +322,10 @@ function summarize(
                     zeta;
                     seriestype,
                     mc,
-                    ms,
                     label,
                     xlabel=vpt_name[2] * " [$(vpt_name[3])]",
                     ylabel="Damping ratio",
-                    size=(800, 400),
                     title,
-                    titlefontsize,
-                    titlelocation,
                     #extra_kwargs
                 )
                 if format == :html
@@ -364,14 +342,10 @@ function summarize(
                     tau;
                     seriestype,
                     mc,
-                    ms,
                     label,
                     xlabel=vpt_name[2] * " [$(vpt_name[3])]",
                     ylabel="Time constant [s]",
-                    size=(800, 400),
                     title,
-                    titlefontsize,
-                    titlelocation,
                     #extra_kwargs
                 )
                 if format == :html
@@ -388,15 +362,11 @@ function summarize(
                     lambda;
                     seriestype,
                     mc,
-                    ms,
                     label,
                     xlabel=vpt_name[2] * " [$(vpt_name[3])]",
                     ylabel="Wavelength [s]",
                     ylims=(0, Inf),
-                    size=(800, 400),
                     title,
-                    titlefontsize,
-                    titlelocation,
                     #extra_kwargs
                 )
                 if format == :html
@@ -435,10 +405,7 @@ function summarize(
             p = plot(;
                 xlabel=vpt_name[2] * " [$(vpt_name[3])]",
                 ylabel="Zero [rad/s]",
-                size=(800, 400),
                 title,
-                titlefontsize,
-                titlelocation,
                 ylims=(yliml, ylimu),
                 widen=true,
                 #extra_kwargs
@@ -449,14 +416,14 @@ function summarize(
             u = size(szr, 1)
             vv = vcat(fill(vpts, u)...)
             if length(vszr) > 0
-                plot!(p, vv, vszr; seriestype, mc, ms, label)
+                plot!(p, vv, vszr; seriestype, mc, label)
             end
             mc = RGB(227 / 255, 111 / 255, 71 / 255)
             label = "Imaginary"
             u = size(szi, 1)
             vv = vcat(fill(vpts, u)...)
             if length(vszi) > 0
-                plot!(p, vv, vszi; seriestype, mc, ms, label)
+                plot!(p, vv, vszi; seriestype, mc, label)
             end
 
             if format == :html
@@ -481,7 +448,7 @@ function summarize(
                 println(output_f, str)
             else
                 println("Rotation centres of first body for all modes, relative to G:")
-                pretty_table([1:1:size(temp, 1) temp]; column_labels, table_format = TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
+                pretty_table([1:1:size(temp, 1) temp]; column_labels, table_format=TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
             end
         end
     end
@@ -512,10 +479,7 @@ function summarize(
                         label,
                         xlabel="Time [s]",
                         ylabel="Output",
-                        size=(800, 400),
                         title,
-                        titlefontsize,
-                        titlelocation,
                         #extra_kwargs
                     )
                     if format == :html
@@ -529,14 +493,10 @@ function summarize(
                     p = plot(
                         t,
                         stp;
-                        lw=2,
                         label,
                         xlabel="Time [s]",
                         ylabel="Output",
-                        size=(800, 400),
                         title,
-                        titlefontsize,
-                        titlelocation,
                         #extra_kwargs
                     )
                     if format == :html
@@ -556,10 +516,7 @@ function summarize(
                         p = plot(;
                             xlabel="Time [s]",
                             ylabel,
-                            size=(800, 400),
                             title,
-                            titlefontsize,
-                            titlelocation,
                             #extra_kwargs
                         )
                         # fill in for each selected vpt
@@ -578,10 +535,7 @@ function summarize(
                         p = plot(;
                             xlabel="Time [s]",
                             ylabel,
-                            size=(800, 400),
                             title,
-                            titlefontsize,
-                            titlelocation,
                             #extra_kwargs
                         )
                         # fill in for each selected vpt
@@ -627,7 +581,6 @@ function summarize(
                     p1 = plot(
                         w,
                         mag';
-                        lw=2,
                         label,
                         xlabel="",
                         ylabel="Gain [dB]",
@@ -636,15 +589,12 @@ function summarize(
                         ylims=(-40, Inf),
                         widen=true,
                         title,
-                        titlefontsize,
-                        titlelocation,
                         bottom_margin=5mm,
                         #extra_kwargs
                     )
                     p2 = plot(
                         w,
                         phs';
-                        lw=2,
                         label="",
                         xlabel="Frequency [Hz]",
                         ylabel="Phase [°]",
@@ -688,8 +638,6 @@ function summarize(
                             widen=true,
                             bottom_margin=5mm,
                             title,
-                            titlefontsize,
-                            titlelocation,
                             #extra_kwargs
                         )
                         ylabel = "∠ $(output_names[i])/$(input_names[j]) [°]"
@@ -735,7 +683,7 @@ function summarize(
     end
 
     if length(plots) > 0
-        plot!.(plots; title, titlefontsize, titlelocation)
+        plot!.(plots; title)
         if format == :html
             println(output_f, "<h2>Time history and other plots</h2>")
             for p in plots
@@ -777,7 +725,7 @@ function summarize(
 
     else
         println("Preloads of first system:")
-        pretty_table(temp; column_labels, table_format = TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
+        pretty_table(temp; column_labels, table_format=TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
     end
 end
 
