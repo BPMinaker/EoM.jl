@@ -36,8 +36,8 @@ function analyze(
         end
     end
 
-    temp_ss = dss2ss(dss_eqns::dss_data, verb) # reduce to standard form
-    min_ss =  minreal(temp_ss::ss_data, verb)
+    temp_ss = dss2ss(dss_eqns, verb) # reduce to standard form
+    min_ss =  minreal(temp_ss, verb)
 
     if size(min_ss.A, 1) < size(temp_ss.A,1)
         result.ss_eqns = min_ss
@@ -75,9 +75,9 @@ function analyze(
 
     for i in 1:nout
         for j in 1:nin
-            temp = [A B[:, j]; C[i:i, :] D[i, j]]
+            temp = [A B[:, j:j]; C[i:i, :] D[i:i, j:j]]
             F = eigen(temp, [I zeros(ns, 1); zeros(1, ns) 0])
-            result.t_zero[i, j] = F.values[abs.(F.values) .< 1e9]
+            result.t_zero[i, j] = F.values[abs.(F.values) .< 1e6]
             result.t_zero_f[i,j] = abs.(result.t_zero[i, j]) / 2π
         end
     end
