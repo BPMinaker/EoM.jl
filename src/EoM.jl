@@ -29,6 +29,7 @@ export ltisim
 export ltiplot
 export ltilabels
 export random_road
+export ride_filter
 export tire
 export input_delay!
 export discrete
@@ -95,6 +96,7 @@ include("sensors_animate.jl")
 include("thin_rod.jl")
 include("ltisim.jl")
 include("random_road.jl")
+include("ride_filter.jl")
 include("magic.jl")
 include("input_delay.jl")
 include("discrete.jl")
