@@ -7,36 +7,23 @@ using Dates
 using DelimitedFiles
 using PrettyTables
 using Unitful
-using Plots
-using Plots.Measures
+using DescriptorSystems
 
 function __init__()
     println("Initializing EoM...")
-    Plots.plotlyjs()
-    Plots.default(fontfamily="Calibri", titlefontsize=7, titlelocation=:left, size=(800, 400), lw=2, ms=3)
-    println("Selected PlotlyJS engine...")
 end
 
-export setup
 export run_eom!
 export diagnose!
 export analyze
-export full_ss
 export write_output
-export summarize
-export impulse
 export ltisim
-export ltiplot
-export ltilabels
 export random_road
 export ride_filter
 export tire
 export input_delay!
-export discrete
 
-export skew
 export mbd_system
-export eom_output
 export thin_rod
 export mirror!
 export sensors_animate!
@@ -50,6 +37,21 @@ export lambda
 export vpt
 
 export my_round
+
+export animate_modes
+export animate_history
+export eom_draw
+
+export summarize
+export ltiplot
+
+function animate_modes end
+function animate_history end
+function eom_draw end
+
+function summarize end
+function ltiplot end
+
 
 fldr = joinpath(dirname(pathof(EoM)), "types")
 types = readdir(fldr)
@@ -84,13 +86,9 @@ include("line_stretch_hessian.jl")
 include("point_hessian.jl")
 include("assemble_eom.jl")
 include("analyze.jl")
-include("full_ss.jl")
-include("dss2ss.jl")
-include("minreal.jl")
 include("write_output.jl")
 include("load_defln.jl")
 include("syst_props.jl")
-include("summarize.jl")
 include("mirror.jl")
 include("sensors_animate.jl")
 include("thin_rod.jl")
@@ -99,9 +97,7 @@ include("random_road.jl")
 include("ride_filter.jl")
 include("magic.jl")
 include("input_delay.jl")
-include("discrete.jl")
 
-#include("lsim.jl")
 #include("phi.jl")
 
 function my_round(x::Number; dig=4, lim=1e-7)
@@ -109,27 +105,6 @@ function my_round(x::Number; dig=4, lim=1e-7)
     abs(real(x)) < lim && (x = 0 + imag(x)im)
     abs(imag(x)) < lim && (x = real(x))
     x
-end
-
-function treat(vec_in::Vector{Vector{Float64}}, lim::Number)
-    vect = unique.(vec_in)
-    nf = maximum(length.(vect))
-    len = length(vect)
-    for i in vect
-        if length(i) < nf
-            pushfirst!(i, NaN * zeros(nf - length(i))...)
-        end
-    end
-    vect = hcat(vect...)'
-    any(vect .!= 0 .&& .!(isnan.(vect))) && (vect[vect.==0] .= NaN)
-    vect[abs.(vect).>lim] .= Inf
-    rcol = []
-    for i in eachcol(vect)
-        if sum(isnan.(i)) < len && sum(isinf.(i)) < len
-            push!(rcol, i)
-        end
-    end
-    hcat(rcol...)
 end
 
 # Let's define some helper functions to make piecewise functions easier to define

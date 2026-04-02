@@ -11,11 +11,9 @@ function ride_filter()
     C = zeros(1, 8)
     C[1, 3:6] = [14.78494485869399, 10.96207981141029, 2.719772977611723, 0.9822591821636029]
 
-    filt_ss = ss_data(A, B, C, zeros(1, 1))
     filter = analysis()
-    filter.ss_eqns = filt_ss
-    val, _ = eigen(A)
-    filter.e_val = val
+    filter.ss_eqns = dss(A, B, C, 0)
+    filter.e_val, _ = eigen(A)
 
     filter
 end

@@ -1,5 +1,5 @@
-function assemble_eom!(data::eom_data, verb::Bool = false)
- 
+function assemble_eom!(data::eom_data, verb::Bool=false)
+
     verb && println("Building equations of motion...")
 
     mass_mtx = data.mass + data.inertia
@@ -68,6 +68,6 @@ function assemble_eom!(data::eom_data, verb::Bool = false)
     phys = r_orth[1:dim, :]
     verb && println("Okay, built equations of motion.")
 
-    dss_data(A, B, C, D, E, phys)
+    A, B, C, D, E, phys
 
 end  ## Leave

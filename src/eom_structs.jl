@@ -51,7 +51,7 @@ end
     beams_name::Dict{String,beam} = Dict{String,beam}()
     loads_name::Dict{String,load} = Dict{String,load}()
     sensors_name::Dict{String,sensor} = Dict{String,sensor}()
-    actuators_name::Dict{String,actuator} = Dict{String,actuator}() 
+    actuators_name::Dict{String,actuator} = Dict{String,actuator}()
     bidx::Dict{String,Int} = Dict{String,Int}()
     aidx::Dict{String,Int} = Dict{String,Int}()
     sidx::Dict{String,Int} = Dict{String,Int}()
@@ -59,6 +59,10 @@ end
 end
 
 mbd_system(str::String) = mbd_system(; name=str)
+
+function (system::mbd_system)(dict::Symbol, idx::Vector{String})
+    get.([getproperty(system, dict)], idx, 0)
+end
 
 function Base.show(io::IO, obj::mbd_system)
     println(io, "Multibody dynamic system:")
@@ -72,45 +76,45 @@ function add_item!(item::Union{body,link,spring,rigid_point,flex_point,nh_point,
     push!(obj.item, item)
 end
 
-function sort_items!(item::body, the_system::mbd_system)
-    push!(the_system.bodys, item)
+function sort_items!(item::Union{body,link,spring,rigid_point,flex_point,nh_point,beam,load,sensor,actuator}, the_system::mbd_system)
+    push!(getproperty(the_system, Symbol(string(typeof(item)) * "s")), item)
 end
 
-function sort_items!(item::link, the_system::mbd_system)
-    push!(the_system.links, item)
+struct system_data
+    name::String
+    aidx::Dict{String,Int}
+    sidx::Dict{String,Int}
+    adesc::Vector{String}
+    sdesc::Vector{String}
+    aunits::Vector{Unitful.Units}
+    sunits::Vector{Unitful.Units}
+    anames::Vector{String}
+    snames::Vector{String}
 end
 
-function sort_items!(item::spring, the_system::mbd_system)
-    push!(the_system.springs, item)
-end
+system_data() = system_data(
+    "",
+    Dict{String,Int}(),
+    Dict{String,Int}(),
+    [""],
+    [""],
+    Vector{Unitful.Units}([]),
+    Vector{Unitful.Units}([]),
+    [""],
+    [""]
+)
 
-function sort_items!(item::rigid_point, the_system::mbd_system)
-    push!(the_system.rigid_points, item)
-end
-
-function sort_items!(item::flex_point, the_system::mbd_system)
-    push!(the_system.flex_points, item)
-end
-
-function sort_items!(item::nh_point, the_system::mbd_system)
-    push!(the_system.nh_points, item)
-end
-
-function sort_items!(item::beam, the_system::mbd_system)
-    push!(the_system.beams, item)
-end
-
-function sort_items!(item::load, the_system::mbd_system)
-    push!(the_system.loads, item)
-end
-
-function sort_items!(item::sensor, the_system::mbd_system)
-    push!(the_system.sensors, item)
-end
-
-function sort_items!(item::actuator, the_system::mbd_system)
-    push!(the_system.actuators, item)
-end
+system_data(system::mbd_system) = system_data(
+    system.name,
+    system.aidx,
+    system.sidx,
+    getproperty.(system.actuators, :desc),
+    getproperty.(system.sensors, :desc),
+    uparse.(getproperty.(system.actuators, :units)),
+    uparse.(getproperty.(system.sensors, :units)),
+    getproperty.(system.actuators, :name),
+    getproperty.(system.sensors, :name)
+)
 
 struct dss_data
     A::Array{Float64,2}
@@ -119,6 +123,7 @@ struct dss_data
     D::Array{Float64,2}
     E::Array{Float64,2}
     phys::Array{Float64,2}
+    sys_data::system_data
 end
 
 function Base.show(io::IO, obj::dss_data)
@@ -140,36 +145,13 @@ function Base.show(io::IO, obj::dss_data)
     println(io)
 end
 
-@kwdef struct ss_data
-    A::Array{Float64,2} = zeros(0, 0)
-    B::Array{Float64,2} = zeros(0, 0)
-    C::Array{Float64,2} = zeros(0, 0)
-    D::Array{Float64,2} = zeros(0, 0)
-end
-
-function Base.show(io::IO, obj::ss_data)
-    println(io, "State space")
-    println(io, "A:")
-    show(io, "text/plain", obj.A)
-    println(io)
-    println(io, "B:")
-    show(io, "text/plain", obj.B)
-    println(io)
-    println(io, "C:")
-    show(io, "text/plain", obj.C)
-    println(io)
-    println(io, "D:")
-    show(io, "text/plain", obj.D)
-    println(io)
-end
-
 @kwdef struct response_data
     time::Vector{Float64} = zeros(0)
     response::Array{Vector{Float64},2} = [zeros(0) for i in 1:0, j in 1:0]
 end
 
 @kwdef mutable struct analysis
-    ss_eqns::ss_data = ss_data()
+    ss_eqns::DescriptorStateSpace{T} where T = dss(zeros(5)...)
     mode_vals::Vector{Complex{Float64}} = zeros(0)
     modes::Array{Complex{Float64},2} = zeros(0, 0) * 1im
     e_val::Vector{Complex{Float64}} = zeros(0)
@@ -177,8 +159,8 @@ end
     zeta::Vector{Float64} = zeros(0)
     tau::Vector{Float64} = zeros(0)
     lambda::Vector{Float64} = zeros(0)
-    t_zero::Array{Vector{Complex{Float64}},2} = [zeros(0) for i in 1:0, j in 1:0]
-    t_zero_f::Array{Vector{Complex{Float64}},2} = [zeros(0) for i in 1:0, j in 1:0]
+    t_zero::Vector{Complex{Float64}} = zeros(0)
+    t_zero_f::Vector{Float64} = zeros(0)
     w::Vector{Float64} = zeros(0)
     freq_resp::Vector{Array{Complex{Float64},2}} = [zeros(0, 0) * 1im]
     mag::Vector{Array{Float64,2}} = [zeros(0, 0)]
@@ -191,6 +173,7 @@ end
     ss::Union{Symbol,Matrix,Vector} = :default
     bode::Union{Symbol,Matrix,Vector} = :default
     impulse::Union{Symbol,Matrix,Vector} = :default
+    sys_data::system_data = system_data()
 end
 
 function Base.show(io::IO, obj::analysis)
@@ -212,10 +195,11 @@ function Base.show(io::IO, obj::analysis)
     println()
 end
 
-mutable struct lti_soln
+struct lti_soln
     y::Vector{Vector{Float64}}
     u::Vector{Vector{Float64}}
     t::Union{Vector{Float64},StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}}
+    sys_data::system_data
 end
 
 function Base.getindex(obj::lti_soln, idx::Union{Int,Vector{Int},StepRange{Int,Int},UnitRange{Int}}, ::Colon)
@@ -224,6 +208,10 @@ end
 
 function Base.getindex(obj::lti_soln, ::Colon, ::Colon)
     hcat(obj.y...)
+end
+
+function Base.getindex(obj::lti_soln, idx::Union{Int,Vector{Int},StepRange{Int,Int},UnitRange{Int}})
+    hcat(obj.y...)'[:, idx]
 end
 
 function Base.show(io::IO, obj::lti_soln)
