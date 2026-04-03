@@ -1,6 +1,6 @@
 function x3d_connections!(syst::mbd_system; trans::Bool=false)
 
-## GPL here
+# GPL here
 # This function builds an x3d model
 
     link_rad = 0.018

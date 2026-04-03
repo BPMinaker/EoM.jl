@@ -8,10 +8,12 @@ function x3d_body!(syst::mbd_system)
     f3(_) = x3d_pnt([0, 0, 0], rad=0.015, col=[0.5, 0, 0])
     f4(_) = x3d_pnt([0, 0, 0], cubes=true, rad=[0.8, 0.3, 0.4], col=[0, 0, 0.5], tran=0.3)
     f5(_) = x3d_cyl([[0, -0.1, 0] [0, 0.1, 0]], rad=0.05, col=rand(3, 1))
+
     function ground(_)
         x3d_cyl([[0, 0, 0] [0, 0, -0.01]], rad=3, col=[0, 0.4, 0], tran=0.5) * 
         x3d_pnt([0, 0, 0], cubes=true, rad=[3, 1.5, 0.01], col=[0.25, 0.25, 0.25], tran=0.5)
     end
+
     function wheel(i::EoM.body)
         lcn = i.location
         rr = abs(lcn[3])
