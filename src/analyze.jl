@@ -115,7 +115,7 @@ function analyze(
             result.ss_resp = -C * (A \ B) + D
         else
             verb && println("System matrix is near singular.  Substituting real part of low frequency response ($(my_round(10.0 ^ (low - 1))) Hz) for steady state...")
-            result.ss_resp = real.(G(2π * 10.0^(low - 1)))
+            result.ss_resp = real.( C * (( I * 1im * 2π * 10.0^(low - 1) - A ) \ B ) + D )
         end
     end
 
