@@ -2,7 +2,7 @@ export sensor
 export name
 export gain
 
-Base.@kwdef mutable struct sensor
+@kwdef mutable struct sensor
     name::String
     group::String = "sensor"
     body::Vector{String} = ["ground", "ground"]

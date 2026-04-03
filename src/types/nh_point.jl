@@ -1,6 +1,6 @@
 export nh_point
 
-Base.@kwdef mutable struct nh_point
+@kwdef mutable struct nh_point
     name::String
     group::String = "nh_point"
     body::Vector{String} = ["ground", "ground"]

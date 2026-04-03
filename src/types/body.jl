@@ -4,7 +4,7 @@ export location
 export weight
 export mass_mtx
 
-Base.@kwdef mutable struct body
+@kwdef mutable struct body
     name::String
     group::String = "body"
     location::Vector{Float64} = zeros(3)

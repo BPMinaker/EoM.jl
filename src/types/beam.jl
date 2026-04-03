@@ -1,6 +1,6 @@
 export beam
 
-Base.@kwdef mutable struct beam
+@kwdef mutable struct beam
     name::String
     group::String = "beam"
     body::Vector{String} = ["ground", "ground"]

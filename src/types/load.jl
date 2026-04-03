@@ -1,6 +1,6 @@
 export load
 
-Base.@kwdef mutable struct load
+@kwdef mutable struct load
 	name::String
 	group::String = "load"
 	location::Vector{Float64} = zeros(3)

@@ -1,6 +1,6 @@
 export flex_point
 
-Base.@kwdef mutable struct flex_point
+@kwdef mutable struct flex_point
     name::String
     group::String = "flex_point"
     body::Vector{String} = ["ground", "ground"]

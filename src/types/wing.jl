@@ -2,7 +2,7 @@ export wing
 export name
 export build_mtx
 
-Base.@kwdef mutable struct wing
+@kwdef mutable struct wing
     name::String
     group::String = "wing"
     CXu::Float64 = 0
@@ -31,7 +31,21 @@ Base.@kwdef mutable struct wing
     Cn::Float64 = 0
     chord::Float64 = 0
     span::Float64 = 0
-
+	body::String = "ground"
+	body_number::Int = 0
+    forces::Int = 3
+    moments::Int = 3
+    radius::Vector{Vector{Float64}} = [zeros(3), zeros(3)]
+    location::Vector{Float64} = zeros(3)
+    axis::Vector{Float64} = zeros(3)
+    s_mtx::Array{Float64,2} = zeros(0, 0)
+    d_mtx::Array{Float64,2} = zeros(0, 0)
+    preload::Vector{Float64} = Vector{Float64}(undef, 0)
+    unit::Vector{Float64} = zeros(3)
+    nu::Array{Float64,2} = zeros(3, 2)
+    b_mtx::Vector{Array{Float64,2}} = [zeros(3, 3), zeros(3, 3)]
+    force::Vector{Float64} = zeros(3)
+    moment::Vector{Float64} = zeros(3)
 end
 
 wing(str::String) = wing(; name = str)

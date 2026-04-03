@@ -1,6 +1,6 @@
 export spring
 
-Base.@kwdef mutable struct spring
+@kwdef mutable struct spring
     name::String
     group::String = "spring"
     body::Vector{String} = ["ground", "ground"]

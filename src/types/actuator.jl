@@ -3,7 +3,7 @@ export name
 export gain
 export rate_gain
 
-Base.@kwdef mutable struct actuator
+@kwdef mutable struct actuator
     name::String
     group::String = "actuator"
     body::Vector{String} = ["ground", "ground"]

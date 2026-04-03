@@ -1,6 +1,6 @@
 export link
 
-Base.@kwdef mutable struct link
+@kwdef mutable struct link
     name::String
     group::String = "link"
     body::Vector{String} = ["ground", "ground"]
