@@ -35,7 +35,7 @@ export build_mtx
 	body_number::Int = 0
     forces::Int = 3
     moments::Int = 3
-    radius::Vector{Vector{Float64}} = [zeros(3), zeros(3)]
+    radius::Vector{Float64} = zeros(3)
     location::Vector{Float64} = zeros(3)
     axis::Vector{Float64} = zeros(3)
     s_mtx::Array{Float64,2} = zeros(0, 0)

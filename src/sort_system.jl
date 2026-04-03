@@ -8,7 +8,17 @@ function sort_system!(the_system::mbd_system, verb::Bool = false)
     push!(the_system.item, body("ground"))  ## Ground body is added last (important!)
 
     # Find the type of each item, and sort into named fields
-    sort_items!.(the_system.item, [the_system])
+    the_system.bodys = the_system.item[typeof.(the_system.item) .== body]
+    the_system.springs = the_system.item[typeof.(the_system.item) .== spring]
+    the_system.links = the_system.item[typeof.(the_system.item) .== link]
+    the_system.rigid_points = the_system.item[typeof.(the_system.item) .== rigid_point]
+    the_system.flex_points = the_system.item[typeof.(the_system.item) .== flex_point]
+    the_system.nh_points = the_system.item[typeof.(the_system.item) .== nh_point]
+    the_system.beams = the_system.item[typeof.(the_system.item) .== beam]
+    the_system.loads = the_system.item[typeof.(the_system.item) .== load]
+    the_system.sensors = the_system.item[typeof.(the_system.item) .== sensor]
+    the_system.actuators = the_system.item[typeof.(the_system.item) .== actuator]
+    the_system.wings = the_system.item[typeof.(the_system.item) .== wing]
 
     the_system.bodys_name = Dict{String, body}(getfield.(the_system.bodys, :name) .=> the_system.bodys)
     the_system.links_name = Dict{String, link}(getfield.(the_system.links, :name) .=> the_system.links)
@@ -20,6 +30,7 @@ function sort_system!(the_system::mbd_system, verb::Bool = false)
     the_system.loads_name = Dict{String, load}(getfield.(the_system.loads, :name) .=> the_system.loads)
     the_system.sensors_name = Dict{String, sensor}(getfield.(the_system.sensors, :name) .=> the_system.sensors)
     the_system.actuators_name = Dict{String, actuator}(getfield.(the_system.actuators, :name) .=> the_system.actuators)
+    the_system.wings_name = Dict{String, wing}(getfield.(the_system.wings, :name) .=> the_system.wings)
 
     the_system.bidx = Dict{String, Int64}(getfield.(the_system.bodys, :name) .=> eachindex(the_system.bodys))
     the_system.aidx = Dict{String, Int64}(getfield.(the_system.actuators, :name) .=> eachindex(the_system.actuators))
@@ -37,4 +48,11 @@ function sort_system!(the_system::mbd_system, verb::Bool = false)
 
     verb && println("System sorted.")
 
-end  ## Leave
+end
+
+
+#sort_items!.(the_system.item, [the_system])
+
+#function sort_items!(item::Union{body,link,spring,rigid_point,flex_point,nh_point,beam,load,sensor,actuator,wing}, the_system::mbd_system)
+#    push!(getproperty(the_system, Symbol(string(typeof(item)) * "s")), item)
+#end

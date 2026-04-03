@@ -31,7 +31,7 @@ end
 @kwdef mutable struct mbd_system
     name::String = "Unnamed System"
     vpt::Number = 0
-    item::Vector{Union{body,link,spring,rigid_point,flex_point,nh_point,beam,load,sensor,actuator}} = Vector{Union{body,link,spring,rigid_point,flex_point,nh_point,beam,load,sensor,actuator}}(undef, 0)
+    item::Vector{Union{body,link,spring,rigid_point,flex_point,nh_point,beam,load,sensor,actuator,wing}} = Vector{Union{body,link,spring,rigid_point,flex_point,nh_point,beam,load,sensor,actuator,wing}}(undef, 0)
     bodys::Vector{body} = Vector{body}(undef, 0)
     links::Vector{link} = Vector{link}(undef, 0)
     springs::Vector{spring} = Vector{spring}(undef, 0)
@@ -42,6 +42,7 @@ end
     loads::Vector{load} = Vector{load}(undef, 0)
     sensors::Vector{sensor} = Vector{sensor}(undef, 0)
     actuators::Vector{actuator} = Vector{actuator}(undef, 0)
+    wings::Vector{wing} = Vector{wing}(undef, 0)
     bodys_name::Dict{String,body} = Dict{String,body}()
     links_name::Dict{String,link} = Dict{String,link}()
     springs_name::Dict{String,spring} = Dict{String,spring}()
@@ -52,6 +53,7 @@ end
     loads_name::Dict{String,load} = Dict{String,load}()
     sensors_name::Dict{String,sensor} = Dict{String,sensor}()
     actuators_name::Dict{String,actuator} = Dict{String,actuator}()
+    wings_name::Dict{String,wing} = Dict{String,wing}()
     bidx::Dict{String,Int} = Dict{String,Int}()
     aidx::Dict{String,Int} = Dict{String,Int}()
     sidx::Dict{String,Int} = Dict{String,Int}()
@@ -71,13 +73,9 @@ function Base.show(io::IO, obj::mbd_system)
     println(io, "vpt: ", obj.vpt)
 end
 
-function add_item!(item::Union{body,link,spring,rigid_point,flex_point,nh_point,beam,load,sensor,actuator}, obj::mbd_system)
+function add_item!(item::Union{body,link,spring,rigid_point,flex_point,nh_point,beam,load,sensor,actuator,wing}, obj::mbd_system)
     item_init!(item)
     push!(obj.item, item)
-end
-
-function sort_items!(item::Union{body,link,spring,rigid_point,flex_point,nh_point,beam,load,sensor,actuator}, the_system::mbd_system)
-    push!(getproperty(the_system, Symbol(string(typeof(item)) * "s")), item)
 end
 
 struct system_data

@@ -75,6 +75,27 @@ function item_init!(item::Union{rigid_point, flex_point, nh_point}, verb=false)
     item.b_mtx[2] = build_b(item, :moments)
 end
 
+function item_init!(item::Union{wing}, verb=false)
+
+    verb && println("Initializing...")
+
+    temp = norm(item.axis)
+    if temp > 0
+        item.unit = item.axis / temp  ## Normalize any non-unit axis vectors
+    end
+
+    item.d_mtx = build_mtx(item)
+    item.s_mtx = zeros(6,6)
+
+    item.nu = nullspace(reshape(item.unit, 1, 3))  ## Find directions perp to beam axis
+    if round(item.unit' * cross(item.nu[:, 1], item.nu[:, 2])) != 1  ## Make sure it's right handed
+        item.nu = circshift(item.nu, [0, 1])
+    end
+    item.b_mtx[1] = build_b(item, :forces)
+    item.b_mtx[2] = build_b(item, :moments)
+end
+
+
 function build_b(item, field)
     n = getfield(item, field)
     if n == 3 ## For 3 forces, i.e. ball joint
@@ -95,7 +116,7 @@ end
 
 #     verb && println("Initializing...")
 
-# #    for i in items
+#    for i in items
 #         i = item
 
 #         ## If the item has one node

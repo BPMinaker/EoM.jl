@@ -13,6 +13,15 @@ function find_bodynum!(item::Union{spring, link, rigid_point, flex_point, nh_poi
     end
 end
 
+function find_bodynum!(item::wing, idx::Dict)
+    i = get(idx, item.body, nothing)
+    if isnothing(i)
+        error("Item $(item.name) is attached to a missing body!")
+    else
+        item.body_number = i
+    end
+end
+
 function find_bodyframenum!(item::load, idx::Dict)
     i = get(idx, item.body, nothing)
     if isnothing(i)
