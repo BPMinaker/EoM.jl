@@ -1,4 +1,4 @@
-function input_delay!(system::EoM.mbd_system, result::EoM.analysis, delay::Float64, inp::Vector{Int64})
+function input_delay!(result::EoM.analysis, delay::Float64, inp::Vector{Int64})
 
     nin = size(result.freq_resp[1],2)
 
@@ -20,6 +20,6 @@ function input_delay!(system::EoM.mbd_system, result::EoM.analysis, delay::Float
     phs(x) = 180 / π * angle.(x)
     result.phase = phs.(result.freq_resp)
 
-    deleteat!(system.actuators, inp[2])
-
+    deleteat!(result.sys_data.anames, inp[2])
+    deleteat!(result.sys_data.aunits, inp[2])
 end
