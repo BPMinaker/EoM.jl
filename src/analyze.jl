@@ -37,7 +37,14 @@ function analyze(
         end
     end
 
-    result.ss_eqns, _, _, _ = dss2ss(gminreal(dss(dss_eqns.A, dss_eqns.E, dss_eqns.B, dss_eqns.C, dss_eqns.D)))
+    ss1 = dss(dss_eqns.A, dss_eqns.E, dss_eqns.B, dss_eqns.C, dss_eqns.D)
+    ss2 = gminreal(ss1)
+
+    if order(ss2) > 0
+        result.ss_eqns, _, _, _ = dss2ss(ss2)
+    else
+        result.ss_eqns, _, _, _ = dss2ss(ss1)
+    end
 
     result.e_val, _ = eigen(result.ss_eqns.A)
 
