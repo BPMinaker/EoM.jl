@@ -127,7 +127,7 @@ function analyze(
         if cond(A) < 1e6
             result.ss_resp = -C * (A \ B) + D
         else
-            println("System matrix is near singular.  Substituting low frequency response for steady state...")
+            @warn "System matrix is near singular.  Substituting low frequency response for steady state..." maxlog = 1
 
             H1 = C * (( I * 1im * 2π * 10.0^(low - 3) - A ) \ B ) + D
             H2 = C * (( I * 1im * 2π * 10.0^(low - 4) - A ) \ B ) + D
