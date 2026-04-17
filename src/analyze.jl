@@ -113,6 +113,12 @@ function analyze(
     if typeof(ss) == Symbol && ss != :default
         ss = zeros(nout, nin)
         compute = false
+    elseif ss == :default
+        ss = ones(nout, nin)
+    else
+        if size(ss, 1) != nout || size(ss, 2) != nin
+            error("Steady state request dimensions are incompatible with system!")
+        end
     end
     result.ss = ss
 
@@ -121,8 +127,14 @@ function analyze(
         if cond(A) < 1e6
             result.ss_resp = -C * (A \ B) + D
         else
-            println("System matrix is near singular.  Substituting real part of low frequency response ($(my_round(10.0 ^ (low - 1))) Hz) for steady state...")
-            result.ss_resp = real.( C * (( I * 1im * 2π * 10.0^(low - 1) - A ) \ B ) + D )
+            println("System matrix is near singular.  Substituting low frequency response for steady state...")
+
+            H1 = C * (( I * 1im * 2π * 10.0^(low - 3) - A ) \ B ) + D
+            H2 = C * (( I * 1im * 2π * 10.0^(low - 4) - A ) \ B ) + D
+            del = (abs.(H1) - abs.(H2)) ./ (abs.(H1) .+ eps(1.0))
+            idx = abs.(del) .> 1e-3
+            result.ss_resp = real.(H2)
+            result.ss_resp[idx] .= 0
         end
     end
 

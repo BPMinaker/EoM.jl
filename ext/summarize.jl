@@ -96,16 +96,10 @@ tr:nth-child(even) {
 
     if ss == :default
         ss = results[1].ss
-    end
-
-    if ss == :default
-        ss = ones(nout, nin)
     elseif typeof(ss) == Symbol
         ss = zeros(nout, nin)
-    end
-
-    if size(ss, 1) != nout || size(ss, 2) != nin
-        error("Steady state plot request dimensions are incompatible with system!")
+    else
+        error("Steady state summary request dimensions are already set!")
     end
 
     if bode == :default
