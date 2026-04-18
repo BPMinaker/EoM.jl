@@ -329,6 +329,16 @@ tr:nth-child(even) {
             function _plot(field, ylabel, section)
 
                 vals = treat(getfield.(results, field), 1000)
+                if any(vals .> 0) && any(vals .< 0)
+                    ylims = (-Inf, Inf)
+                elseif any(vals .> 0)
+                    ylims = (0, Inf)
+                elseif any(vals .< 0)
+                    ylims = (-Inf, 0)
+                else
+                    ylims = (-1, 1)
+                end
+
                 if length(vals) > 0
                     p = plot(
                         vpts,
@@ -338,7 +348,7 @@ tr:nth-child(even) {
                         label,
                         xlabel=vpt_name[2] * " [$(vpt_name[3])]",
                         ylabel,
-                        ylims=(0, Inf),
+                        ylims,
                         widen=true,
                     )
                     if format == :html
