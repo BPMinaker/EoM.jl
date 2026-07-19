@@ -7,6 +7,8 @@ authors = ["BPMinaker <bminaker@uwindsor.ca>"]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 DescriptorSystems = "a81e2ce2-54d1-11eb-2c75-db236b00f339"
+LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
+Latexify = "23fbe1c1-3f47-55db-b15f-69d7ec21a316"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 PrettyTables = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
@@ -23,4 +25,6 @@ EoM_ext_plt = "Plots"
 
 [compat]
 DescriptorSystems = "1.5.0"
+LaTeXStrings = "1.4.0"
+Latexify = "0.16.10"
 PlotlyJS = "0.18.17"

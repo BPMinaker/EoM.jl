@@ -7,8 +7,9 @@ function EoM.summarize(
     format::Symbol=:screen,
     folder::String="output",
     filename::String=results.sys_data.name,
+    tex::Bool = false,
 )
-    summarize(0, [results]; plots, ss, bode, impulse, format, folder, filename)
+    summarize(0, [results]; plots, ss, bode, impulse, format, folder, filename, tex)
 end
 
 # Copyright (C) 2020, Bruce Minaker
@@ -24,6 +25,7 @@ function EoM.summarize(
     format::Symbol=:screen,
     folder::String="output",
     filename::String=results[1].sys_data.name,
+    tex::Bool = false
 )
 
     if !isdefined(Main, :VSCodeServer)
@@ -709,6 +711,49 @@ tr:nth-child(even) {
             println(output_f, str_close)
         end
     end
+
+    if format != :html && tex
+        dir_date = EoM.setup(; folder)
+    end
+
+    if tex && nvpts == 1
+
+        (; A, B, C, D) = results[1].ss_eqns
+        A = EoM.my_round.(A)
+        B = EoM.my_round.(B)
+        C = EoM.my_round.(C)
+        D = EoM.my_round.(D)
+
+        ns = size(A,1)
+
+        xx = ["x_$i" for i in 1:ns]
+        uu = ["u_$i" for i in 1:nin]
+        yy = ["y_$i" for i in 1:nout]
+
+        xdot = [LaTeXString("\\dot{x}_$i") for i in 1:ns]
+
+        xdot = (latexify(xdot; arraystyle=:curly, env=:raw))
+        xx = (latexify(xx; arraystyle=:curly, env=:raw))
+        uu = (latexify(uu; arraystyle=:curly, env=:raw))
+        yy = (latexify(yy; arraystyle=:curly, env=:raw))
+
+        ex1 =:($xdot = $A * $xx +  $B * $uu)
+        ex2 =:($yy = $C * $xx +  $D * $uu)
+
+        eq1 = latexify(ex1; mult_symbol="", env=:eq, starred=true)
+        eq2 = latexify(ex2; mult_symbol="", env=:eq, starred=true)
+
+        open(joinpath(dir_date, "$filename.tex"), "w") do output_f
+        write(output_f, "\\documentclass{article}\n")
+        write(output_f, "\\usepackage{amsmath}\n")
+        write(output_f, "\\begin{document}\n")
+        write(output_f, string(eq1))
+        write(output_f, string(eq2))
+        write(output_f, "\\end{document}\n")
+    end
+
+    end
+
 end
 
 #   xticks = 10.0 .^ collect(Int(round(log10(w[1]))):1:Int(round(log10(w[end]))))

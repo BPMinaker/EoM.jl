@@ -6,6 +6,8 @@ using Plots.Measures
 using Unitful
 using PrettyTables
 using Dates
+using LaTeXStrings
+using Latexify
 
 include("summarize.jl")
 include("ltiplot.jl")
