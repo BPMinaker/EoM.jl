@@ -735,10 +735,19 @@ tr:nth-child(even) {
         uu = latexify(uu; arraystyle=:curly, env=:raw)
         yy = latexify(yy; arraystyle=:curly, env=:raw)
 
-        AA = latexify(A; adjustment=:S, env=:raw)
-        BB = latexify(B; adjustment=:S, env=:raw)
-        CC = latexify(C; adjustment=:S, env=:raw)
-        DD = latexify(D; adjustment=:S, env=:raw)
+        function my_tex(mtx::Array{Float64,2})
+            intsize = [(maximum(length.(string.((floor.(x))))) - 2) for x in eachcol(mtx)]
+            intsize = intsize * 1.0
+            fracsize = [(maximum(length.(string.(round.(x - floor.(x); digits=4)))) - 2) / 10 for x in eachcol(mtx)]
+            intsize .+= fracsize
+            adjustment = [Symbol("S[table-format=$i]") for i in intsize]
+            latexify(mtx; adjustment, env=:raw)
+        end
+
+        AA = my_tex(A)
+        BB = my_tex(B)
+        CC = my_tex(C)
+        DD = my_tex(D)
 
         ex1 =:($xdot = $AA * $xx +  $BB * $uu)
         ex2 =:($yy = $CC * $xx +  $DD * $uu)
@@ -750,7 +759,7 @@ tr:nth-child(even) {
         write(output_f, "\\documentclass{article}\n")
         write(output_f, "\\usepackage{amsmath}\n")
         write(output_f, "\\usepackage{siunitx}\n")
-        write(output_f, "\\sisetup{group-digits=none, exponent-mode=threshold, exponent-thresholds=-2:6, round-mode=figures, round-precision=4, round-pad=false, minimum-decimal-digits=1, tight-spacing=true}\n")
+        write(output_f, "\\sisetup{group-digits=none}\n")
         write(output_f, "\\begin{document}\n")
         write(output_f, string(eq1))
         write(output_f, string(eq2))
@@ -761,9 +770,9 @@ tr:nth-child(even) {
 
 end
 
+# , exponent-mode=threshold, exponent-thresholds=-2:6, round-mode=figures, round-precision=4, round-pad=false, minimum-decimal-digits=1, tight-spacing=true
+
 #   xticks = 10.0 .^ collect(Int(round(log10(w[1]))):1:Int(round(log10(w[end]))))
-
-
 
 #=
     # add the static preloads
