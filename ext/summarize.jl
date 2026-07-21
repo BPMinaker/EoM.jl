@@ -719,26 +719,29 @@ tr:nth-child(even) {
     if tex && nvpts == 1
 
         (; A, B, C, D) = results[1].ss_eqns
-        A = EoM.my_round.(A)
-        B = EoM.my_round.(B)
-        C = EoM.my_round.(C)
-        D = EoM.my_round.(D)
+        A = round.(A; digits=4)
+        B = round.(B; digits=4)
+        C = round.(C, digits=4)
+        D = round.(D; digits=4)
 
         ns = size(A,1)
-
         xx = ["x_$i" for i in 1:ns]
         uu = ["u_$i" for i in 1:nin]
         yy = ["y_$i" for i in 1:nout]
 
         xdot = [LaTeXString("\\dot{x}_$i") for i in 1:ns]
+        xdot = latexify(xdot; arraystyle=:curly, env=:raw)
+        xx = latexify(xx; arraystyle=:curly, env=:raw)
+        uu = latexify(uu; arraystyle=:curly, env=:raw)
+        yy = latexify(yy; arraystyle=:curly, env=:raw)
 
-        xdot = (latexify(xdot; arraystyle=:curly, env=:raw))
-        xx = (latexify(xx; arraystyle=:curly, env=:raw))
-        uu = (latexify(uu; arraystyle=:curly, env=:raw))
-        yy = (latexify(yy; arraystyle=:curly, env=:raw))
+        AA = latexify(A; adjustment=:S, env=:raw)
+        BB = latexify(B; adjustment=:S, env=:raw)
+        CC = latexify(C; adjustment=:S, env=:raw)
+        DD = latexify(D; adjustment=:S, env=:raw)
 
-        ex1 =:($xdot = $A * $xx +  $B * $uu)
-        ex2 =:($yy = $C * $xx +  $D * $uu)
+        ex1 =:($xdot = $AA * $xx +  $BB * $uu)
+        ex2 =:($yy = $CC * $xx +  $DD * $uu)
 
         eq1 = latexify(ex1; mult_symbol="", env=:eq, starred=true)
         eq2 = latexify(ex2; mult_symbol="", env=:eq, starred=true)
@@ -746,6 +749,8 @@ tr:nth-child(even) {
         open(joinpath(dir_date, "$filename.tex"), "w") do output_f
         write(output_f, "\\documentclass{article}\n")
         write(output_f, "\\usepackage{amsmath}\n")
+        write(output_f, "\\usepackage{siunitx}\n")
+        write(output_f, "\\sisetup{group-digits=none, exponent-mode=threshold, exponent-thresholds=-2:6, round-mode=figures, round-precision=4, round-pad=false, minimum-decimal-digits=1, tight-spacing=true}\n")
         write(output_f, "\\begin{document}\n")
         write(output_f, string(eq1))
         write(output_f, string(eq2))
