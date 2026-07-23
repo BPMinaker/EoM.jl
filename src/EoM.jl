@@ -100,8 +100,8 @@ include("input_delay.jl")
 
 #include("phi.jl")
 
-function my_round(x::Number; dig=4, lim=1e-7)
-    x = round(x, sigdigits=dig)
+function my_round(x::Number; lim=1e-7, kwargs...)
+    x = round(x; kwargs...)
     abs(real(x)) < lim && (x = 0 + imag(x)im)
     abs(imag(x)) < lim && (x = real(x))
     x

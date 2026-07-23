@@ -737,10 +737,7 @@ tr:nth-child(even) {
 
         function my_tex(mtx::Array{Float64,2})
             intsize = [(maximum(length.(string.((floor.(x))))) - 2) for x in eachcol(mtx)]
-            intsize = intsize * 1.0
-            fracsize = [(maximum(length.(string.(round.(x - floor.(x); digits=4)))) - 2) / 10 for x in eachcol(mtx)]
-            intsize .+= fracsize
-            adjustment = [Symbol("S[table-format=$i]") for i in intsize]
+            adjustment = [Symbol("S[table-format=$i.4]") for i in intsize]
             latexify(mtx; adjustment, env=:raw)
         end
 
@@ -757,10 +754,13 @@ tr:nth-child(even) {
 
         open(joinpath(dir_date, "$filename.tex"), "w") do output_f
         write(output_f, "\\documentclass{article}\n")
-        write(output_f, "\\usepackage{amsmath}\n")
+        write(output_f, "\\usepackage[letterpaper, margin=0.25in]{geometry}\n")
+        write(output_f, "\\usepackage{newpxtext, newpxmath}\n")
         write(output_f, "\\usepackage{siunitx}\n")
-        write(output_f, "\\sisetup{group-digits=none}\n")
+        write(output_f, "\\usepackage{booktabs}\n")
+        write(output_f, "\\sisetup{group-digits=none, minimum-decimal-digits=4}\n")
         write(output_f, "\\begin{document}\n")
+        write(output_f, "Here are the equations of motion of: $(results[1].sys_data.name)\n")
         write(output_f, string(eq1))
         write(output_f, string(eq2))
         write(output_f, "\\end{document}\n")
@@ -770,7 +770,18 @@ tr:nth-child(even) {
 
 end
 
-# , exponent-mode=threshold, exponent-thresholds=-2:6, round-mode=figures, round-precision=4, round-pad=false, minimum-decimal-digits=1, tight-spacing=true
+        # function my_tex(mtx::Array{Float64,2})
+        #     intsize = [(maximum(length.(string.((floor.(x))))) - 2) for x in eachcol(mtx)]
+        #     intsize = intsize * 1.0
+        #     fracsize = [(maximum(length.(string.(round.(x - floor.(x); digits=4)))) - 2) / 10 for x in eachcol(mtx)]
+        #     intsize .+= fracsize
+        #     adjustment = [Symbol("S[table-format=$i]") for i in intsize]
+        #     latexify(mtx; adjustment, env=:raw)
+        # end
+
+
+
+# , exponent-mode=threshold, exponent-thresholds=-2:6, round-mode=figures, round-precision=4, round-pad=false,, tight-spacing=true
 
 #   xticks = 10.0 .^ collect(Int(round(log10(w[1]))):1:Int(round(log10(w[end]))))
 

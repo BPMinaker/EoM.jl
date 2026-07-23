@@ -3,7 +3,7 @@ function write_output(
     result::EoM.analysis,
     verbose::Bool = false;
     folder::String = "output",
-    filename::String = system.name,
+    filename::String = result.sys_data.name,
     overwrite::Bool = false
 )
     write_output([system], 0, [result], verbose; folder, filename, overwrite)
@@ -15,7 +15,7 @@ function write_output(
     results::Vector{EoM.analysis},
     verbose::Bool = false;
     folder::String = "output",
-    filename::String = systems[1].name,
+    filename::String = results[1].sys_data.name,
     overwrite::Bool = false
 )
 
@@ -26,15 +26,9 @@ function write_output(
     dir_data = joinpath(dir_date, filename)
     !isdir(dir_data) && (mkdir(dir_data))
 
-    # if overwrite
-    #     dir_data = joinpath(dir_date, filename)
-    # else
-    #     dir_data = joinpath(dir_date, dir_time)
-    # end
-
     # get names of inputs and outputs
-    input_names = getfield.(systems[1].actuators, :name)
-    output_names = getfield.(systems[1].sensors, :name)
+    input_names = results[1].sys_data.anames
+    output_names = results[1].sys_data.snames
 
     # get number of ins, outs, and number of vpts (velocity points)
     nin = length(input_names)
@@ -181,10 +175,10 @@ function write_output(
     ss_path = joinpath(dir_data, "ss")
     ~isdir(ss_path) && (mkdir(ss_path))
 
-    writedlm(joinpath(ss_path, "A.out"), my_round.(results[1].ss_eqns.A, dig=8))
-    writedlm(joinpath(ss_path, "B.out"), my_round.(results[1].ss_eqns.B, dig=8))
-    writedlm(joinpath(ss_path, "C.out"), my_round.(results[1].ss_eqns.C, dig=8))
-    writedlm(joinpath(ss_path, "D.out"), my_round.(results[1].ss_eqns.D, dig=8))
+    writedlm(joinpath(ss_path, "A.out"), my_round.(results[1].ss_eqns.A; digits=8))
+    writedlm(joinpath(ss_path, "B.out"), my_round.(results[1].ss_eqns.B; digits=8))
+    writedlm(joinpath(ss_path, "C.out"), my_round.(results[1].ss_eqns.C; digits=8))
+    writedlm(joinpath(ss_path, "D.out"), my_round.(results[1].ss_eqns.D; digits=8))
 
     dir_data
 
