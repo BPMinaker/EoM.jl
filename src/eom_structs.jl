@@ -78,7 +78,7 @@ function add_item!(item::Union{body,link,spring,rigid_point,flex_point,nh_point,
     push!(obj.item, item)
 end
 
-struct system_data
+mutable struct system_data
     name::String
     aidx::Dict{String,Int}
     sidx::Dict{String,Int}
@@ -90,17 +90,17 @@ struct system_data
     snames::Vector{String}
 end
 
-system_data() = system_data(
-    "",
-    Dict{String,Int}(),
-    Dict{String,Int}(),
-    [""],
-    [""],
-    Vector{Unitful.Units}([]),
-    Vector{Unitful.Units}([]),
-    [""],
-    [""]
-)
+# system_data() = system_data(
+#     "",
+#     Dict{String,Int}(),
+#     Dict{String,Int}(),
+#     [""],
+#     [""],
+#     Vector{Unitful.Units}([]),
+#     Vector{Unitful.Units}([]),
+#     [""],
+#     [""]
+# )
 
 system_data(system::mbd_system) = system_data(
     system.name,
