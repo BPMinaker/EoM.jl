@@ -143,7 +143,7 @@ tr:nth-child(even) {
                 if ss[i, j] == 1
                     x = zeros(nvpts)
                     for k in 1:nvpts
-                        x[k] = my_round(results[k].ss_resp[i, j])
+                        x[k] = my_round(results[k].ss_resp[i, j]; sigdigits=4)
                     end
                     push!(gain, x[1])
                     lb = "$(output_names[i])/$(input_names[j]) [$(output_units[i]/input_units[j])]"
@@ -173,14 +173,14 @@ tr:nth-child(even) {
         if nvpts == 1
             column_labels = ["Output/Input", "Gain"]
             if format == :html
-                str = pretty_table(String, [labels my_round.(gain)]; column_labels, backend=:html)
+                str = pretty_table(String, [labels my_round.(gain, sigdigits=4)]; column_labels, backend=:html)
                 open(joinpath(dir_date, "$filename.html"), "a") do output_f
                     println(output_f, "<h2>Steady state gains</h2>")
                     println(output_f, str)
                 end
             else
                 println("Steady state gains:")
-                pretty_table([labels my_round.(gain)]; column_labels, table_format=TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
+                pretty_table([labels my_round.(gain, sigdigits=4)]; column_labels, table_format=TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
             end
         end
     end
@@ -219,14 +219,14 @@ tr:nth-child(even) {
             column_labels = ["No.", "σ±ωi [rad/s]", "ω_n [Hz]", "ζ", "τ [s]", "λ [s]"]
 
             if format == :html
-                str = pretty_table(String, [1:1:l[1] my_round.([s omega zeta tau lambda])]; column_labels, backend=:html)
+                str = pretty_table(String, [1:1:l[1] my_round.([s omega zeta tau lambda], sigdigits=4)]; column_labels, backend=:html)
                 open(joinpath(dir_date, "$filename.html"), "a") do output_f
                     println(output_f, "<h2>Eigenvalues of minimal system</h2>")
                     println(output_f, str)
                 end
             else
                 println("Eigenvalues of minimal system:")
-                pretty_table([1:1:l[1] my_round.([s omega zeta tau lambda])]; column_labels, table_format=TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
+                pretty_table([1:1:l[1] my_round.([s omega zeta tau lambda], sigdigits=4)]; column_labels, table_format=TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
             end
 
             t_zero = vcat(results[1].t_zero[:]...)
@@ -234,14 +234,14 @@ tr:nth-child(even) {
             if mz > 0 && length(t_zero) < 200
                 column_labels = ["No.", "σ±ωi [rad/s]", "ω [Hz]"]
                 if format == :html
-                    str = pretty_table(String, [1:1:lz[1] my_round.([t_zero t_zero_f])]; column_labels, backend=:html)
+                    str = pretty_table(String, [1:1:lz[1] my_round.([t_zero t_zero_f], sigdigits=4)]; column_labels, backend=:html)
                     open(joinpath(dir_date, "$filename.html"), "a") do output_f
                         println(output_f, "<h2>Zeros of minimal system</h2>")
                         println(output_f, str)
                     end
                 else
                     println("Zeros of minimal system:")
-                    pretty_table([1:1:lz[1] my_round.([t_zero t_zero_f])]; column_labels, table_format=TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
+                    pretty_table([1:1:lz[1] my_round.([t_zero t_zero_f], sigdigits=4)]; column_labels, table_format=TextTableFormat(; @text__no_vertical_lines), fit_table_in_display_vertically=false)
                 end
             end
 
@@ -433,7 +433,7 @@ tr:nth-child(even) {
         # print instant centre of body 1
         if nvpts == 1
             column_labels = ["No.", "Eigenvalue", "x", "y", "z", "u_x", "u_y", "u_z"]
-            temp = my_round.([results[1].mode_vals (results[1].centre[1:6, 1:end])'])
+            temp = my_round.([results[1].mode_vals (results[1].centre[1:6, 1:end])']; sigdigits=4)
             if format == :html
                 link = []
                 for i in axes(temp, 1)
@@ -524,7 +524,7 @@ tr:nth-child(even) {
                         for k in l
                             t = results[k].impulse_resp.time
                             imp = results[k].impulse_resp.response[i, j]
-                            lb = vpt_name[1] * "=$(my_round(vpts[k]))  $(vpt_name[3])"
+                            lb = vpt_name[1] * "=$(my_round(vpts[k], sigdigits=4))  $(vpt_name[3])"
                             p = plot!(p, t, imp; lw=2, label=lb)
                         end
                         if format == :html
@@ -543,7 +543,7 @@ tr:nth-child(even) {
                         for k in l
                             t = results[k].step_resp.time
                             stp = results[k].step_resp.response[i, j]
-                            lb = vpt_name[1] * "=$(my_round(vpts[k]))  $(vpt_name[3])"
+                            lb = vpt_name[1] * "=$(my_round(vpts[k], sigdigits=4))  $(vpt_name[3])"
                             p = plot!(p, t, stp; lw=2, label=lb)
                         end
                         if format == :html
@@ -664,7 +664,7 @@ tr:nth-child(even) {
                             phs[phs.>1] .-= 360
                             # set wrap arounds in phase to Inf to avoid jumps in plot
                             phs[findall(abs.(diff(phs)) .> 181)] .= Inf
-                            lb = vpt_name[1] * "=$(my_round(vpts[k]))  $(vpt_name[3])"
+                            lb = vpt_name[1] * "=$(my_round(vpts[k], sigdigits=4))  $(vpt_name[3])"
                             p1 = plot!(p1, w, mag; lw=2, label=lb)
                             p2 = plot!(p2, w, phs; lw=2, label="")
                         end
