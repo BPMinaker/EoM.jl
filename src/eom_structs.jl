@@ -90,17 +90,17 @@ mutable struct system_data
     snames::Vector{String}
 end
 
-# system_data() = system_data(
-#     "",
-#     Dict{String,Int}(),
-#     Dict{String,Int}(),
-#     [""],
-#     [""],
-#     Vector{Unitful.Units}([]),
-#     Vector{Unitful.Units}([]),
-#     [""],
-#     [""]
-# )
+system_data() = system_data(
+    "",
+    Dict{String,Int}(),
+    Dict{String,Int}(),
+    [""],
+    [""],
+    Vector{Unitful.Units}([]),
+    Vector{Unitful.Units}([]),
+    [""],
+    [""]
+)
 
 system_data(system::mbd_system) = system_data(
     system.name,
