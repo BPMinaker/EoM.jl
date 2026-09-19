@@ -729,7 +729,7 @@ tr:nth-child(even) {
         uu = ["u_$i" for i in 1:nin]
         yy = ["y_$i" for i in 1:nout]
 
-        xdot = [LaTeXString("\\dot{x}_$i") for i in 1:ns]
+        xdot = [LaTeXString("\\dot{x}_{$i}") for i in 1:ns]
         xdot = latexify(xdot; arraystyle=:curly, env=:raw)
         xx = latexify(xx; arraystyle=:curly, env=:raw)
         uu = latexify(uu; arraystyle=:curly, env=:raw)
